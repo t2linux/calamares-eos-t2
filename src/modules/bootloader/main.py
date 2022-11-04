@@ -22,6 +22,7 @@
 
 import fileinput
 import os
+import re
 import shutil
 import subprocess
 
@@ -59,20 +60,6 @@ def get_uuid():
             return partition["uuid"]
 
     return ""
-
-
-def get_bootloader_entry_name():
-    """
-    Passes 'bootloader_entry_name' to other routine based
-    on configuration file.
-
-    :return:
-    """
-    if "bootloaderEntryName" in libcalamares.job.configuration:
-        return libcalamares.job.configuration["bootloaderEntryName"]
-    else:
-        branding = libcalamares.globalstorage.value("branding")
-        return branding["bootloaderEntryName"]
 
 
 def get_kernel_line(kernel_type):
@@ -239,22 +226,32 @@ def create_systemd_boot_conf(installation_root_path, efi_dir, uuid, kernel, kern
                                                   os.path.join("/", kernel)])
 
 
-def create_loader(loader_path, entry):
+def create_loader(loader_path, installation_root_path):
     """
     Writes configuration for loader.
 
-    :param loader_path:
-    :param entry:
+    :param loader_path: The absolute path to the loader.conf file
+    :param installation_root_path: The path to the root of the target installation
     """
-    timeout = libcalamares.job.configuration["timeout"]
-    lines = [
-        "timeout {!s}\n".format(timeout),
-        "default {!s}\n".format(entry),
-    ]
+
+    # get the machine-id
+    with open(os.path.join(installation_root_path, "etc", "machine-id"), 'r') as machineid_file:
+        machine_id = machineid_file.read().rstrip('\n')
+
+    try:
+        loader_entries = libcalamares.job.configuration["loaderEntries"]
+    except KeyError:
+        libcalamares.utils.debug("No aditional loader entries found in config")
+        loader_entries = []
+        pass
+
+    lines = [f"default {machine_id}*"]
+
+    lines.extend(loader_entries)
 
     with open(loader_path, 'w') as loader_file:
         for line in lines:
-            loader_file.write(line)
+            loader_file.write(line + "\n")
 
 
 class SuffixIterator(object):
@@ -469,14 +466,26 @@ def get_kernels(installation_root_path):
 
     Each 3-tuple contains the kernel, kernel_type and kernel_version
     """
-    kernel_search_path = libcalamares.job.configuration["kernelSearchPath"]
-    source_kernel_name = libcalamares.job.configuration["kernelName"]
+    try:
+        kernel_search_path = libcalamares.job.configuration["kernelSearchPath"]
+    except KeyError:
+        libcalamares.utils.warning("No kernel pattern found in configuration, using '/usr/lib/modules'")
+        kernel_search_path = "/usr/lib/modules"
+        pass
+
     kernel_list = []
+
+    try:
+        kernel_pattern = libcalamares.job.configuration["kernelPattern"]
+    except KeyError:
+        libcalamares.utils.warning("No kernel pattern found in configuration, using 'vmlinuz'")
+        kernel_pattern = "vmlinuz"
+        pass
 
     # find all the installed kernels
     for root, dirs, files in os.walk(os.path.join(installation_root_path, kernel_search_path.lstrip('/'))):
         for file in files:
-            if file == source_kernel_name:
+            if re.search(kernel_pattern, file):
                 rel_root = os.path.relpath(root, installation_root_path)
                 kernel_list.append((os.path.join(rel_root, file), "default", os.path.basename(root)))
 
@@ -493,8 +502,6 @@ def install_systemd_boot(efi_directory):
     installation_root_path = libcalamares.globalstorage.value("rootMountPoint")
     install_efi_directory = installation_root_path + efi_directory
     uuid = get_uuid()
-    distribution = get_bootloader_entry_name()
-    distribution_translated = distribution.translate(file_name_sanitizer)
     loader_path = os.path.join(install_efi_directory,
                                "loader",
                                "loader.conf")
@@ -509,7 +516,7 @@ def install_systemd_boot(efi_directory):
                                  kernel,
                                  kernel_version)
 
-    create_loader(loader_path, distribution_translated)
+    create_loader(loader_path, installation_root_path)
 
 
 def get_grub_efi_parameters():

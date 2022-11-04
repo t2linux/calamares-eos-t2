@@ -10,8 +10,8 @@ properties:
     efiBootLoader: { type: string }
     kernelSearchPath:  { type: string }
     kernelName:  { type: string }
-    timeout:  { type: string }  # Inserted verbatim
     kernelParams: { type: array, items: { type: string } }
+    loaderEntries: { type: array, items: { type: string } }
     refindKernelList: { type: array, items: { type: string } }
 
     # Programs
