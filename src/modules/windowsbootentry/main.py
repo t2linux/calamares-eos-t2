@@ -86,9 +86,10 @@ def enable_osprober(installation_root_path, enable):
         line = line.strip()
         if line.startswith("#GRUB_DISABLE_OS_PROBER=false") and enable:
             print(line.lstrip("#"))
-        if line.startswith("GRUB_DISABLE_OS_PROBER=false") and not enable:
+        elif line.startswith("GRUB_DISABLE_OS_PROBER=false") and not enable:
             print("#" + line)
-        print(line)
+        else:
+            print(line)
 
 
 def write_grub_config(installation_root_path, filename, entry):
