@@ -363,7 +363,7 @@
   packages:
     - adwaita-icon-theme
     - arc-gtk-theme-eos
-    - endeavouros-gschema-gnome-git
+    - eos-settings-gnome
     - eos-qogir-icons
     - eog
     - evince
@@ -400,7 +400,7 @@
   critical: true
   packages:
     - arc-gtk-theme-eos
-    - endeavouros-skel-mate-git
+    - eos-settings-mate
     - eos-lightdm-slick-theme
     - eos-qogir-icons
     - celluloid
@@ -456,7 +456,7 @@
   critical: true
   packages:
     - arc-gtk-theme-eos
-    - endeavouros-gschema-budgie-git
+    - eos-settings-budgie
     - eos-lightdm-slick-theme
     - eos-qogir-icons
     - budgie-control-center
@@ -495,7 +495,7 @@
     - baka-mplayer
     - breeze
     - breeze-gtk
-    - endeavouros-skel-lxqt-git
+    - eos-settings-lxqt
     - eos-sddm-theme
     - featherpad
     - gvfs
@@ -521,7 +521,7 @@
   critical: true
   packages:
     - arc-gtk-theme-eos
-    - endeavouros-skel-lxde-git
+    - eos-settings-lxde
     - eos-lxdm-gtk3
     - eos-qogir-icons
     - celluloid
