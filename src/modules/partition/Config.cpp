@@ -359,6 +359,8 @@ Config::setConfigurationMap( const QVariantMap& configurationMap )
     m_allowManualPartitioning = CalamaresUtils::getBool( configurationMap, "allowManualPartitioning", true );
     m_requiredPartitionTableType = CalamaresUtils::getStringList( configurationMap, "requiredPartitionTableType" );
 
+    m_bootloaderVar = CalamaresUtils::getString( configurationMap, "efiBootLoaderVar", "" );
+
     Calamares::GlobalStorage* gs = Calamares::JobQueue::instance()->globalStorage();
     fillGSConfigurationEFI( gs, configurationMap );
     fillConfigurationFSTypes( configurationMap );

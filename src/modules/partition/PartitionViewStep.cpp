@@ -441,45 +441,61 @@ PartitionViewStep::isAtEnd() const
 void
 PartitionViewStep::onActivate()
 {
+
     // Alter GS based on prior module
     QString efiLocation;
-    if( Calamares::JobQueue::instance()->globalStorage()->contains("packagechooser_packagechooserq")) {
-        m_bootloader = Calamares::JobQueue::instance()->globalStorage()->value("packagechooser_packagechooserq").toString();
+    if ( !m_config->bootloaderVar().isEmpty()
+         && Calamares::JobQueue::instance()->globalStorage()->contains( m_config->bootloaderVar() ) )
+    {
+        m_bootloader = Calamares::JobQueue::instance()->globalStorage()->value( m_config->bootloaderVar() ).toString();
 
         cDebug() << "The bootloader is " << m_bootloader;
-        if( m_bootloader.toLower() == "grub") {
+        if ( m_bootloader.toLower() == "grub" )
+        {
             efiLocation = "/boot/efi";
-        } else if( m_bootloader.toLower() == "refind" ) {
+        }
+        else if ( m_bootloader.toLower() == "refind" )
+        {
             efiLocation = "/boot";
-        } else {
+        }
+        else
+        {
             efiLocation = "/efi";
         }
         cDebug() << "The efi location is " << efiLocation;
-        Calamares::JobQueue::instance()->globalStorage()->insert( "efiSystemPartition", efiLocation);
+        Calamares::JobQueue::instance()->globalStorage()->insert( "efiSystemPartition", efiLocation );
     }
 
-    if ( PartUtils::isEfiSystem() )
+    if ( PartUtils::isEfiSystem() && !m_config->bootloaderVar().isEmpty() )
     {
         // Alter GS based on prior module
         QString efiLocation;
-        if( Calamares::JobQueue::instance()->globalStorage()->contains("packagechooser_packagechooserq")) {
-            QString bootLoader = Calamares::JobQueue::instance()->globalStorage()->value("packagechooser_packagechooserq").toString();
+        if ( Calamares::JobQueue::instance()->globalStorage()->contains( m_config->bootloaderVar() ) )
+        {
+            QString bootLoader
+                = Calamares::JobQueue::instance()->globalStorage()->value( m_config->bootloaderVar() ).toString();
             cDebug() << "The bootloader is " << bootLoader;
-            if( bootLoader.toLower() == "grub") {
+            if ( bootLoader.toLower() == "grub" )
+            {
                 efiLocation = "/boot/efi";
-            } else if( bootLoader.toLower() == "refind" ) {
+            }
+            else if ( bootLoader.toLower() == "refind" )
+            {
                 efiLocation = "/boot";
-            } else {
+            }
+            else
+            {
                 efiLocation = "/efi";
             }
             cDebug() << "The efi location is " << efiLocation;
-            Calamares::JobQueue::instance()->globalStorage()->insert( "efiSystemPartition", efiLocation);
+            Calamares::JobQueue::instance()->globalStorage()->insert( "efiSystemPartition", efiLocation );
         }
 
         // This may not be our first trip so reset the efi mountpoint if needed
-        if ( m_core->isDirty() ) {
+        if ( m_core->isDirty() )
+        {
             QList< Partition* > efiSystemPartitions = m_core->efiSystemPartitions();
-            if ( PartitionInfo::mountPoint(efiSystemPartitions.at( m_choicePage->efiIndex() ) ) != "" )
+            if ( PartitionInfo::mountPoint( efiSystemPartitions.at( m_choicePage->efiIndex() ) ) != "" )
             {
                 PartitionInfo::setMountPoint( efiSystemPartitions.at( m_choicePage->efiIndex() ), efiLocation );
             }
@@ -572,7 +588,8 @@ PartitionViewStep::onLeave()
             QString description = tr( "The size of the EFI partition is smaller than recommended "
                                       "for systemd-boot.  If you proceed with this partition size, "
                                       "the installation may fail or the system may not boot.  "
-                                      "The recommended minimum size is %1 MiB").arg(atLeastMiB);
+                                      "The recommended minimum size is %1 MiB" )
+                                      .arg( atLeastMiB );
 
             QMessageBox mb( QMessageBox::Warning, message, description, QMessageBox::Ok, m_choicePage );
             Calamares::fixButtonLabels( &mb );
