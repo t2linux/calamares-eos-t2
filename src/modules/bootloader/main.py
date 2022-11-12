@@ -132,14 +132,18 @@ def get_kernel_params(uuid):
     partitions = libcalamares.globalstorage.value("partitions")
     swap_uuid = ""
     swap_outer_mappername = None
+    swap_outer_uuid = None
 
     cryptdevice_params = []
+
+    have_dracut = libcalamares.utils.target_env_call(["sh", "-c", "which dracut"]) == 0
 
     # Take over swap settings:
     #  - unencrypted swap partition sets swap_uuid
     #  - encrypted root sets cryptdevice_params
     for partition in partitions:
         if partition["fs"] == "linuxswap" and not partition.get("claimed", None):
+            # Skip foreign swap
             continue
         has_luks = "luksMapperName" in partition
         if partition["fs"] == "linuxswap" and not has_luks:
@@ -147,14 +151,14 @@ def get_kernel_params(uuid):
 
         if partition["fs"] == "linuxswap" and has_luks:
             swap_outer_mappername = partition["luksMapperName"]
+            swap_outer_uuid = partition["luksUuid"]
 
         if partition["mountPoint"] == "/" and has_luks:
-            cryptdevice_params = ["cryptdevice=UUID="
-                                  + partition["luksUuid"]
-                                  + ":"
-                                  + partition["luksMapperName"],
-                                  "root=/dev/mapper/"
-                                  + partition["luksMapperName"]]
+            if have_dracut:
+                cryptdevice_params = [f"rd.luks.uuid={partition['luksUuid']}"]
+            else:
+                cryptdevice_params = [f"cryptdevice=UUID={partition['luksUuid']}:{partition['luksMapperName']}"]
+            cryptdevice_params.append(f"root=/dev/mapper/{partition['luksMapperName']}")
 
     # btrfs and zfs handling
     for partition in partitions:
@@ -169,7 +173,7 @@ def get_kernel_params(uuid):
         if is_zfs_root(partition):
             zfs_root_path = get_zfs_root()
             if zfs_root_path is not None:
-                kernel_params.append("zfs=" + zfs_root_path)
+                kernel_params.append("root=ZFS=" + zfs_root_path)
             else:
                 # Something is really broken if we get to this point
                 libcalamares.utils.warning("Internal error handling zfs dataset")
@@ -183,9 +187,11 @@ def get_kernel_params(uuid):
     if swap_uuid:
         kernel_params.append("resume=UUID={!s}".format(swap_uuid))
 
+    if have_dracut and swap_outer_uuid:
+        kernel_params.append(f"rd.luks.uuid={swap_outer_uuid}")
+
     if swap_outer_mappername:
-        kernel_params.append("resume=/dev/mapper/{!s}".format(
-            swap_outer_mappername))
+        kernel_params.append(f"resume=/dev/mapper/{swap_outer_mappername}")
 
     return kernel_params
 
