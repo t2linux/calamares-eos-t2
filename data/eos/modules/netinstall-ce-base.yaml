@@ -143,7 +143,6 @@
         packages:
           - endeavouros-theming
           - eos-apps-info
-          - eos-hooks
           - eos-log-tool
           - eos-packagelist
           - eos-quickstart
