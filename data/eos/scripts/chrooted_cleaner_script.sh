@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # New version of cleaner_script
-# Made by @fernandomaroto and @manuel 
+# Made by @fernandomaroto and @manuel
 # Any failed command will just be skipped, error message may pop up but won't crash the install process
 # Net-install creates the file /tmp/run_once in live environment (need to be transfered to installed system) so it can be used to detect install option
 # ISO-NEXT specific cleanup removals and additions (08-2021) @killajoe and @manuel
@@ -154,7 +154,7 @@ _sed_stuff(){
 
 _clean_archiso(){
 
-    local _files_to_remove=(                               
+    local _files_to_remove=(
         /etc/sudoers.d/g_wheel
         /var/lib/NetworkManager/NetworkManager.state
         /etc/systemd/system/getty@tty1.service.d/autologin.conf
@@ -232,7 +232,7 @@ _clean_offline_packages(){
         ckbcomp
         kvantum
         qt5ct
-        
+
         # arm qemu dependency
         qemu-arm-aarch64-static-bin
     )
@@ -505,7 +505,7 @@ _desktop_i3(){
     git clone $(eos-github2gitlab https://github.com/endeavouros-team/endeavouros-i3wm-setup.git)
     pushd endeavouros-i3wm-setup >/dev/null
     cp -R .config ~/
-    cp -R .config /home/$NEW_USER/                                                
+    cp -R .config /home/$NEW_USER/
     chmod -R +x ~/.config/i3/scripts /home/$NEW_USER/.config/i3/scripts
     cp set_once.sh  ~/
     cp set_once.sh  /home/$NEW_USER/
@@ -580,6 +580,9 @@ Main() {
     _clean_up
     _run_hotfix_end
     _show_disk_and_partition_info
+
+    # Remove pacnew files
+    find /etc -type f -name "*.pacnew" -exec rm {} \;
 
     rm -rf /etc/calamares /opt/extra-drivers
     [[ -f "/boot/grub/grub.cfg" ]] && grub-mkconfig -o /boot/grub/grub.cfg
