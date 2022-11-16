@@ -26,6 +26,22 @@ def pretty_name():
     return _("Install bootloader.")
 
 
+def copytree(source_dir, dest_dir):
+    """
+    Recursively copy source_dir to dest_dir.  This is basically a work-around for the fact that native Python copytree
+    can't handle the situation where dest_dir already exists
+    """
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+    for item in os.listdir(source_dir):
+        s = os.path.join(source_dir, item)
+        d = os.path.join(dest_dir, item)
+        if os.path.isdir(s):
+            copytree(s, d)
+        else:
+            shutil.copy2(s, d)
+
+
 def handle_systemdboot(efi_directory):
     """
     For systemd-boot, we copy the Microsoft EFI entry to the EFI partition where systemd-boot is installed
@@ -64,7 +80,7 @@ def handle_systemdboot(efi_directory):
                 source_path = os.path.join(temp_path, "EFI", "Microsoft")
                 if os.path.isdir(source_path):
                     target_path = os.path.join(install_efi_directory, "EFI", "Microsoft")
-                    shutil.copytree(source_path, target_path)
+                    copytree(source_path, target_path)
                 libcalamares.utils.host_env_process_output(["umount", temp_path])
         except KeyError:
             pass
