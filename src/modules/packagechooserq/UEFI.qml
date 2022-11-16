@@ -91,7 +91,7 @@ import QtQuick.Layouts 1.3
                     width: 450
                     height: 80
                     anchors.centerIn: parent
-                    text: qsTr("Grub a longstanding bootloader for Linux and is the best choice for individuals wanting to boot off of btrfs snapshots.")
+                    text: qsTr("Grub a longstanding bootloader for Linux and is the best choice for individuals wanting to boot off of btrfs snapshots or need to use a smaller EFI partition.")
                     font.pointSize: 10
                     anchors.verticalCenterOffset: 0
                     anchors.horizontalCenterOffset: 0
@@ -149,7 +149,7 @@ import QtQuick.Layouts 1.3
                     width: 450
                     height: 80
                     anchors.centerIn: parent
-                    text: qsTr("No bootloader selected. Selecting no bootloader might result in an un-bootable system, if you don't already have a bootloader were you can add this install to.")
+                    text: qsTr("No bootloader selected. Selecting no bootloader might result in an un-bootable system, if you don't already have a bootloader that you can add this install to.")
                     font.pointSize: 10
                     anchors.verticalCenterOffset: 0
                     anchors.horizontalCenterOffset: 0
