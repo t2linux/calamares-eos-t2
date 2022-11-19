@@ -665,7 +665,7 @@ ChoicePage::onHomeCheckBoxStateChanged()
 int
 ChoicePage::efiIndex()
 {
-    if( !m_efiComboBox )
+    if ( !m_efiComboBox )
     {
         return 0;
     }
@@ -678,7 +678,11 @@ ChoicePage::onLeave()
 {
     if ( m_config->installChoice() == InstallChoice::Alongside )
     {
-        doAlongsideApply();
+        if ( m_afterPartitionSplitterWidget->splitPartitionSize() >= 0
+             && m_afterPartitionSplitterWidget->newPartitionSize() >= 0 )
+        {
+            doAlongsideApply();
+        }
     }
 
     if ( m_isEfi
@@ -692,7 +696,7 @@ ChoicePage::onLeave()
                 efiSystemPartitions.first(),
                 Calamares::JobQueue::instance()->globalStorage()->value( "efiSystemPartition" ).toString() );
         }
-        else if ( efiSystemPartitions.count() > 1 && m_efiComboBox )
+        else if ( efiSystemPartitions.count() > 1 && m_efiComboBox && m_efiComboBox->currentIndex() >= 0 )
         {
             PartitionInfo::setMountPoint(
                 efiSystemPartitions.at( m_efiComboBox->currentIndex() ),
@@ -1742,10 +1746,11 @@ ChoicePage::createBootloaderPanel()
     return panelWidget;
 }
 
-bool ChoicePage::shouldShowEncryptWidget( Config::InstallChoice choice ) const
+bool
+ChoicePage::shouldShowEncryptWidget( Config::InstallChoice choice ) const
 {
     // If there are any choices for FS, check it's not ZFS because that doesn't
     // support the kind of encryption we enable here.
     const bool suitableFS = m_eraseFsTypesChoiceComboBox ? m_eraseFsTypesChoiceComboBox->currentText() != "zfs" : true;
-    return (choice == InstallChoice::Erase) && m_enableEncryptionWidget && suitableFS;
+    return ( choice == InstallChoice::Erase ) && m_enableEncryptionWidget && suitableFS;
 }
