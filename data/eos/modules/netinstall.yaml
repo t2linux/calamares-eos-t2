@@ -300,7 +300,6 @@
     - mpv
     - network-manager-applet
     - numlockx
-    - picom
     - playerctl
     - polkit-gnome
     - rofi
