@@ -495,7 +495,8 @@ PartitionViewStep::onActivate()
         if ( m_core->isDirty() )
         {
             QList< Partition* > efiSystemPartitions = m_core->efiSystemPartitions();
-            if ( PartitionInfo::mountPoint( efiSystemPartitions.at( m_choicePage->efiIndex() ) ) != "" )
+            if ( m_choicePage->efiIndex() >= 0
+                 && PartitionInfo::mountPoint( efiSystemPartitions.at( m_choicePage->efiIndex() ) ) != "" )
             {
                 PartitionInfo::setMountPoint( efiSystemPartitions.at( m_choicePage->efiIndex() ), efiLocation );
             }
