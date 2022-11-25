@@ -442,12 +442,15 @@ void
 PartitionViewStep::onActivate()
 {
 
+    auto gs = Calamares::JobQueue::instance()->globalStorage();
+
     // Alter GS based on prior module
     QString efiLocation;
     if ( !m_config->bootloaderVar().isEmpty()
-         && Calamares::JobQueue::instance()->globalStorage()->contains( m_config->bootloaderVar() ) )
+         && gs->contains( m_config->bootloaderVar() ) )
     {
-        m_bootloader = Calamares::JobQueue::instance()->globalStorage()->value( m_config->bootloaderVar() ).toString();
+        m_bootloader = gs->value( m_config->bootloaderVar() ).toString();
+        gs->insert( "curBootloader", m_bootloader );
 
         cDebug() << "The bootloader is " << m_bootloader;
         if ( m_bootloader.toLower() == "grub" )

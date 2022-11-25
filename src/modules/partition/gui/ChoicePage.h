@@ -172,6 +172,10 @@ private:
     bool m_enableEncryptionWidget = false;
 
     QMutex m_coreMutex;
+
+    int m_efiNewIndex = -1;
+
+    QString m_bootLoader;
 };
 
 #endif  // CHOICEPAGE_H

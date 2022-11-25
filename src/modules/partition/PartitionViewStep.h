@@ -66,6 +66,8 @@ public:
 
     Calamares::RequirementsList checkRequirements() override;
 
+    QString bootLoader() const { return m_bootloader; }
+
 private:
     void initPartitionCoreModule();
     void continueLoading();

@@ -690,19 +690,39 @@ ChoicePage::onLeave()
               || m_config->installChoice() == InstallChoice::Replace ) )
     {
         QList< Partition* > efiSystemPartitions = m_core->efiSystemPartitions();
-        if ( efiSystemPartitions.count() == 1 )
+        if ( efiSystemPartitions.count() == 1 && m_config->installChoice() == InstallChoice::Replace )
         {
+            m_core->removeEspMounts();
             PartitionInfo::setMountPoint(
                 efiSystemPartitions.first(),
                 Calamares::JobQueue::instance()->globalStorage()->value( "efiSystemPartition" ).toString() );
         }
-        else if ( efiSystemPartitions.count() > 1 && m_efiComboBox && m_efiComboBox->currentIndex() >= 0 )
+        else if ( efiSystemPartitions.count() > 1 && m_efiComboBox && m_efiComboBox->currentIndex() >= 0
+                  && m_efiComboBox->currentIndex() != m_efiNewIndex )
         {
-            PartitionInfo::setMountPoint(
-                efiSystemPartitions.at( m_efiComboBox->currentIndex() ),
-                Calamares::JobQueue::instance()->globalStorage()->value( "efiSystemPartition" ).toString() );
+            Partition* part = nullptr;
+            for ( auto const partition : qAsConst( efiSystemPartitions ) )
+            {
+                if ( partition->partitionPath() == m_efiComboBox->currentText() )
+                {
+                    part = partition;
+                    break;
+                }
+            }
+
+            if ( part != nullptr )
+            {
+                m_core->removeEspMounts();
+                PartitionInfo::setMountPoint(
+                    part, Calamares::JobQueue::instance()->globalStorage()->value( "efiSystemPartition" ).toString() );
+            }
+            else
+            {
+                // This should never happen
+                cError() << "No valid efi partition found matching the selected partition" << Qt::endl;
+            }
         }
-        else
+        else if ( m_efiComboBox->currentIndex() != m_efiNewIndex || m_efiNewIndex == -1 )
         {
             cError() << "cannot set up EFI system partition.\nESP count:" << efiSystemPartitions.count()
                      << "\nm_efiComboBox:" << m_efiComboBox;
@@ -744,6 +764,8 @@ ChoicePage::doAlongsideApply()
     Q_ASSERT( m_afterPartitionSplitterWidget->splitPartitionSize() >= 0 );
     Q_ASSERT( m_afterPartitionSplitterWidget->newPartitionSize() >= 0 );
 
+    auto gs = Calamares::JobQueue::instance()->globalStorage();
+
     QMutexLocker locker( &m_coreMutex );
 
     QString path = m_beforePartitionBarsView->selectionModel()
@@ -764,8 +786,41 @@ ChoicePage::doAlongsideApply()
                 = firstSector + m_afterPartitionSplitterWidget->splitPartitionSize() / dev->logicalSize();
 
             m_core->resizePartition( dev, candidate, firstSector, newLastSector );
+
+            qint64 firstFreeSector = newLastSector + 2;
+
+            // Add an EFI partition if required
+            if ( PartUtils::isEfiSystem() && m_efiComboBox && m_efiNewIndex != -1
+                 && m_efiComboBox->currentIndex() == m_efiNewIndex )
+            {
+                qint64 uefisys_part_sizeB = PartUtils::efiFilesystemMinimumSize();
+                qint64 efiSectorCount = CalamaresUtils::bytesToSectors( uefisys_part_sizeB, dev->logicalSize() );
+                Q_ASSERT( efiSectorCount > 0 );
+
+                // Since sectors count from 0, and this partition is created starting
+                // at firstFreeSector, we need efiSectorCount sectors, numbered
+                // firstFreeSector..firstFreeSector+efiSectorCount-1.
+                qint64 lastSector = firstFreeSector + efiSectorCount - 1;
+                Partition* efiPartition = KPMHelpers::createNewPartition( dev->partitionTable(),
+                                                                          *dev,
+                                                                          PartitionRole( PartitionRole::Primary ),
+                                                                          FileSystem::Fat32,
+                                                                          QString(),
+                                                                          firstFreeSector,
+                                                                          lastSector,
+                                                                          KPM_PARTITION_FLAG( None ) );
+                PartitionInfo::setFormat( efiPartition, true );
+                m_core->removeEspMounts();
+                PartitionInfo::setMountPoint( efiPartition, gs->value( "efiSystemPartition" ).toString() );
+                if ( gs->contains( "efiSystemPartitionName" ) )
+                {
+                    efiPartition->setLabel( gs->value( "efiSystemPartitionName" ).toString() );
+                }
+                m_core->createPartition( dev, efiPartition, KPM_PARTITION_FLAG_ESP );
+                firstFreeSector = lastSector + 1;
+            }
             m_core->layoutApply( dev,
-                                 newLastSector + 2,
+                                 firstFreeSector,
                                  oldLastSector,
                                  m_encryptWidget->passphrase(),
                                  candidate->parent(),
@@ -1179,6 +1234,10 @@ ChoicePage::setupEfiSystemPartitionSelector()
 {
     Q_ASSERT( m_isEfi );
 
+    auto gs = Calamares::JobQueue::instance()->globalStorage();
+
+    m_efiNewIndex = -1;
+
     // Only the already existing ones:
     QList< Partition* > efiSystemPartitions = m_core->efiSystemPartitions();
 
@@ -1190,7 +1249,8 @@ ChoicePage::setupEfiSystemPartitionSelector()
                                  .arg( Calamares::Branding::instance()->shortProductName() ) );
         updateNextEnabled();
     }
-    else if ( efiSystemPartitions.count() == 1 )  //probably most usual situation
+    else if ( efiSystemPartitions.count() == 1
+              && m_config->installChoice() == InstallChoice::Replace )  //probably most usual situation
     {
         m_efiLabel->setText( tr( "The EFI system partition at %1 will be used for "
                                  "starting %2." )
@@ -1204,6 +1264,17 @@ ChoicePage::setupEfiSystemPartitionSelector()
         for ( int i = 0; i < efiSystemPartitions.count(); ++i )
         {
             Partition* efiPartition = efiSystemPartitions.at( i );
+
+            if ( gs->contains( "curBootloader" )
+                 && gs->value( "curBootloader" ).toString().trimmed() == QStringLiteral( "systemd-boot" ) )
+            {
+                qint64 minEspSize = gs->value( "efiSystemPartitionMinSize_i" ).toLongLong();
+                if ( m_config->installChoice() == InstallChoice::Alongside && efiPartition->capacity() < minEspSize )
+                {
+                    continue;
+                }
+            }
+
             m_efiComboBox->addItem( efiPartition->partitionPath(), i );
 
             // We pick an ESP on the currently selected device, if possible
@@ -1211,6 +1282,11 @@ ChoicePage::setupEfiSystemPartitionSelector()
             {
                 m_efiComboBox->setCurrentIndex( i );
             }
+        }
+        if ( m_config->installChoice() == InstallChoice::Alongside && m_efiComboBox->count() == 0 )
+        {
+            m_efiComboBox->addItem( tr( "New" ) );
+            m_efiNewIndex = m_efiComboBox->count() - 1;
         }
     }
 }

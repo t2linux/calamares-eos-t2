@@ -265,6 +265,26 @@ fillGSConfigurationEFI( Calamares::GlobalStorage* gs, const QVariantMap& configu
         }
     }
 
+
+    // Read and parse key efiSystemPartitionSize
+    if ( configurationMap.contains( "efiSystemPartitionMinSize" ) )
+    {
+        const QString sizeString = CalamaresUtils::getString( configurationMap, "efiSystemPartitionMinSize" );
+        CalamaresUtils::Partition::PartitionSize part_size = CalamaresUtils::Partition::PartitionSize( sizeString );
+        if ( part_size.isValid() )
+        {
+            // Insert once as string, once as a size-in-bytes;
+            // changes to these keys should be synchronized with PartUtils.cpp
+            gs->insert( "efiSystemPartitionMinSize", sizeString );
+            gs->insert( "efiSystemPartitionMinSize_i", part_size.toBytes() );
+        }
+        else
+        {
+            cWarning() << "Minimum EFI partition size" << sizeString << "is invalid, ignored";
+        }
+    }
+
+
     // Read and parse key efiSystemPartitionName
     if ( configurationMap.contains( "efiSystemPartitionName" ) )
     {

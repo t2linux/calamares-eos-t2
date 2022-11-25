@@ -1166,3 +1166,12 @@ PartitionCoreModule::createSummaryInfo() const
     }
     return lst;
 }
+
+void
+PartitionCoreModule::removeEspMounts()
+{
+    for ( auto const partition : qAsConst( m_efiSystemPartitions ) )
+    {
+        PartitionInfo::setMountPoint( partition, QString() );
+    }
+}
