@@ -28,7 +28,6 @@
 #include "gui/PartitionBarsView.h"
 #include "gui/PartitionLabelsView.h"
 #include "gui/PartitionSplitterWidget.h"
-#include "gui/ReplaceWidget.h"
 #include "gui/ScanningDialog.h"
 
 #include "Branding.h"
@@ -348,6 +347,12 @@ ChoicePage::setupChoices()
 
     updateSwapChoicesTr();
     updateChoiceButtonsTr();
+}
+
+bool
+ChoicePage::isNewEfiSelected() const
+{
+    return m_efiComboBox && m_efiNewIndex != -1 && m_efiComboBox->currentIndex() == m_efiNewIndex;
 }
 
 
@@ -690,15 +695,7 @@ ChoicePage::onLeave()
               || m_config->installChoice() == InstallChoice::Replace ) )
     {
         QList< Partition* > efiSystemPartitions = m_core->efiSystemPartitions();
-        if ( efiSystemPartitions.count() == 1 && m_config->installChoice() == InstallChoice::Replace )
-        {
-            m_core->removeEspMounts();
-            PartitionInfo::setMountPoint(
-                efiSystemPartitions.first(),
-                Calamares::JobQueue::instance()->globalStorage()->value( "efiSystemPartition" ).toString() );
-        }
-        else if ( efiSystemPartitions.count() > 1 && m_efiComboBox && m_efiComboBox->currentIndex() >= 0
-                  && m_efiComboBox->currentIndex() != m_efiNewIndex )
+        if ( !isNewEfiSelected() )
         {
             Partition* part = nullptr;
             for ( auto const partition : qAsConst( efiSystemPartitions ) )
@@ -722,7 +719,7 @@ ChoicePage::onLeave()
                 cError() << "No valid efi partition found matching the selected partition" << Qt::endl;
             }
         }
-        else if ( m_efiComboBox->currentIndex() != m_efiNewIndex || m_efiNewIndex == -1 )
+        else if ( !isNewEfiSelected() )
         {
             cError() << "cannot set up EFI system partition.\nESP count:" << efiSystemPartitions.count()
                      << "\nm_efiComboBox:" << m_efiComboBox;
@@ -790,8 +787,7 @@ ChoicePage::doAlongsideApply()
             qint64 firstFreeSector = newLastSector + 2;
 
             // Add an EFI partition if required
-            if ( PartUtils::isEfiSystem() && m_efiComboBox && m_efiNewIndex != -1
-                 && m_efiComboBox->currentIndex() == m_efiNewIndex )
+            if ( PartUtils::isEfiSystem() && isNewEfiSelected() )
             {
                 qint64 uefisys_part_sizeB = PartUtils::efiFilesystemMinimumSize();
                 qint64 efiSectorCount = CalamaresUtils::bytesToSectors( uefisys_part_sizeB, dev->logicalSize() );
@@ -928,7 +924,8 @@ ChoicePage::doReplaceSelectedPartition( const QModelIndex& current )
                                                               selectedPartition,
                                                               { gs->value( "defaultPartitionType" ).toString(),
                                                                 gs->value( "defaultFileSystemType" ).toString(),
-                                                                m_encryptWidget->passphrase() } );
+                                                                m_encryptWidget->passphrase(),
+                                                                isNewEfiSelected() } );
                         Partition* homePartition = findPartitionByPath( { selectedDevice() }, *homePartitionPath );
 
                         if ( homePartition && doReuseHomePartition )
@@ -953,8 +950,12 @@ ChoicePage::doReplaceSelectedPartition( const QModelIndex& current )
                                                   .arg( Calamares::Branding::instance()->shortProductName() ) );
             delete homePartitionPath;
 
-            if ( m_isEfi )
+            if ( m_isEfi && m_efiComboBox->count() == 0 )
+            {
+                m_inOnReplace = true;
                 setupEfiSystemPartitionSelector();
+                m_inOnReplace = false;
+            }
 
             updateNextEnabled();
             if ( !m_bootloaderComboBox.isNull() && m_bootloaderComboBox->currentIndex() < 0 )
@@ -1205,6 +1206,7 @@ ChoicePage::updateActionChoicePreview( InstallChoice choice )
         efiLayout->addWidget( m_efiComboBox );
         m_efiLabel->setBuddy( m_efiComboBox );
         m_efiComboBox->hide();
+        connect( m_efiComboBox, &QComboBox::currentTextChanged, this, &ChoicePage::onEficomboTextChanged );
         efiLayout->addStretch();
     }
 
@@ -1249,14 +1251,6 @@ ChoicePage::setupEfiSystemPartitionSelector()
                                  .arg( Calamares::Branding::instance()->shortProductName() ) );
         updateNextEnabled();
     }
-    else if ( efiSystemPartitions.count() == 1
-              && m_config->installChoice() == InstallChoice::Replace )  //probably most usual situation
-    {
-        m_efiLabel->setText( tr( "The EFI system partition at %1 will be used for "
-                                 "starting %2." )
-                                 .arg( efiSystemPartitions.first()->partitionPath() )
-                                 .arg( Calamares::Branding::instance()->shortProductName() ) );
-    }
     else
     {
         m_efiComboBox->show();
@@ -1269,7 +1263,7 @@ ChoicePage::setupEfiSystemPartitionSelector()
                  && gs->value( "curBootloader" ).toString().trimmed() == QStringLiteral( "systemd-boot" ) )
             {
                 qint64 minEspSize = gs->value( "efiSystemPartitionMinSize_i" ).toLongLong();
-                if ( m_config->installChoice() == InstallChoice::Alongside && efiPartition->capacity() < minEspSize )
+                if ( efiPartition->capacity() < minEspSize )
                 {
                     continue;
                 }
@@ -1283,11 +1277,17 @@ ChoicePage::setupEfiSystemPartitionSelector()
                 m_efiComboBox->setCurrentIndex( i );
             }
         }
-        if ( m_config->installChoice() == InstallChoice::Alongside && m_efiComboBox->count() == 0 )
-        {
-            m_efiComboBox->addItem( tr( "New" ) );
-            m_efiNewIndex = m_efiComboBox->count() - 1;
-        }
+        m_efiComboBox->addItem( tr( "New" ) );
+        m_efiNewIndex = m_efiComboBox->count() - 1;
+    }
+}
+
+void
+ChoicePage::onEficomboTextChanged( const QString& text )
+{
+    if ( m_config->installChoice() == InstallChoice::Replace && !m_inOnReplace )
+    {
+        doReplaceSelectedPartition( m_beforePartitionBarsView->selectionModel()->currentIndex() );
     }
 }
 

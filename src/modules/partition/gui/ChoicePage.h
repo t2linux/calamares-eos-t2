@@ -111,6 +111,7 @@ private:
     bool calculateNextEnabled() const;
     void updateNextEnabled();
     void setupChoices();
+    bool isNewEfiSelected() const;
     void checkInstallChoiceRadioButton( Config::InstallChoice choice );  ///< Sets the chosen button to "on"
     /** @brief Create a panel with "boot loader location:"
      *
@@ -132,6 +133,8 @@ private:
     OsproberEntryList getOsproberEntriesForDevice( Device* device ) const;
     void doAlongsideApply();
     void setupEfiSystemPartitionSelector();
+
+    void onEficomboTextChanged(const QString &text);
 
     // Translations support
     void updateSwapChoicesTr();
@@ -176,6 +179,8 @@ private:
     int m_efiNewIndex = -1;
 
     QString m_bootLoader;
+
+    bool m_inOnReplace = false;
 };
 
 #endif  // CHOICEPAGE_H
