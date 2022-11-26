@@ -867,6 +867,13 @@ ChoicePage::doReplaceSelectedPartition( const QModelIndex& current )
                     m_core->revertDevice( selectedDevice() );
                 }
 
+                if ( m_isEfi && m_efiComboBox->count() == 0 )
+                {
+                    m_inOnReplace = true;
+                    setupEfiSystemPartitionSelector();
+                    m_inOnReplace = false;
+                }
+
                 // if the partition is unallocated(free space), we don't replace it but create new one
                 // with the same first and last sector
                 Partition* selectedPartition
@@ -949,13 +956,6 @@ ChoicePage::doReplaceSelectedPartition( const QModelIndex& current )
                                                   .arg( *homePartitionPath )
                                                   .arg( Calamares::Branding::instance()->shortProductName() ) );
             delete homePartitionPath;
-
-            if ( m_isEfi && m_efiComboBox->count() == 0 )
-            {
-                m_inOnReplace = true;
-                setupEfiSystemPartitionSelector();
-                m_inOnReplace = false;
-            }
 
             updateNextEnabled();
             if ( !m_bootloaderComboBox.isNull() && m_bootloaderComboBox->currentIndex() < 0 )
