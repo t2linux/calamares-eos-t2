@@ -446,8 +446,7 @@ PartitionViewStep::onActivate()
 
     // Alter GS based on prior module
     QString efiLocation;
-    if ( !m_config->bootloaderVar().isEmpty()
-         && gs->contains( m_config->bootloaderVar() ) )
+    if ( !m_config->bootloaderVar().isEmpty() && gs->contains( m_config->bootloaderVar() ) )
     {
         m_bootloader = gs->value( m_config->bootloaderVar() ).toString();
         gs->insert( "curBootloader", m_bootloader );
@@ -561,6 +560,8 @@ shouldWarnForGPTOnBIOS( const PartitionCoreModule* core )
 void
 PartitionViewStep::onLeave()
 {
+    auto gs = Calamares::JobQueue::instance()->globalStorage();
+
     // Put the ESPs in global storage
     if ( PartUtils::isEfiSystem() )
     {
@@ -573,27 +574,26 @@ PartitionViewStep::onLeave()
                 espPaths.append( partition->partitionPath() );
             }
         }
-        Calamares::JobQueue::instance()->globalStorage()->insert( "espList", espPaths );
+        gs->insert( "espList", espPaths );
     }
 
     // Check the size of the ESP for systemd-boot
     if ( PartUtils::isEfiSystem() && m_bootloader.trimmed() == "systemd-boot" )
     {
-        const QString espMountPoint
-            = Calamares::JobQueue::instance()->globalStorage()->value( "efiSystemPartition" ).toString();
+        const QString espMountPoint = gs->value( "efiSystemPartition" ).toString();
         Partition* esp = m_core->findPartitionByMountPoint( espMountPoint );
 
-        if ( esp != nullptr && !PartUtils::isEfiFilesystemSuitableSize( esp ) )
+        qint64 minEspSize = gs->value( "efiSystemPartitionMinSize_i" ).toLongLong();
+        if ( esp != nullptr && esp->capacity() < minEspSize )
         {
-            const qint64 atLeastBytes = static_cast< qint64 >( PartUtils::efiFilesystemMinimumSize() );
-            const auto atLeastMiB = CalamaresUtils::BytesToMiB( atLeastBytes );
+            QString minSizeString = gs->value( "efiSystemPartitionMinSize" ).toString();
 
             QString message = tr( "EFI partition too small" );
             QString description = tr( "The size of the EFI partition is smaller than recommended "
                                       "for systemd-boot.  If you proceed with this partition size, "
                                       "the installation may fail or the system may not boot.  "
-                                      "The recommended minimum size is %1 MiB" )
-                                      .arg( atLeastMiB );
+                                      "The recommended minimum size is %1" )
+                                      .arg( minSizeString );
 
             QMessageBox mb( QMessageBox::Warning, message, description, QMessageBox::Ok, m_choicePage );
             Calamares::fixButtonLabels( &mb );
