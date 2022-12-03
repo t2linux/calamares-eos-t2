@@ -367,8 +367,8 @@
     - evince
     - file-roller
     - gdm
-    - gedit
     - gnome-calculator
+    - gnome-console
     - gnome-control-center
     - gnome-disk-utility
     - gnome-keyring
@@ -376,7 +376,7 @@
     - gnome-power-manager
     - gnome-screenshot
     - gnome-shell
-    - gnome-terminal
+    - gnome-text-editor
     - gnome-themes-extra
     - gnome-tweaks
     - gnome-usage
