@@ -477,8 +477,9 @@
     - gvfs-smb
     - lightdm
     - lightdm-slick-greeter
-    - nautilus
-    - nautilus-sendto
+    - nemo
+    - nemo-fileroller
+    - nemo-preview
     - network-manager-applet
     - sushi
     - totem
