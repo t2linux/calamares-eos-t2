@@ -448,14 +448,6 @@ _misc_cleanups() {
 _clean_up(){
     local xx
 
-    # Remove the "wrong" microcode.
-    if [ -x /usr/bin/device-info ] ; then
-        case "$(/usr/bin/device-info --cpu)" in
-            GenuineIntel)       _remove_ucode amd-ucode ;;
-            AuthenticAMD | *)   _remove_ucode intel-ucode ;;
-        esac
-    fi
-
     # install or remove nvidia graphics stuff
     _manage_nvidia_packages
 
@@ -470,9 +462,6 @@ _clean_up(){
 
     _misc_cleanups
 
-    # remove the packages dir
-    rm -rf /usr/share/packages
-
     # on the target, select file server based on country
     xx=/usr/bin/eos-select-file-server
     if [ -x $xx ] ; then
@@ -486,7 +475,6 @@ _clean_up(){
     fi
 
     # change log file permissions
-    [ -r /var/log/endeavour-install.log ] && chmod 0600      /var/log/endeavour-install.log
     [ -r /var/log/Calamares.log ]         && chown root:root /var/log/Calamares.log
 
     # run possible user-given commands
@@ -555,7 +543,6 @@ Main() {
     find /etc -type f -name "*.pacnew" -exec rm {} \;
 
     rm -rf /etc/calamares /opt/extra-drivers
-    [[ -f "/boot/grub/grub.cfg" ]] && grub-mkconfig -o /boot/grub/grub.cfg
 
     # Remove device-info & eos-connection-checker if they aren't installed
     [[ $(pacman -Q eos-bash-shared  2</dev/null) ]] || rm /bin/device-info /bin/eos-connection-checker
