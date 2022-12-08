@@ -493,36 +493,6 @@ _clean_up(){
     _RunUserCommands
 }
 
-_desktop_i3(){
-    # i3 configs here
-    # Note: variable 'desktop' from '_another_case' is visible here too!
-
-    if ! _check_internet_connection ; then
-        _c_c_s_msg warning "cannot fetch i3 configs, no connection."
-        return
-    fi
-
-    git clone $(eos-github2gitlab https://github.com/endeavouros-team/endeavouros-i3wm-setup.git)
-    pushd endeavouros-i3wm-setup >/dev/null
-    cp -R .config ~/
-    cp -R .config /home/$NEW_USER/
-    chmod -R +x ~/.config/i3/scripts /home/$NEW_USER/.config/i3/scripts
-    cp set_once.sh  ~/
-    cp set_once.sh  /home/$NEW_USER/
-    chmod +x ~/set_once.sh /home/$NEW_USER/set_once.sh
-    cp .Xresources ~/
-    cp .Xresources /home/$NEW_USER/
-    cp .gtkrc-2.0 ~/
-    cp .gtkrc-2.0 /home/$NEW_USER/
-    cp .nanorc ~/
-    cp .nanorc /home/$NEW_USER/
-    cp xed.dconf ~/
-    cp xed.dconf /home/$NEW_USER/
-    chown -R $NEW_USER:$NEW_USER /home/$NEW_USER/
-    popd >/dev/null
-    rm -rf endeavouros-i3wm-setup
-}
-
 _show_disk_and_partition_info() {
     local cmd
     local cmds=( "lsblk -f -o+SIZE"
