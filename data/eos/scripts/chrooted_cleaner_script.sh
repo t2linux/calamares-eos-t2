@@ -202,6 +202,7 @@ _clean_offline_packages(){
         ## Live iso specific
         arch-install-scripts
         memtest86+
+        mkinitcpio
         mkinitcpio-archiso
         mkinitcpio-openswap
         mkinitcpio-nfs-utils
@@ -223,11 +224,6 @@ _clean_offline_packages(){
         rate-mirrors
 
         ## Calamares EndeavourOS
-        calamares_config_ce
-        calamares_config_default
-        calamares_current
-        calamares_config_ce-git
-        calamares_config_default-git
         calamares-git
         ckbcomp
         kvantum
