@@ -187,15 +187,7 @@ _clean_offline_packages(){
         ## Base system
         edk2-shell
 
-        ## Boot
-        refind
-
-
         # SOFTWARE
-
-        ## Bluetooth
-        blueberry
-
 
         # ISO
 
@@ -204,8 +196,6 @@ _clean_offline_packages(){
         memtest86+
         mkinitcpio
         mkinitcpio-archiso
-        mkinitcpio-openswap
-        mkinitcpio-nfs-utils
         mkinitcpio-busybox
         pv
         syslinux
@@ -217,14 +207,13 @@ _clean_offline_packages(){
         grsync
         hdparm
 
-
         # ENDEAVOUROS REPO
 
         ## General
         rate-mirrors
 
         ## Calamares EndeavourOS
-        calamares-git
+        calamares
         ckbcomp
         kvantum
         qt5ct
@@ -233,15 +222,8 @@ _clean_offline_packages(){
         qemu-arm-aarch64-static-bin
     )
 
-    # @ does one by one to avoid errors in the entire process
-    # * can be used to treat all packages in one command
-    # for xx in ${_packages_to_remove[@]}; do pacman -Rsc $xx --noconfirm; done
+	pacman -Rsn --noconfirm "${_packages_to_remove[@]}"
 
-    local xx
-
-    for xx in "${_packages_to_remove[@]}" ; do
-        pacman -Rsn --noconfirm "$xx"
-    done
 }
 
 _endeavouros(){
