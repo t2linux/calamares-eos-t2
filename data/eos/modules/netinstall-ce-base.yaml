@@ -37,6 +37,7 @@
           - iwd
           - modemmanager
           - networkmanager
+          - networkmanager-openconnect
           - networkmanager-openvpn
           - nss-mdns
           - usb_modeswitch
