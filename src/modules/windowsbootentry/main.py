@@ -7,6 +7,7 @@ import fileinput
 import os
 import shutil
 import subprocess
+import stat
 import tempfile
 
 import libcalamares
@@ -119,6 +120,11 @@ def write_grub_config(installation_root_path, filename, entry):
         conf_file.write("exec tail -n +3 $0\n\n")
         conf_file.writelines(entry)
 
+    try:
+        os.chmod(conf_path, stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+    except os.error as e:
+        libcalamares.utils.warning(f"Failed to chmod grub config, the error was: {e}")
+        
     return None
 
 
@@ -146,9 +152,9 @@ def handle_grub():
             found_osprober = True
         elif "menuentry" in line and "Windows" in line and found_osprober:
             found_windows = True
-            entry = [line]
+            entry = [f"{line}\n"]
         elif found_windows and found_osprober:
-            entry.append(line)
+            entry.append(f"{line}\n")
             if line.strip().startswith("}"):
                 break
 
