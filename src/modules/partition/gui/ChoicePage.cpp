@@ -1269,16 +1269,23 @@ ChoicePage::setupEfiSystemPartitionSelector()
                 }
             }
 
-            m_efiComboBox->addItem( efiPartition->partitionPath(), i );
+            m_efiComboBox->addItem( efiPartition->partitionPath() );
 
             // We pick an ESP on the currently selected device, if possible
-            if ( efiPartition->devicePath() == selectedDevice()->deviceNode() && efiPartition->number() == 1 )
+            if ( efiPartition->devicePath() == selectedDevice()->deviceNode() && m_efiComboBox->currentIndex() < 0 )
             {
-                m_efiComboBox->setCurrentIndex( i );
+                m_efiComboBox->setCurrentIndex( m_efiComboBox->findText( efiPartition->partitionPath() ) );
             }
         }
         m_efiComboBox->addItem( tr( "New" ) );
         m_efiNewIndex = m_efiComboBox->count() - 1;
+
+        // Ensure the combobox has something selected
+        if ( m_efiComboBox->currentIndex() < 0 )
+        {
+            m_efiComboBox->setCurrentIndex( 0 );
+        }
+
     }
 }
 
