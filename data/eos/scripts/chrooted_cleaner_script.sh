@@ -459,11 +459,13 @@ _clean_up(){
     _RunUserCommands
 }
 
-_show_disk_and_partition_info() {
+_show_info_about_installed_system() {
     local cmd
     local cmds=( "lsblk -f -o+SIZE"
                  "fdisk -l"
                )
+    [ -x /usr/bin/os-prober ] && cmds+=( "os-prober" )
+
     for cmd in "${cmds[@]}" ; do
         _c_c_s_msg info "$cmd"
         $cmd
@@ -515,7 +517,7 @@ Main() {
     _virtual_machines
     _clean_up
     _run_hotfix_end
-    _show_disk_and_partition_info
+    _show_info_about_installed_system
 
     # Remove pacnew files
     find /etc -type f -name "*.pacnew" -exec rm {} \;
