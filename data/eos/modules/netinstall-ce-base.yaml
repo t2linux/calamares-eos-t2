@@ -151,7 +151,6 @@
           - eos-update-notifier
           - reflector-simple
           - welcome
-          - yad-eos
       - name: "EndeavourOS applications selection"
         description: "General tools and applications"
         selected: true
