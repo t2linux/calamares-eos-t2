@@ -22,14 +22,11 @@
         selected: true
         packages:
           - xf86-video-amdgpu
-          - xf86-video-ati
           - xf86-video-intel
       - name: "Network"
         description: "Network apps drivers and tools"
         selected: true
         packages:
-          - b43-fwcutter
-          - broadcom-wl-dkms
           - dhclient
           - dnsmasq
           - dnsutils
@@ -174,12 +171,11 @@
           - vi
           - wget
 - name: "CPU specific Microcode update packages"
-  description: "Microcode update image for AMD and Intel CPU"
+  description: "Microcode update image for your Mac's CPU"
   hidden: false
   selected: true
   critical: false
   packages:
-    - amd-ucode
     - intel-ucode
 - name: "Firefox and language package"
   description: "Add firefox and language pack if possible"
@@ -189,24 +185,15 @@
   packages:
     - firefox
     - firefox-i18n-$LOCALE
-- name: "LTS Kernel in addition"
-  description: "Adding Long Term Supported Kernel in addition to main one"
+- name: "Xanmod Kernel in addition"
+  description: "Adding Xanmod Kernel in addition to main one"
   hidden: false
   selected: false
   expanded: false
   critical: true
   packages:
-    - linux-lts
-    - linux-lts-headers
-- name: "Zen Kernel in addition"
-  description: "Adding ZEN kernel in addition to main one"
-  hidden: false
-  selected: false
-  expanded: false
-  critical: true
-  packages:
-    - linux-zen
-    - linux-zen-headers
+    - linux-xanmod-edge-t2
+    - linux-xanmod-edge-t2-headers
 - name: "XFCE4-Desktop"
   description: "XFCE4 - lightweight desktop fast and low on system resources, visually appealing and user friendly."
   hidden: false
