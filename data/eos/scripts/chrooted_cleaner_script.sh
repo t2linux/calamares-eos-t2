@@ -226,11 +226,6 @@ _clean_offline_packages(){
 
 }
 
-_endeavouros(){
-    [ -r /root/.bash_profile ] && sed -i "/if/,/fi/"'s/^/#/' /root/.bash_profile
-    sed -i "/if/,/fi/"'s/^/#/' /home/$NEW_USER/.bash_profile
-}
-
 _is_offline_mode() {
     if [ "$INSTALL_TYPE" = "online" ] ; then
         return 1           # online install mode
@@ -513,7 +508,6 @@ Main() {
     fi
 
     _check_install_mode
-    _endeavouros
     _virtual_machines
     _clean_up
     _run_hotfix_end
