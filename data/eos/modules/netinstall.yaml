@@ -40,6 +40,7 @@
           - networkmanager-openconnect
           - networkmanager-openvpn
           - nss-mdns
+          - openssh
           - usb_modeswitch
           - wpa_supplicant
           - xl2tpd
