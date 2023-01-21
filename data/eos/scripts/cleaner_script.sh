@@ -138,6 +138,10 @@ Main() {
                 NEW_USER="${i#*=}"
                 shift
                 ;;
+			--online)
+                INSTALL_TYPE="online"
+                shift
+                ;;
         esac
     done
 
@@ -161,13 +165,22 @@ Main() {
         _cleaner_msg "error" "cleaner_script.sh: new username is unknown!"
     fi
 
+    # If the Intel X driver was installed, also install it on the target
+    echo "Checking if Intel X11 driver is needed"
+    if [[ $(pacman -Q xf86-video-intel 2>/dev/null) ]] ; then
+		if [ -z ${INSTALL_TYPE} ] ; then
+			pacman -U --noconfirm --sysroot /tmp/$chroot_path /usr/share/packages/libxvmc*.zst --asdeps
+			pacman -U --noconfirm --sysroot /tmp/$chroot_path /usr/share/packages/xf86-video-intel*.zst
+		else
+			pacman -S --noconfirm --sysroot /tmp/$chroot_path xf86-video-intel
+		fi
+	fi
+
     # Copy any file from live environment to new system
 
     cp -f /etc/calamares/files/environment /tmp/$chroot_path/etc/environment
     cp -n /usr/bin/device-info /tmp/$chroot_path/usr/bin/.
     cp -n /usr/bin/eos-connection-checker /tmp/$chroot_path/usr/bin/.
-
-    #cp -rf /home/liveuser/.gnupg/gpg.conf /tmp/$chroot_path/etc/pacman.d/gnupg/gpg.conf
 
     _copy_files
 

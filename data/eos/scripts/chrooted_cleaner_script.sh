@@ -271,11 +271,6 @@ _remove_other_graphics_drivers() {
     local graphics="$(device-info --vga ; device-info --display)"
     local amd=no
 
-    # remove Intel graphics driver if it is not needed
-    if [ -z "$(echo "$graphics" | grep "Intel Corporation")" ] ; then
-        _remove_a_pkg xf86-video-intel
-    fi
-
     # remove AMD graphics driver if it is not needed
     if [ -n "$(echo "$graphics" | grep "Advanced Micro Devices")" ] ; then
         amd=yes
