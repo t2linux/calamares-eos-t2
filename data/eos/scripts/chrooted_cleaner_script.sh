@@ -455,7 +455,6 @@ _show_info_about_installed_system() {
     local cmds=( "lsblk -f -o+SIZE"
                  "fdisk -l"
                )
-    [ -x /usr/bin/os-prober ] && cmds+=( "os-prober" )
 
     for cmd in "${cmds[@]}" ; do
         _c_c_s_msg info "$cmd"
