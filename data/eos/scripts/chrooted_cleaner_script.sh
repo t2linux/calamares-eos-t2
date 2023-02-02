@@ -359,7 +359,6 @@ _remove_nvidia_drivers() {
         [ -r /usr/share/licenses/nvidia-dkms/LICENSE ]      && _nvidia_remove nvidia-dkms
         [ -x /usr/bin/nvidia-modprobe ]                     && _nvidia_remove nvidia-utils
         [ -x /usr/bin/nvidia-settings ]                     && _nvidia_remove nvidia-settings
-        [ -x /usr/bin/nvidia-installer-dkms ]               && _nvidia_remove nvidia-installer-dkms
         [ -x /usr/bin/nvidia-inst ]                         && _nvidia_remove nvidia-inst
         [ -r /usr/share/libalpm/hooks/eos-nvidia-fix.hook ] && _nvidia_remove nvidia-hook
         true
@@ -379,7 +378,7 @@ _manage_nvidia_packages() {
         if [ "$nvidia_driver" = "no" ] ; then
             _remove_nvidia_drivers
         elif [ "$nvidia_card" = "yes" ] ; then
-            _install_needed_packages nvidia-inst nvidia-hook nvidia-dkms  # nvidia-installer-dkms: no more in the repo
+            _install_needed_packages nvidia-inst nvidia-hook nvidia-dkms
             nvidia-installer-kernel-para
         fi
     fi
