@@ -327,8 +327,6 @@
     - bluedevil
     - breeze-gtk
     - dolphin
-    - dragon
-    - elisa
     - eos-plasma-sddm-config
     - eos-settings-plasma
     - gwenview
@@ -353,6 +351,7 @@
     - sddm-kcm
     - solid
     - spectacle
+    - vlc
     - xsettingsd
 - name: "GNOME-Desktop"
   description: "GNOME Desktop - designed to put you in control and get things done."
