@@ -215,7 +215,7 @@
   expanded: false
   critical: true
   subgroups:
-    - name: "EndeavourOS setup"
+    - name: "EndeavourOS settings"
       description: "Unselect to install vanilla."
       selected: false
       packages:
@@ -320,7 +320,7 @@
   expanded: false
   critical: true
   subgroups:
-    - name: "EndeavourOS setup"
+    - name: "EndeavourOS settings"
       description: "Unselect to install vanilla."
       selected: false
       packages:
@@ -363,7 +363,7 @@
   expanded: false
   critical: true
   subgroups:
-    - name: "EndeavourOS setup"
+    - name: "EndeavourOS settings"
       description: "Unselect to install vanilla."
       selected: false
       packages:
@@ -407,7 +407,7 @@
   expanded: false
   critical: true
   subgroups:
-    - name: "EndeavourOS setup"
+    - name: "EndeavourOS settings"
       description: "Unselect to install vanilla."
       selected: false
       packages:
@@ -436,7 +436,7 @@
   expanded: false
   critical: true
   subgroups:
-    - name: "EndeavourOS setup"
+    - name: "EndeavourOS settings"
       description: "Unselect to install vanilla."
       selected: false
       packages:
@@ -475,7 +475,7 @@
   expanded: false
   critical: true
   subgroups:
-    - name: "EndeavourOS setup"
+    - name: "EndeavourOS settings"
       description: Unselect to install vanilla.
       selected: false
       packages:
