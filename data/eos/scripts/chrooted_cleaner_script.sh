@@ -379,7 +379,7 @@ _manage_nvidia_packages() {
             _remove_nvidia_drivers
         elif [ "$nvidia_card" = "yes" ] ; then
             _install_needed_packages nvidia-inst nvidia-hook nvidia-dkms
-            nvidia-installer-kernel-para nvidia-drm.modeset=1
+            nvidia-installer-kernel-para --ccs nvidia-drm.modeset=1
         fi
     fi
 }
