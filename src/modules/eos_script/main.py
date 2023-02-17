@@ -66,12 +66,23 @@ def run():
     global user_output
     user_output = libcalamares.job.configuration.get("userOutput", False)
 
+    try:
+        gs_name = libcalamares.job.configuration["gsName"]
+    except KeyError:
+        gs_name = None
+
     # build the paramater list
     command = [script_path]
     if online:
         gs_online = libcalamares.globalstorage.value("online")
         if gs_online is True:
             command.append("--online")
+
+    if gs_name is not None:
+        try:
+            command.append("--bootloader=" + libcalamares.globalstorage.value(gs_name))
+        except KeyError:
+            return f"Key missing", f"Failed to find {gs_name} in global storage"
 
     if include_root:
         root_mount_point = libcalamares.globalstorage.value("rootMountPoint")
