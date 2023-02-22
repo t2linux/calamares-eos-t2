@@ -379,7 +379,7 @@ _manage_nvidia_packages() {
             _remove_nvidia_drivers
         elif [ "$nvidia_card" = "yes" ] ; then
             _install_needed_packages nvidia-inst nvidia-hook nvidia-dkms
-            nvidia-installer-kernel-para --ccs nvidia-drm.modeset=1
+            nvidia-installer-kernel-para --bootloader="$BOOTLOADER" nvidia-drm.modeset=1
         fi
     fi
 }
@@ -482,7 +482,7 @@ Main() {
     _c_c_s_msg info "$filename started."
 
     local i
-    local NEW_USER="" INSTALL_TYPE=""
+    local NEW_USER="" INSTALL_TYPE="" BOOTLOADER=""
 
     # parse the options
     for i in "$@"; do
@@ -494,6 +494,9 @@ Main() {
             --online)
                 INSTALL_TYPE="online"
                 shift
+                ;;
+            --bootloader=*)
+                BOOTLOADER="${i#*=}"
                 ;;
         esac
     done
