@@ -379,10 +379,6 @@ _manage_nvidia_packages() {
             _remove_nvidia_drivers
         elif [ "$nvidia_card" = "yes" ] ; then
             _install_needed_packages nvidia-inst nvidia-hook nvidia-dkms
-
-            local para="nvidia-drm.modeset=1"
-            _c_c_s_msg info "Adding kernel parameter '$para' to $BOOTLOADER"
-            nvidia-installer-kernel-para --bootloader="$BOOTLOADER" "$para"
         fi
     fi
 }
