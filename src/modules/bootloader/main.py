@@ -130,6 +130,11 @@ def get_kernel_params(uuid):
     kernel_params.append("rw")
 
     partitions = libcalamares.globalstorage.value("partitions")
+    try:
+        gpu_drivers = libcalamares.globalstorage.value("gpuDrivers")
+    except KeyError:
+        pass
+
     swap_uuid = ""
     swap_outer_mappername = None
     swap_outer_uuid = None
@@ -192,6 +197,9 @@ def get_kernel_params(uuid):
 
     if swap_outer_mappername:
         kernel_params.append(f"resume=/dev/mapper/{swap_outer_mappername}")
+
+    if "nvidia" in gpu_drivers:
+        kernel_params.append("nvidia-drm.modeset=1")
 
     return kernel_params
 

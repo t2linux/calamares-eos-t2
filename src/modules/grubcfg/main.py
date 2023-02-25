@@ -136,6 +136,11 @@ def modify_grub_default(partitions, root_mount_point, distributor):
         ["sh", "-c", "which plymouth"]
         )
 
+    try:
+        gpu_drivers = libcalamares.globalstorage.value("gpuDrivers")
+    except KeyError:
+        pass
+
     # Shell exit value 0 means success
     have_plymouth = plymouth_bin == 0
     have_dracut = dracut_bin == 0
@@ -214,6 +219,9 @@ def modify_grub_default(partitions, root_mount_point, distributor):
         kernel_params.append(f"rd.luks.uuid={swap_outer_uuid}")
     if swap_outer_mappername:
         kernel_params.append(f"resume=/dev/mapper/{swap_outer_mappername}")
+
+    if "nvidia" in gpu_drivers:
+        kernel_params.append("nvidia-drm.modeset=1")
 
     overwrite = libcalamares.job.configuration.get("overwrite", False)
 
