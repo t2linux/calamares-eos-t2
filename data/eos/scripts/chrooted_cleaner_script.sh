@@ -180,7 +180,7 @@ _clean_archiso(){
 
 _clean_offline_packages(){
 
-    local _packages_to_remove=(
+    local packages_to_remove=(
 
         # BASE
 
@@ -213,7 +213,7 @@ _clean_offline_packages(){
         rate-mirrors
 
         ## Calamares EndeavourOS
-        calamares
+        $(pacman -Qs calamares | grep ^local/ | awk '{print $1}' | sed 's|^local/||')        # finds calamares related packages
         ckbcomp
         kvantum
         qt5ct
@@ -222,7 +222,7 @@ _clean_offline_packages(){
         qemu-arm-aarch64-static-bin
     )
 
-	pacman -Rsn --noconfirm "${_packages_to_remove[@]}"
+    pacman -Rsn --noconfirm "${packages_to_remove[@]}"
 
 }
 
