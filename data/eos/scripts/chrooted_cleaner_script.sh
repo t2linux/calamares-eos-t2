@@ -214,7 +214,6 @@ _clean_offline_packages(){
 
         ## Calamares EndeavourOS
         calamares
-	calamares-git
         ckbcomp
         kvantum
         qt5ct
