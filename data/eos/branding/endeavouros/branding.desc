@@ -18,8 +18,8 @@ navigation: widget
 strings:
     productName:         EndeavourOS
     shortProductName:    EndeavourOS
-    version:             Cassini_neo
-    shortVersion:        Cassini_neo
+    version:             Cassini_nova
+    shortVersion:        Cassini_nova
     versionedName:       EndeavourOS
     shortVersionedName:  EndeavourOS
     bootloaderEntryName: EndeavourOS
