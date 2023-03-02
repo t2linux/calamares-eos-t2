@@ -213,7 +213,7 @@ _clean_offline_packages(){
         rate-mirrors
 
         ## Calamares EndeavourOS
-        $(pacman -Qs calamares | grep ^local/ | awk '{print $1}' | sed 's|^local/||')        # finds calamares related packages
+        $(pacman -Qq | grep calamares)        # finds calamares related packages
         ckbcomp
         kvantum
         qt5ct
