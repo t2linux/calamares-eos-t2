@@ -23,7 +23,6 @@
         packages:
           - xf86-video-amdgpu
           - xf86-video-ati
-          - xf86-video-intel
       - name: "Network"
         description: "Network apps drivers and tools"
         selected: true
@@ -241,7 +240,7 @@
     - cups-filters
     - cups-pdf
 - name: "Accessibility Tools"
-  description: "Screen reader and mouse tweaks (impaired vision)"
+  description: "Impaired vision tools (Screen reader e.t.c.)"
   hidden: false
   selected: false
   critical: true
