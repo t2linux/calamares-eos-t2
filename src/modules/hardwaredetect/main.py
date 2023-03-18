@@ -16,7 +16,6 @@ _n = _translation.ngettext
 
 custom_status_message = None
 name = "Hardware detection"
-user_output = False
 
 
 def pretty_name():
@@ -28,18 +27,9 @@ def pretty_status_message():
         return custom_status_message
 
 
-def clean_key(key):
-    """
-    Strips the positional info json key
-    :param key: The original data from the inxi json
-    :return: The key without the position information
-    """
-    return re.sub("^[0-9]*#[0-9]*#[0-9]*#", "", key)
-
-
 def run():
-    cpu_model = ""
-    cpu_vendor = ""
+    cpu_model = "unknown"
+    cpu_vendor = "unknown"
     gpu_drivers = []
     try:
         with open("/proc/cpuinfo", "r") as cpu_file:
@@ -49,7 +39,7 @@ def run():
                 if line.strip().startswith("model name"):
                     cpu_model = line.split(":")[1].strip()
     except KeyError:
-        return "Failed to get CPU info"
+        libcalamares.utils.warning("Failed to get CPU drivers")
 
     try:
         lspci_output = subprocess.run("LANG=C lspci -k | grep -EA3 'VGA|3D|Display'",
@@ -59,16 +49,12 @@ def run():
             if line.strip().startswith("Kernel driver in use:"):
                 gpu_drivers.append(line.split(":")[1].strip())
     except subprocess.CalledProcessError as cpe:
-        libcalamares.utils.warning(f"Failed to get GPU drivers with error: {gpu_drivers}")
-        return "Failed to get GPU drivers"
+        libcalamares.utils.warning(f"Failed to get GPU drivers with error: {cpe.output}")
     except KeyError:
-        return "Failed to parse GPU driver string"
+        libcalamares.utils.warning("Failed to parse GPU driver string")
 
-    if cpu_model and gpu_drivers and cpu_vendor:
-        libcalamares.globalstorage.insert("cpuModel", cpu_model)
-        libcalamares.globalstorage.insert("cpuVendor", cpu_vendor)
-        libcalamares.globalstorage.insert("gpuDrivers", gpu_drivers)
-    else:
-        return "Failed to locate CPU and GPU driver information"
+    libcalamares.globalstorage.insert("cpuModel", cpu_model)
+    libcalamares.globalstorage.insert("cpuVendor", cpu_vendor)
+    libcalamares.globalstorage.insert("gpuDrivers", gpu_drivers)
 
     return None
