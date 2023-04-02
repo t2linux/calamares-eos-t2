@@ -189,24 +189,6 @@
   packages:
     - firefox
     - firefox-i18n-$LOCALE
-- name: "LTS Kernel in addition"
-  description: "Adding Long Term Supported Kernel in addition to main one"
-  hidden: false
-  selected: false
-  expanded: false
-  critical: true
-  packages:
-    - linux-lts
-    - linux-lts-headers
-- name: "Zen Kernel in addition"
-  description: "Adding ZEN kernel in addition to main one"
-  hidden: false
-  selected: false
-  expanded: false
-  critical: true
-  packages:
-    - linux-zen
-    - linux-zen-headers
 - name: XFCE4-Desktop
   description: "XFCE4 - lightweight desktop fast and low on system resources, visually appealing and user friendly."
   hidden: false
