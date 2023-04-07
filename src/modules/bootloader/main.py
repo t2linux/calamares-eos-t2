@@ -130,6 +130,11 @@ def get_kernel_params(uuid):
     kernel_params.append("rw")
 
     partitions = libcalamares.globalstorage.value("partitions")
+    try:
+        gpu_drivers = libcalamares.globalstorage.value("gpuDrivers")
+    except KeyError:
+        pass
+
     swap_uuid = ""
     swap_outer_mappername = None
     swap_outer_uuid = None
@@ -193,6 +198,9 @@ def get_kernel_params(uuid):
     if swap_outer_mappername:
         kernel_params.append(f"resume=/dev/mapper/{swap_outer_mappername}")
 
+    if "nvidia" in gpu_drivers:
+        kernel_params.append("nvidia-drm.modeset=1")
+
     return kernel_params
 
 
@@ -206,14 +214,6 @@ def create_systemd_boot_conf(installation_root_path, efi_dir, uuid, kernel, kern
     :param kernel: A string containing the path to the kernel relative to the root of the installation
     :param kernel_version: The kernel version string
     """
-
-    # Get the kernel params and write them to /etc/kernel/cmdline
-    # This file is used by kernel-install
-    kernel_params = " ".join(get_kernel_params(uuid))
-    kernel_cmdline_path = os.path.join(installation_root_path, "etc", "kernel")
-    os.makedirs(kernel_cmdline_path, exist_ok=True)
-    with open(os.path.join(kernel_cmdline_path, "cmdline"), "w") as cmdline_file:
-        cmdline_file.write(kernel_params)
 
     libcalamares.utils.debug(f"Configuring kernel version {kernel_version}")
 
@@ -514,6 +514,14 @@ def install_systemd_boot(efi_directory):
     subprocess.call(["bootctl",
                      "--path={!s}".format(install_efi_directory),
                      "install"])
+
+    # Get the kernel params and write them to /etc/kernel/cmdline
+    # This file is used by kernel-install
+    kernel_params = " ".join(get_kernel_params(uuid))
+    kernel_cmdline_path = os.path.join(installation_root_path, "etc", "kernel")
+    os.makedirs(kernel_cmdline_path, exist_ok=True)
+    with open(os.path.join(kernel_cmdline_path, "cmdline"), "w") as cmdline_file:
+        cmdline_file.write(kernel_params)
 
     for (kernel, kernel_type, kernel_version) in get_kernels(installation_root_path):
         create_systemd_boot_conf(installation_root_path,

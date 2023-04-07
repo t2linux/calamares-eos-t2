@@ -1,3 +1,6 @@
+# EndeavourOS fork of Calamares Installer Framework
+[![Maintenance](https://img.shields.io/maintenance/yes/2023.svg)]()
+
 <!-- SPDX-FileCopyrightText: no
      SPDX-License-Identifier: CC0-1.0
 -->

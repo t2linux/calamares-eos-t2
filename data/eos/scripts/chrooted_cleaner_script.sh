@@ -180,7 +180,7 @@ _clean_archiso(){
 
 _clean_offline_packages(){
 
-    local _packages_to_remove=(
+    local packages_to_remove=(
 
         # BASE
 
@@ -213,7 +213,7 @@ _clean_offline_packages(){
         rate-mirrors
 
         ## Calamares EndeavourOS
-        calamares
+        $(pacman -Qq | grep calamares)        # finds calamares related packages
         ckbcomp
         kvantum
         qt5ct
@@ -222,13 +222,8 @@ _clean_offline_packages(){
         qemu-arm-aarch64-static-bin
     )
 
-	pacman -Rsn --noconfirm "${_packages_to_remove[@]}"
+    pacman -Rsn --noconfirm "${packages_to_remove[@]}"
 
-}
-
-_endeavouros(){
-    [ -r /root/.bash_profile ] && sed -i "/if/,/fi/"'s/^/#/' /root/.bash_profile
-    sed -i "/if/,/fi/"'s/^/#/' /home/$NEW_USER/.bash_profile
 }
 
 _is_offline_mode() {
@@ -275,11 +270,6 @@ _remove_ucode(){
 _remove_other_graphics_drivers() {
     local graphics="$(device-info --vga ; device-info --display)"
     local amd=no
-
-    # remove Intel graphics driver if it is not needed
-    if [ -z "$(echo "$graphics" | grep "Intel Corporation")" ] ; then
-        _remove_a_pkg xf86-video-intel
-    fi
 
     # remove AMD graphics driver if it is not needed
     if [ -n "$(echo "$graphics" | grep "Advanced Micro Devices")" ] ; then
@@ -368,7 +358,6 @@ _remove_nvidia_drivers() {
         [ -r /usr/share/licenses/nvidia-dkms/LICENSE ]      && _nvidia_remove nvidia-dkms
         [ -x /usr/bin/nvidia-modprobe ]                     && _nvidia_remove nvidia-utils
         [ -x /usr/bin/nvidia-settings ]                     && _nvidia_remove nvidia-settings
-        [ -x /usr/bin/nvidia-installer-dkms ]               && _nvidia_remove nvidia-installer-dkms
         [ -x /usr/bin/nvidia-inst ]                         && _nvidia_remove nvidia-inst
         [ -r /usr/share/libalpm/hooks/eos-nvidia-fix.hook ] && _nvidia_remove nvidia-hook
         true
@@ -388,8 +377,7 @@ _manage_nvidia_packages() {
         if [ "$nvidia_driver" = "no" ] ; then
             _remove_nvidia_drivers
         elif [ "$nvidia_card" = "yes" ] ; then
-            _install_needed_packages nvidia-inst nvidia-hook nvidia-dkms  # nvidia-installer-dkms: no more in the repo
-            nvidia-installer-kernel-para
+            _install_needed_packages nvidia-inst nvidia-hook nvidia-dkms
         fi
     fi
 }
@@ -458,7 +446,6 @@ _show_info_about_installed_system() {
     local cmds=( "lsblk -f -o+SIZE"
                  "fdisk -l"
                )
-    [ -x /usr/bin/os-prober ] && cmds+=( "os-prober" )
 
     for cmd in "${cmds[@]}" ; do
         _c_c_s_msg info "$cmd"
@@ -487,7 +474,7 @@ Main() {
     _c_c_s_msg info "$filename started."
 
     local i
-    local NEW_USER="" INSTALL_TYPE=""
+    local NEW_USER="" INSTALL_TYPE="" BOOTLOADER=""
 
     # parse the options
     for i in "$@"; do
@@ -500,6 +487,9 @@ Main() {
                 INSTALL_TYPE="online"
                 shift
                 ;;
+            --bootloader=*)
+                BOOTLOADER="${i#*=}"
+                ;;
         esac
     done
     if [ -z "$NEW_USER" ] ; then
@@ -507,7 +497,6 @@ Main() {
     fi
 
     _check_install_mode
-    _endeavouros
     _virtual_machines
     _clean_up
     _run_hotfix_end

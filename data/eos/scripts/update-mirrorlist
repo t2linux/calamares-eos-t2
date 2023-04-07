@@ -181,7 +181,7 @@ Main() {
             *)
                 # rate-mirrors should create a reasonably good mirrorlist generally
                 ranker="rate-mirrors"
-                cmd="$ranker --allow-root arch"
+                cmd="$ranker --allow-root arch --max-delay=3600"   # don't allow too old mirrors!
                 ;;
         esac
     else

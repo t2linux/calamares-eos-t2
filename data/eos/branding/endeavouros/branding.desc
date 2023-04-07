@@ -18,8 +18,8 @@ navigation: widget
 strings:
     productName:         EndeavourOS
     shortProductName:    EndeavourOS
-    version:             2021.05.28
-    shortVersion:        2021.05.28
+    version:             Cassini_nova
+    shortVersion:        Cassini_nova
     versionedName:       EndeavourOS
     shortVersionedName:  EndeavourOS
     bootloaderEntryName: EndeavourOS

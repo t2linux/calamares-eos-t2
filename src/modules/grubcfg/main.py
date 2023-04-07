@@ -136,6 +136,11 @@ def modify_grub_default(partitions, root_mount_point, distributor):
         ["sh", "-c", "which plymouth"]
         )
 
+    try:
+        gpu_drivers = libcalamares.globalstorage.value("gpuDrivers")
+    except KeyError:
+        pass
+
     # Shell exit value 0 means success
     have_plymouth = plymouth_bin == 0
     have_dracut = dracut_bin == 0
@@ -215,6 +220,9 @@ def modify_grub_default(partitions, root_mount_point, distributor):
     if swap_outer_mappername:
         kernel_params.append(f"resume=/dev/mapper/{swap_outer_mappername}")
 
+    if "nvidia" in gpu_drivers:
+        kernel_params.append("nvidia-drm.modeset=1")
+
     overwrite = libcalamares.job.configuration.get("overwrite", False)
 
     grub_config_items = {}
@@ -286,6 +294,24 @@ def run():
 
     :return:
     """
+
+    if not libcalamares.job.configuration:
+        return "No configuration found", "Aborting due to missing configuration"
+
+    try:
+        gs_name = libcalamares.job.configuration["gsName"]
+    except KeyError:
+        return "Missing global storage value", "gsname not found in configuration file"
+
+    if libcalamares.globalstorage.contains(gs_name):
+        bootloader_name = libcalamares.globalstorage.value(gs_name)
+    else:
+        return f"Key missing", f"Failed to find {gs_name} in global storage"
+
+    if bootloader_name != "grub":
+        libcalamares.utils.debug("Bootloader is not grub, skipping grub configuration")
+        return None
+
     fw_type = libcalamares.globalstorage.value("firmwareType")
     partitions = libcalamares.globalstorage.value("partitions")
     root_mount_point = libcalamares.globalstorage.value("rootMountPoint")

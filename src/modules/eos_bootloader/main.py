@@ -30,6 +30,15 @@ def pretty_status_message():
         return custom_status_message
 
 
+def is_resume_needed():
+    partitions = libcalamares.globalstorage.value("partitions")
+    for partition in partitions:
+        if partition["fs"] == "linuxswap":
+            return True
+
+    return False
+
+
 def get_local_packages(packages):
     try:
         package_location = libcalamares.job.configuration["packageLocation"]
@@ -55,13 +64,8 @@ def get_local_packages(packages):
     return package_files
 
 
-def run_dracut():
+def run_dracut(installation_root_path):
     kernel_search_path = "/usr/lib/modules"
-
-    try:
-        installation_root_path = libcalamares.globalstorage.value("rootMountPoint")
-    except KeyError:
-        libcalamares.utils.warning('Global storage value "rootMountPoint" missing')
 
     # find all the installed kernels and run dracut
     for root, dirs, files in os.walk(os.path.join(installation_root_path, kernel_search_path.lstrip('/'))):
@@ -110,6 +114,11 @@ def run():
     else:
         return f"Key missing", f"Failed to find {gs_name} in global storage"
 
+    try:
+        installation_root_path = libcalamares.globalstorage.value("rootMountPoint")
+    except KeyError:
+        libcalamares.utils.warning('Global storage value "rootMountPoint" missing')
+
     packages = None
 
     for bootloader in bootloaders:
@@ -123,7 +132,15 @@ def run():
     try:
         libcalamares.utils.target_env_process_output(["pacman", "--noconfirm", "-Rcn", "mkinitcpio"])
     except subprocess.CalledProcessError:
+        # If it isn't installed, don't trigger an error
         pass
+
+    # Add the resume module for dracut
+    if is_resume_needed():
+        dracut_file_path = os.path.join(installation_root_path , "etc/dracut.conf.d/resume.conf")
+        resume_line = 'add_dracutmodules+=" resume "'
+        with open(dracut_file_path, 'w') as dracut_resume:
+            dracut_resume.write(resume_line + "\n")
 
     # install packages
     if offline:
@@ -142,6 +159,6 @@ def run():
 
     # Run dracut unless we are using systemd-boot since kernel-install handles that
     if bootloader_name.casefold().strip() != "systemd-boot":
-        run_dracut()
+        run_dracut(installation_root_path)
 
     return None
