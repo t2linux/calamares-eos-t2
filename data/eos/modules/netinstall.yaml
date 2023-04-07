@@ -347,6 +347,7 @@
     - plasma-disks
     - plasma-nm
     - plasma-pa
+    - plasma-thunderbolt
     - powerdevil
     - print-manager
     - sddm-kcm
