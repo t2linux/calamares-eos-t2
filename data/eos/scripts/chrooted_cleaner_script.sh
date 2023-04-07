@@ -414,15 +414,9 @@ _misc_cleanups() {
 _clean_up(){
     local xx
 
-    # install or remove nvidia graphics stuff
-    _manage_nvidia_packages
-
     # remove AMD and Intel graphics drivers if they are not needed
     _remove_other_graphics_drivers
-
-    # remove broadcom-wl-dkms if it is not needed
-    _remove_broadcom_wifi_driver
-
+    
     _install_extra_drivers_to_target
     _install_more_firmware
 

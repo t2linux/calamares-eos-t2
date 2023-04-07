@@ -189,6 +189,15 @@
   packages:
     - firefox
     - firefox-i18n-$LOCALE
+- name: "Xanmod Kernel in addition"
+  description: "Adding Xanmod Kernel in addition to main one"
+  hidden: false
+  selected: false
+  expanded: false
+  critical: true
+  packages:
+    - linux-xanmod-edge-t2
+    - linux-xanmod-edge-t2-headers
 - name: XFCE4-Desktop
   description: "XFCE4 - lightweight desktop fast and low on system resources, visually appealing and user friendly."
   hidden: false
