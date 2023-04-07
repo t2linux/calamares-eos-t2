@@ -179,7 +179,6 @@
       selected: true
       critical: false
       packages:
-        - amd-ucode
         - intel-ucode
 - name: "Firefox and language package"
   description: "Add firefox and language pack if possible"
@@ -196,8 +195,17 @@
   expanded: false
   critical: true
   packages:
-    - linux-xanmod-edge-t2
-    - linux-xanmod-edge-t2-headers
+    - linux-xanmod-t2
+    - linux-xanmod-t2-headers
+- name: "Xanmod LTS Kernel in addition"
+  description: "Adding Xanmod LTS Kernel in addition to main one"
+  hidden: false
+  selected: false
+  expanded: false
+  critical: true
+  packages:
+    - linux-xanmod-lts-t2
+    - linux-xanmod-lts-t2-headers
 - name: XFCE4-Desktop
   description: "XFCE4 - lightweight desktop fast and low on system resources, visually appealing and user friendly."
   hidden: false
