@@ -378,6 +378,8 @@
     - gvfs-smb
     - nautilus
     - nautilus-sendto
+    - qgnomeplatform-qt5
+    - qgnomeplatform-qt6
     - sushi
     - totem
     - xdg-user-dirs-gtk
