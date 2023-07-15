@@ -135,7 +135,7 @@ set(CALAMARES_DESCRIPTION_SUMMARY "The distribution-independent installer framew
 #
 # Language en (source language) is added later. It isn't listed in
 # Transifex either. Get the list of languages and their status
-# from https://transifex.com/calamares/calamares/ , or (preferably)
+# from https://app.transifex.com/calamares/calamares/ , or (preferably)
 # use ci/txstats.py to automatically check.
 #
 # When adding a new language, take care that it is properly loaded
@@ -213,10 +213,10 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 set(CMAKE_C_FLAGS_DEBUG "-Og -g")
 set(CMAKE_C_FLAGS_MINSIZEREL "-Os -DNDEBUG")
-set(CMAKE_C_FLAGS_RELEASE "-O4 -DNDEBUG")
+set(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG")
 set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O2 -g")
 
-set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-undefined -Wl,--fatal-warnings")
+set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-undefined -Wl,--fatal-warnings ${CMAKE_SHARED_LINKER_FLAGS}")
 
 # If no build type is set, pick a reasonable one
 if(NOT CMAKE_BUILD_TYPE)
@@ -585,7 +585,6 @@ install(
 ### Miscellaneous installs
 #
 #
-
 if(INSTALL_POLKIT)
     install(FILES com.github.calamares.calamares.policy DESTINATION "${POLKITQT-1_POLICY_FILES_INSTALL_DIR}")
 endif()
@@ -602,7 +601,9 @@ install(FILES calamares.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/application
 
 install(FILES man/calamares.8 DESTINATION ${CMAKE_INSTALL_MANDIR}/man8/)
 
-# uninstall target
+### Uninstall
+#
+#
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
     "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
@@ -611,6 +612,17 @@ configure_file(
 )
 
 add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+
+### Developer convenience
+#
+# The module support files -- .desc files, .conf files -- are copied into the build
+# directory so that it is possible to run `calamares -d` from there. Copy the
+# top-level settings.conf as well, into the build directory.
+if( settings.conf IS_NEWER_THAN ${CMAKE_BINARY_DIR}/settings.conf )
+    configure_file(settings.conf ${CMAKE_BINARY_DIR}/settings.conf COPYONLY)
+endif()
+
+
 
 ### CMAKE SUMMARY REPORT
 #

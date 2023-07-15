@@ -89,14 +89,14 @@ doAutopartition( PartitionCoreModule* core, Device* dev, Choices::AutoPartitionO
 {
     Calamares::GlobalStorage* gs = Calamares::JobQueue::instance()->globalStorage();
 
-    bool isEfi = PartUtils::isEfiSystem();
+    const bool isEfi = PartUtils::isEfiSystem();
 
     // Partition sizes are expressed in MiB, should be multiples of
     // the logical sector size (usually 512B). EFI starts with 2MiB
     // empty and a EFI boot partition, while BIOS starts at
     // the 1MiB boundary (usually sector 2048).
     // ARM empty sectors are 16 MiB in size.
-    int empty_space_sizeB;
+    const int empty_space_sizeB = PartUtils::isArmSystem() ? 16_MiB : ( isEfi ? 2_MiB : 1_MiB );
     if ( gs->contains( "arm_install" ) && gs->value( "arm_install" ).toBool() )
     {
         empty_space_sizeB = 16_MiB;
@@ -226,6 +226,12 @@ doReplacePartition( PartitionCoreModule* core, Device* dev, Partition* partition
     qint64 firstSector, lastSector;
 
     cDebug() << "doReplacePartition for device" << partition->partitionPath();
+
+    // Looking up the defaultFsType (which should name a filesystem type)
+    // will log an error and set the type to Unknown if there's something wrong.
+    FileSystem::Type type = FileSystem::Unknown;
+    PartUtils::canonicalFilesystemName( o.defaultFsType, &type );
+    core->partitionLayout().setDefaultFsType( type == FileSystem::Unknown ? FileSystem::Ext4 : type );
 
     PartitionRole newRoles( partition->roles() );
     if ( partition->roles().has( PartitionRole::Extended ) )

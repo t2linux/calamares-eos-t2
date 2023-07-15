@@ -952,11 +952,12 @@ void
 PartitionCoreModule::layoutApply( Device* dev,
                                   qint64 firstSector,
                                   qint64 lastSector,
+                                  Config::LuksGeneration luksFsType,
                                   QString luksPassphrase,
                                   PartitionNode* parent,
                                   const PartitionRole& role )
 {
-    bool isEfi = PartUtils::isEfiSystem();
+    const bool isEfi = PartUtils::isEfiSystem();
     QList< Partition* > partList
         = m_partLayout.createPartitions( dev, firstSector, lastSector, luksPassphrase, parent, role );
 
@@ -1000,6 +1001,7 @@ PartitionCoreModule::layoutApply( Device* dev,
 
 void
 PartitionCoreModule::layoutApply( Device* dev, qint64 firstSector, qint64 lastSector, QString luksPassphrase )
+                                  Config::LuksGeneration luksFsType,
 {
     layoutApply(
         dev, firstSector, lastSector, luksPassphrase, dev->partitionTable(), PartitionRole( PartitionRole::Primary ) );

@@ -91,11 +91,13 @@ mapForPartition( Partition* partition, const QString& uuid )
     map[ "parttype" ] = partition->type();
     map[ "partattrs" ] = partition->attributes();
     map[ "features" ] = partition->fileSystem().features();
+
     if ( partition->fileSystem().type() == FileSystem::Luks
          && dynamic_cast< FS::luks& >( partition->fileSystem() ).innerFS() )
     {
         map[ "fs" ] = untranslatedFS( dynamic_cast< FS::luks& >( partition->fileSystem() ).innerFS() );
     }
+
     map[ "uuid" ] = uuid;
     map[ "claimed" ] = PartitionInfo::format( partition );  // If we formatted it, it's ours
 

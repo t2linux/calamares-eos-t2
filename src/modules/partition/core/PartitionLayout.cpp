@@ -204,6 +204,7 @@ QList< Partition* >
 PartitionLayout::createPartitions( Device* dev,
                                    qint64 firstSector,
                                    qint64 lastSector,
+                                   Config::LuksGeneration luksFsType,
                                    QString luksPassphrase,
                                    PartitionNode* parent,
                                    const PartitionRole& role )

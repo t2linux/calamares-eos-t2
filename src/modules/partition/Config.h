@@ -31,6 +31,9 @@ class Config : public QObject
     Q_PROPERTY(
         QString eraseModeFilesystem READ eraseFsType WRITE setEraseFsTypeChoice NOTIFY eraseModeFilesystemChanged )
 
+    Q_PROPERTY( QString replaceModeFilesystem READ replaceModeFilesystem WRITE setReplaceFilesystemChoice NOTIFY
+                    replaceModeFilesystemChanged )
+
     Q_PROPERTY( bool allowManualPartitioning READ allowManualPartitioning CONSTANT FINAL )
 
 public:
@@ -63,6 +66,7 @@ public:
 
     using EraseFsTypesSet = QStringList;
 
+    enum class LuksGeneration
     void setConfigurationMap( const QVariantMap& );
     /** @brief Set GS values where other modules configuration has priority
      *
@@ -113,10 +117,7 @@ public:
     SwapChoice swapChoice() const { return m_swapChoice; }
 
     /** @brief Get the variable name in global storage holding the name of bootloader
-     *
-     */
     QString bootloaderVar() const { return m_bootloaderVar; }
-
     /** @brief Get the list of configured FS types to use with *erase* mode
      *
      * This list is not empty.
@@ -126,6 +127,9 @@ public:
     /** @brief Currently-selected FS type for *erase* mode
      */
     QString eraseFsType() const { return m_eraseFsTypeChoice; }
+
+    /// @brief Currently-selected FS type for *replace* mode
+    QString replaceModeFilesystem() const { return m_replaceFileSystemChoice; }
 
     /** @brief Configured default FS type (for other modes than erase)
      *
@@ -145,35 +149,45 @@ public:
     /// @brief Returns list of acceptable types. May be empty.
     QStringList partitionTableTypes() const { return m_requiredPartitionTableType; }
 
+    /** @brief The configured LUKS generation (1 or 2)
+     */
+    LuksGeneration luksFileSystemType() const { return m_luksFileSystemType; }
+
+    /// @brief If zfs encryption should be allowed
+    bool allowZfsEncryption() const { return m_allowZfsEncryption; }
+
 public Q_SLOTS:
     void setInstallChoice( int );  ///< Translates a button ID or so to InstallChoice
     void setInstallChoice( InstallChoice );
     void setSwapChoice( int );  ///< Translates a button ID or so to SwapChoice
     void setSwapChoice( SwapChoice );
     void setEraseFsTypeChoice( const QString& filesystemName );  ///< See property eraseModeFilesystem
+    void setReplaceFilesystemChoice( const QString& filesystemName );
 
 Q_SIGNALS:
     void installChoiceChanged( InstallChoice );
     void swapChoiceChanged( SwapChoice );
     void eraseModeFilesystemChanged( const QString& );
+    void replaceModeFilesystemChanged( const QString& );
 
 private:
     /** @brief Handle FS-type configuration, for erase and default */
     void fillConfigurationFSTypes( const QVariantMap& configurationMap );
     EraseFsTypesSet m_eraseFsTypes;
     QString m_eraseFsTypeChoice;
+    QString m_replaceFileSystemChoice;
     FileSystem::Type m_defaultFsType;
 
     SwapChoiceSet m_swapChoices;
     SwapChoice m_initialSwapChoice = NoSwap;
     SwapChoice m_swapChoice = NoSwap;
+    LuksGeneration m_luksFileSystemType = LuksGeneration::Luks1;
     InstallChoice m_initialInstallChoice = NoChoice;
     InstallChoice m_installChoice = NoChoice;
     qreal m_requiredStorageGiB = 0.0;  // May duplicate setting in the welcome module
     QStringList m_requiredPartitionTableType;
 
     QString m_bootloaderVar;
-
     bool m_allowManualPartitioning = true;
 };
 

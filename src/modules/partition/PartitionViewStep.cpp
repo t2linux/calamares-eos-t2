@@ -512,7 +512,6 @@ PartitionViewStep::onActivate()
     {
         m_choicePage->applyActionChoice( Config::InstallChoice::Alongside );
         //        m_choicePage->reset();
-        //FIXME: ReplaceWidget should be reset maybe?
     }
 }
 

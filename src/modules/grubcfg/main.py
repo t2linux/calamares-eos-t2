@@ -260,6 +260,12 @@ def modify_grub_default(partitions, root_mount_point, distributor):
 
     # If applicable add the items from defaults to the dict containing the grub config to wirte/modify
     if always_use_defaults or overwrite or not os.path.exists(default_grub):
+                grub_config_items["GRUB_SAVEDEFAULT"] = "false"
+
+    always_use_defaults = libcalamares.job.configuration.get("always_use_defaults", False)
+
+    # If applicable add the items from defaults to the dict containing the grub config to wirte/modify
+    if always_use_defaults or overwrite or not os.path.exists(default_grub):
         if "defaults" in libcalamares.job.configuration:
             for key, value in libcalamares.job.configuration["defaults"].items():
                 if isinstance(value, bool):
