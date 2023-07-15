@@ -446,13 +446,6 @@ bool
 isEfiSystem()
 {
     return isArmSystem() || QDir( "/sys/firmware/efi/efivars" ).exists();
-    if ( gs->contains( "arm_install" ) && gs->value( "arm_install" ).toBool() )
-    {
-        return true;
-    }
-    else
-    {
-    }
 }
 
 bool

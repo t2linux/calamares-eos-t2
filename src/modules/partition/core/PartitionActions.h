@@ -27,6 +27,7 @@ namespace PartitionActions
  */
 namespace Choices
 {
+
 struct ReplacePartitionOptions
 {
     QString defaultPartitionTableType;  // e.g. "gpt" or "msdos"
@@ -35,11 +36,16 @@ struct ReplacePartitionOptions
     QString luksPassphrase;  // optional
     bool newEfiPartition;
 
-    ReplacePartitionOptions( const QString& pt, const QString& fs, const QString& luks, const bool& newEsp )
+    ReplacePartitionOptions( const QString& pt,
+                             const QString& fs,
                              Config::LuksGeneration luksFs,
+                             const QString& luksPassphrase,
+                             const bool& newEsp
+                             )
         : defaultPartitionTableType( pt )
         , defaultFsType( fs )
-        , luksPassphrase( luks )
+        , luksFsType( luksFs )
+        , luksPassphrase( luksPassphrase )
         , newEfiPartition( newEsp )
     {
     }
@@ -54,10 +60,11 @@ struct AutoPartitionOptions : ReplacePartitionOptions
     AutoPartitionOptions( const QString& pt,
                           const QString& fs,
                           Config::LuksGeneration luksFs,
+                          const QString& luksPassphrase,
                           const QString& efi,
                           qint64 requiredBytes,
                           Config::SwapChoice s )
-        : ReplacePartitionOptions( pt, fs, luks, false )
+        : ReplacePartitionOptions( pt, fs, luksFs, luksPassphrase, false )
         , efiPartitionMountPoint( efi )
         , requiredSpaceB( requiredBytes > 0 ? quint64( requiredBytes ) : 0U )
         , swap( s )

@@ -842,6 +842,7 @@ ChoicePage::doAlongsideApply()
             m_core->layoutApply( dev,
                                  firstFreeSector,
                                  oldLastSector,
+                                 m_config->luksFileSystemType(),
                                  m_encryptWidget->passphrase(),
                                  candidate->parent(),
                                  candidate->roles() );
@@ -923,6 +924,7 @@ ChoicePage::doReplaceSelectedPartition( const QModelIndex& current )
                     m_core->layoutApply( selectedDevice(),
                                          selectedPartition->firstSector(),
                                          selectedPartition->lastSector(),
+                                         m_config->luksFileSystemType(),
                                          m_encryptWidget->passphrase(),
                                          newParent,
                                          newRoles );
@@ -956,6 +958,7 @@ ChoicePage::doReplaceSelectedPartition( const QModelIndex& current )
                                                               { gs->value( "defaultPartitionType" ).toString(),
                                                                 m_config->replaceModeFilesystem(),
                                                                 m_config->luksFileSystemType(),
+                                                                m_encryptWidget->passphrase(),
                                                                 isNewEfiSelected() } );
                         Partition* homePartition = findPartitionByPath( { selectedDevice() }, *homePartitionPath );
 

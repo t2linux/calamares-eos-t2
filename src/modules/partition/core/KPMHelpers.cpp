@@ -95,8 +95,9 @@ createNewEncryptedPartition( PartitionNode* parent,
     }
 
     FileSystem::Type luksType = luksGenerationToFSName( luksFsType );
+
     FS::luks* fs = dynamic_cast< FS::luks* >(
-        FileSystemFactory::create( FileSystem::Luks, firstSector, lastSector, device.logicalSize() ) );
+        FileSystemFactory::create( luksType, firstSector, lastSector, device.logicalSize() ) );
     if ( !fs )
     {
         cError() << "cannot create LUKS filesystem. Giving up.";

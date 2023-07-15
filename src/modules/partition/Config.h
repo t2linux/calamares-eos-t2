@@ -67,6 +67,13 @@ public:
     using EraseFsTypesSet = QStringList;
 
     enum class LuksGeneration
+    {
+        Luks1,  // First generation of LUKS
+        Luks2,  // Second generation of LUKS, default since cryptsetup >= 2.1.0
+    };
+    Q_ENUM( LuksGeneration )
+    static const NamedEnumTable< LuksGeneration >& luksGenerationNames();
+
     void setConfigurationMap( const QVariantMap& );
     /** @brief Set GS values where other modules configuration has priority
      *
@@ -117,7 +124,10 @@ public:
     SwapChoice swapChoice() const { return m_swapChoice; }
 
     /** @brief Get the variable name in global storage holding the name of bootloader
+     *
+     */
     QString bootloaderVar() const { return m_bootloaderVar; }
+
     /** @brief Get the list of configured FS types to use with *erase* mode
      *
      * This list is not empty.
@@ -186,7 +196,7 @@ private:
     InstallChoice m_installChoice = NoChoice;
     qreal m_requiredStorageGiB = 0.0;  // May duplicate setting in the welcome module
     QStringList m_requiredPartitionTableType;
-
+    bool m_allowZfsEncryption = true;
     QString m_bootloaderVar;
     bool m_allowManualPartitioning = true;
 };

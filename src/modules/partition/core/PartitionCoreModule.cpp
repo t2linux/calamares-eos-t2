@@ -959,7 +959,7 @@ PartitionCoreModule::layoutApply( Device* dev,
 {
     const bool isEfi = PartUtils::isEfiSystem();
     QList< Partition* > partList
-        = m_partLayout.createPartitions( dev, firstSector, lastSector, luksPassphrase, parent, role );
+        = m_partLayout.createPartitions( dev, firstSector, lastSector, luksFsType, luksPassphrase, parent, role );
 
     // Partition::mountPoint() tells us where it is mounted **now**, while
     // PartitionInfo::mountPoint() says where it will be mounted in the target system.
@@ -1000,11 +1000,19 @@ PartitionCoreModule::layoutApply( Device* dev,
 }
 
 void
-PartitionCoreModule::layoutApply( Device* dev, qint64 firstSector, qint64 lastSector, QString luksPassphrase )
+PartitionCoreModule::layoutApply( Device* dev,
+                                  qint64 firstSector,
+                                  qint64 lastSector,
                                   Config::LuksGeneration luksFsType,
+                                  QString luksPassphrase )
 {
-    layoutApply(
-        dev, firstSector, lastSector, luksPassphrase, dev->partitionTable(), PartitionRole( PartitionRole::Primary ) );
+    layoutApply( dev,
+                 firstSector,
+                 lastSector,
+                 luksFsType,
+                 luksPassphrase,
+                 dev->partitionTable(),
+                 PartitionRole( PartitionRole::Primary ) );
 }
 
 void

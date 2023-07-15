@@ -318,6 +318,7 @@ PartitionLayout::createPartitions( Device* dev,
                                                             entry.partLabel,
                                                             currentSector,
                                                             currentSector + sectors - 1,
+                                                            luksFsType,
                                                             luksPassphrase,
                                                             KPM_PARTITION_FLAG( None ) );
         }

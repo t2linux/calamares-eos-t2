@@ -47,27 +47,34 @@ Config::swapChoiceNames()
     // *INDENT-OFF*
     // clang-format off
     static const NamedEnumTable< SwapChoice > names {
-        { QStringLiteral( "none" ), SwapChoice::NoSwap },
-        { QStringLiteral( "small" ), SwapChoice::SmallSwap },
-        { QStringLiteral( "suspend" ), SwapChoice::FullSwap },
-        { QStringLiteral( "reuse" ), SwapChoice::ReuseSwap },
-        { QStringLiteral( "file" ), SwapChoice::SwapFile },
-    };
+                                                      { QStringLiteral( "none" ), SwapChoice::NoSwap },
+                                                      { QStringLiteral( "small" ), SwapChoice::SmallSwap },
+                                                      { QStringLiteral( "suspend" ), SwapChoice::FullSwap },
+                                                      { QStringLiteral( "reuse" ), SwapChoice::ReuseSwap },
+                                                      { QStringLiteral( "file" ), SwapChoice::SwapFile },
+                                                      };
     // clang-format on
     // *INDENT-ON*
 
     return names;
 }
 
+const NamedEnumTable< Config::LuksGeneration >&
+Config::luksGenerationNames()
+{
     // *INDENT-OFF*
     // clang-format off
     static const NamedEnumTable< LuksGeneration > names {
-        { QStringLiteral( "luks1" ), LuksGeneration::Luks1 },
-        { QStringLiteral( "luks" ), LuksGeneration::Luks1 },
-        { QStringLiteral( "luks2" ), LuksGeneration::Luks2 },
-    };
+                                                          { QStringLiteral( "luks1" ), LuksGeneration::Luks1 },
+                                                          { QStringLiteral( "luks" ), LuksGeneration::Luks1 },
+                                                          { QStringLiteral( "luks2" ), LuksGeneration::Luks2 },
+                                                          };
     // clang-format on
     // *INDENT-ON*
+
+    return names;
+}
+
 Config::SwapChoice
 pickOne( const Config::SwapChoiceSet& s )
 {
@@ -86,7 +93,6 @@ pickOne( const Config::SwapChoiceSet& s )
     // Here, count > 1 but NoSwap is not a member.
     return *( s.begin() );
 }
-
 
 static Config::SwapChoiceSet
 getSwapChoices( const QVariantMap& configurationMap )
@@ -374,6 +380,15 @@ Config::fillConfigurationFSTypes( const QVariantMap& configurationMap )
         }
     }
 
+    // Set LUKS file system based on luksGeneration provided, defaults to 'luks'.
+    bool nameFound = false;
+    Config::LuksGeneration luksGeneration
+        = luksGenerationNames().find( CalamaresUtils::getString( configurationMap, "luksGeneration" ), nameFound );
+    if ( !nameFound )
+    {
+        cWarning() << "Partition-module setting *luksGeneration* not found or invalid. Defaulting to luks1.";
+        luksGeneration = Config::LuksGeneration::Luks1;
+    }
     m_luksFileSystemType = luksGeneration;
     gs->insert( "luksFileSystemType", luksGenerationNames().find( luksGeneration ) );
     Q_ASSERT( !m_eraseFsTypes.isEmpty() );

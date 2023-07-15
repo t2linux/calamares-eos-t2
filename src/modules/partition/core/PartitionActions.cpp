@@ -97,14 +97,6 @@ doAutopartition( PartitionCoreModule* core, Device* dev, Choices::AutoPartitionO
     // the 1MiB boundary (usually sector 2048).
     // ARM empty sectors are 16 MiB in size.
     const int empty_space_sizeB = PartUtils::isArmSystem() ? 16_MiB : ( isEfi ? 2_MiB : 1_MiB );
-    if ( gs->contains( "arm_install" ) && gs->value( "arm_install" ).toBool() )
-    {
-        empty_space_sizeB = 16_MiB;
-    }
-    else
-    {
-        empty_space_sizeB = isEfi ? 2_MiB : 1_MiB;
-    }
 
     // Since sectors count from 0, if the space is 2048 sectors in size,
     // the first free sector has number 2048 (and there are 2048 sectors
@@ -178,7 +170,7 @@ doAutopartition( PartitionCoreModule* core, Device* dev, Choices::AutoPartitionO
         lastSectorForRoot -= suggestedSwapSizeB / sectorSize + 1;
     }
 
-    core->layoutApply( dev, firstFreeSector, lastSectorForRoot, o.luksPassphrase );
+    core->layoutApply( dev, firstFreeSector, lastSectorForRoot, o.luksFsType, o.luksPassphrase );
 
     if ( shouldCreateSwap )
     {
@@ -203,6 +195,7 @@ doAutopartition( PartitionCoreModule* core, Device* dev, Choices::AutoPartitionO
                                                                      QStringLiteral( "swap" ),
                                                                      lastSectorForRoot + 1,
                                                                      dev->totalLogical() - 1,
+                                                                     o.luksFsType,
                                                                      o.luksPassphrase,
                                                                      KPM_PARTITION_FLAG( None ) );
         }
@@ -290,7 +283,7 @@ doReplacePartition( PartitionCoreModule* core, Device* dev, Partition* partition
         newFirstSector = lastSector + 1;
     }
 
-    core->layoutApply( dev, newFirstSector, lastSector, o.luksPassphrase );
+    core->layoutApply( dev, newFirstSector, lastSector, o.luksFsType, o.luksPassphrase );
 
     core->dumpQueue();
 }

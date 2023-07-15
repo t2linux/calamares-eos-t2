@@ -223,6 +223,8 @@ CreatePartitionDialog::initGptPartitionTypeUi()
 Partition*
 CreatePartitionDialog::getNewlyCreatedPartition()
 {
+    Calamares::GlobalStorage* gs = Calamares::JobQueue::instance()->globalStorage();
+
     if ( m_role.roles() == PartitionRole::None )
     {
         m_role = PartitionRole( m_ui->extendedRadioButton->isChecked() ? PartitionRole::Extended
@@ -242,13 +244,21 @@ CreatePartitionDialog::getNewlyCreatedPartition()
     // newFlags() and the consumer (see PartitionPage::onCreateClicked)
     // does so, to set up the partition for create-and-then-set-flags.
     Partition* partition = nullptr;
+    QString luksFsType = gs->value( "luksFileSystemType" ).toString();
     QString luksPassphrase = m_ui->encryptWidget->passphrase();
     if ( m_ui->encryptWidget->state() == EncryptWidget::Encryption::Confirmed && !luksPassphrase.isEmpty()
          && fsType != FileSystem::Zfs )
     {
-        partition = KPMHelpers::createNewEncryptedPartition(
-            m_parent, *m_device, m_role, fsType, fsLabel, first, last, luksPassphrase, PartitionTable::Flags() );
+        partition = KPMHelpers::createNewEncryptedPartition( m_parent,
+                                                             *m_device,
+                                                             m_role,
+                                                             fsType,
+                                                             fsLabel,
+                                                             first,
+                                                             last,
                                                              Config::luksGenerationNames().find(luksFsType, Config::LuksGeneration::Luks1),
+                                                             luksPassphrase,
+                                                             PartitionTable::Flags() );
     }
     else
     {
