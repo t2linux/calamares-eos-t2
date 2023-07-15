@@ -436,17 +436,16 @@ runOsprober( DeviceModel* dm )
 }
 
 bool
-isEfiSystem()
+isArmSystem()
 {
     Calamares::GlobalStorage* gs = Calamares::JobQueue::instance()->globalStorage();
-    if ( gs->contains( "arm_install" ) && gs->value( "arm_install" ).toBool() )
-    {
-        return true;
-    }
-    else
-    {
-        return QDir( "/sys/firmware/efi/efivars" ).exists();
-    }
+    return gs->contains( "armInstall" ) && gs->value( "armInstall" ).toBool();
+}
+
+bool
+isEfiSystem()
+{
+    return isArmSystem() || QDir( "/sys/firmware/efi/efivars" ).exists();
 }
 
 bool
