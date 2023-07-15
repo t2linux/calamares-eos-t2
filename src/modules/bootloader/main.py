@@ -216,12 +216,6 @@ def create_systemd_boot_conf(installation_root_path, efi_dir, uuid, kernel, kern
     """
 
     libcalamares.utils.debug(f"Configuring kernel version {kernel_version}")
-    kernel_cmdline_path = os.path.join(installation_root_path, "etc", "kernel")
-    os.makedirs(kernel_cmdline_path, exist_ok=True)
-    with open(os.path.join(kernel_cmdline_path, "cmdline"), "w") as cmdline_file:
-        cmdline_file.write(kernel_params)
-
-    libcalamares.utils.debug(f"Configuring kernel version {kernel_version}")
 
     # get the machine-id
     with open(os.path.join(installation_root_path, "etc", "machine-id"), 'r') as machineid_file:
