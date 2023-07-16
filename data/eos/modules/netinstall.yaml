@@ -330,6 +330,7 @@
     - plasma-disks
     - plasma-nm
     - plasma-pa
+    - plasma-systemmonitor
     - powerdevil
     - print-manager
     - sddm-kcm
@@ -399,7 +400,6 @@
         - eos-lightdm-slick-theme
         - eos-qogir-icons
   packages:
-    - celluloid
     - gvfs
     - gvfs-afc
     - gvfs-gphoto2
@@ -410,6 +410,7 @@
     - lightdm-slick-greeter
     - mate
     - mate-extra
+    - mpv
     - network-manager-applet
     - xdg-user-dirs-gtk
 - name: Cinnamon-Desktop
@@ -428,11 +429,10 @@
         - eos-qogir-icons
         - eos-settings-cinnamon
   packages:
-    - celluloid
     - cinnamon
     - cinnamon-translations
     - file-roller
-    - gnome-calculator
+    - galculator
     - gnome-screenshot
     - gnome-system-monitor
     - gnome-terminal
@@ -445,6 +445,7 @@
     - gvfs-smb
     - lightdm
     - lightdm-slick-greeter
+    - mpv
     - nemo-fileroller
     - nemo-image-converter
     - nemo-preview
@@ -487,12 +488,12 @@
     - gvfs-smb
     - lightdm
     - lightdm-slick-greeter
+    - mpv
     - nemo
     - nemo-fileroller
     - nemo-preview
     - network-manager-applet
     - sushi
-    - totem
     - xdg-user-dirs-gtk
 - name: LXQT-Desktop
   description: "The Lightweight Qt Desktop Environment."
@@ -543,7 +544,6 @@
         - eos-lxdm-gtk3
         - eos-qogir-icons
   packages:
-    - celluloid
     - file-roller
     - galculator
     - gnome-screenshot
@@ -570,6 +570,7 @@
     - openbox
     - pcmanfm-gtk3
     - lxmusic
+    - mpv
     - network-manager-applet
     - xdg-user-dirs-gtk
     - xed

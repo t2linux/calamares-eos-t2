@@ -33,6 +33,7 @@ EndeavourOS Calamares Theme
 /* ########## MAIN APPLICATION WINDOW ########## */
 
 #mainApp {
+	background-color: "#2a2e32";
 }
 
 
@@ -45,8 +46,8 @@ EndeavourOS Calamares Theme
 }
 
 QWidget {
-	font: 14px;
-	color: #000000;
+	font: 12px;
+	color: #ffffff;
 }
 
 QListWidget::item:alternate {

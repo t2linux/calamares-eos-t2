@@ -7,7 +7,7 @@ welcomeExpandingLogo: true
 # windowExpanding: normal
 windowExpanding: noexpand
 
-windowSize: 1215px,715px
+windowSize: 1200px,715px
 
 windowPlacement: center
 
@@ -32,10 +32,10 @@ images:
 slideshowAPI: 2
 
 style:
-   SidebarBackground:        "#0d0e22"
-   SidebarText:              "#f5f6f7"
-   SidebarTextCurrent:       "#0d0e22"
-   SidebarBackgroundCurrent: "#f5f6f7"
+   SidebarBackground:        "#2a2e32"
+   SidebarText:              "#ffffff"
+   SidebarTextCurrent:       "#7d7dfb"
+   SidebarBackgroundCurrent: "#2a2e32"
 
 slideshow:               "show.qml"
 

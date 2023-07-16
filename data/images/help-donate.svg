@@ -1,4 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 32 32"
+   version="1.1"
+   id="svg2704"
+   sodipodi:docname="help-donate.svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview2706"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="28.0625"
+     inkscape:cx="8.8908686"
+     inkscape:cy="16.017817"
+     inkscape:window-width="1920"
+     inkscape:window-height="1236"
+     inkscape:window-x="1080"
+     inkscape:window-y="404"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2704" />
   <defs
      id="defs3051">
     <style
@@ -10,9 +39,8 @@
       </style>
   </defs>
   <path
-     style="fill:currentColor;fill-opacity:1;stroke:none" 
-      d="m 5,9 0,1 -1,0 0,12 1,0 0,1 22,0 0,-1 1,0 0,-12 -1,0 0,-1 z m 1,1 20,0 a 1,1 0 0 0 1,1 l 0,10 a 1,1 0 0 0 -1,1 L 6,22 A 1,1 0 0 0 5,21 L 5,11 a 1,1 0 0 0 1,-1 m 10,2 a 4,4 0 0 0 -4,4 4,4 0 0 0 4,4 4,4 0 0 0 4,-4 4,4 0 0 0 -4,-4 m 0,1 a 3,3 0 0 1 3,3 3,3 0 0 1 -3,3 3,3 0 0 1 -3,-3 3,3 0 0 1 3,-3"
-     id="path76" 
-     class="ColorScheme-Text"
-     />
+     style="fill:#7f7fff;fill-opacity:1;stroke:none"
+     d="m 5,9 0,1 -1,0 0,12 1,0 0,1 22,0 0,-1 1,0 0,-12 -1,0 0,-1 z m 1,1 20,0 a 1,1 0 0 0 1,1 l 0,10 a 1,1 0 0 0 -1,1 L 6,22 A 1,1 0 0 0 5,21 L 5,11 a 1,1 0 0 0 1,-1 m 10,2 a 4,4 0 0 0 -4,4 4,4 0 0 0 4,4 4,4 0 0 0 4,-4 4,4 0 0 0 -4,-4 m 0,1 a 3,3 0 0 1 3,3 3,3 0 0 1 -3,3 3,3 0 0 1 -3,-3 3,3 0 0 1 3,-3"
+     id="path76"
+     class="ColorScheme-Text" />
 </svg>
