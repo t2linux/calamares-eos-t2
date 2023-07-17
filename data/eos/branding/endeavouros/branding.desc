@@ -25,7 +25,7 @@ strings:
     bootloaderEntryName: EndeavourOS
     
 images:
-    productLogo:         "endeavouros-logo.png"
+    productLogo:         "endeavouros-icon.png"
     productIcon:         "endeavouros-icon.png"
     productWelcome:      "opening-banner.jpg"
     
