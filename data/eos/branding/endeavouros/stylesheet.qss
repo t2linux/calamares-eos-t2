@@ -38,7 +38,7 @@ EndeavourOS Calamares Theme
 
 
 #sidebarMenuApp {
-	background-image: url(/etc/calamares/branding/endeavouros/img/side-bar.png);
+	background-image: url(/etc/calamares/branding/endeavouros/side-bar.png);
 	font: 18px;
 	padding-top: 30px;
 	background-position: center;
