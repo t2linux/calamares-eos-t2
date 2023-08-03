@@ -14,10 +14,13 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.3
 
+backgroundColor: "#2a2e32"
+
         Column {
             id: column
             anchors.centerIn: parent
             spacing: 5
+            
 
             ButtonGroup {
                 id: switchGroup
@@ -36,6 +39,7 @@ import QtQuick.Layouts 1.3
                     anchors.centerIn: parent
                     text: qsTr("Systemd-boot provides a simple experience which will work for most circumstances.  This is the default option for EndeavourOS.")
                     font.pointSize: 10
+                    color: "#ffffff"
                     anchors.verticalCenterOffset: 0
                     anchors.horizontalCenterOffset: 0
                     wrapMode: Text.WordWrap
@@ -85,6 +89,7 @@ import QtQuick.Layouts 1.3
             Rectangle {
                 width: 700
                 height: 110
+                color: "#2a2e32"
                 radius: 10
                 border.width: 0
                 Text {
@@ -93,6 +98,7 @@ import QtQuick.Layouts 1.3
                     anchors.centerIn: parent
                     text: qsTr("Grub a longstanding bootloader for Linux and is the best choice for individuals wanting to boot off of btrfs snapshots or need to use a smaller EFI partition.")
                     font.pointSize: 10
+                    color: "#ffffff"
                     anchors.verticalCenterOffset: 0
                     anchors.horizontalCenterOffset: 0
                     wrapMode: Text.WordWrap
@@ -151,6 +157,7 @@ import QtQuick.Layouts 1.3
                     anchors.centerIn: parent
                     text: qsTr("No bootloader selected. Selecting no bootloader might result in an un-bootable system, if you don't already have a bootloader that you can add this install to.")
                     font.pointSize: 10
+                    color: "#ffffff"
                     anchors.verticalCenterOffset: 0
                     anchors.horizontalCenterOffset: 0
                     wrapMode: Text.WordWrap
@@ -207,6 +214,7 @@ import QtQuick.Layouts 1.3
                     anchors.centerIn: parent
                     text: qsTr("Please select a bootloader option for your install, or leave the default option, <strong>systemd-boot</strong>.")
                     font.pointSize: 10
+                    color: "#ffffff"
                     wrapMode: Text.WordWrap
                 }
             }
