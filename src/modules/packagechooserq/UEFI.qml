@@ -27,7 +27,7 @@ import QtQuick.Layouts 1.3
                 //id: rectangle
                 width: 700
                 height: 110
-                color: "#ffffff"
+                color: "#2a2e32"
                 radius: 10
                 border.width: 0
                 Text {
@@ -142,7 +142,7 @@ import QtQuick.Layouts 1.3
             Rectangle {
                 width: 700
                 height: 110
-                color: "#ffffff"
+                color: "#2a2e32"
                 radius: 10
                 border.width: 0
                 Text {
@@ -200,7 +200,7 @@ import QtQuick.Layouts 1.3
             Rectangle {
                 width: 700
                 height: 25
-                color: "#f2f2f2"
+                color: "#2a2e32"
                 border.width: 0
                 Text {
                     height: 25
