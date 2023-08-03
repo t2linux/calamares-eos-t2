@@ -14,12 +14,11 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.3
 
-backgroundColor: "#2a2e32"
-
         Column {
             id: column
             anchors.centerIn: parent
             spacing: 5
+            backgroundColor: "#2a2e32"    
             
 
             ButtonGroup {
