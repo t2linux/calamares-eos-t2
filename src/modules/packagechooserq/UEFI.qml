@@ -18,8 +18,6 @@ import QtQuick.Layouts 1.3
             id: column
             anchors.centerIn: parent
             spacing: 5
-            backgroundColor: "#2a2e32"    
-            
 
             ButtonGroup {
                 id: switchGroup
