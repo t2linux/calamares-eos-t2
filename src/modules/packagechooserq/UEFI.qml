@@ -41,7 +41,7 @@ import QtQuick.Layouts 1.3
 
                 Rectangle {
                     width: 700
-                    height: 130
+                    height: 135
                     color: "#1b1e20"
                     radius: 5
                     border.width: 1
@@ -101,7 +101,7 @@ import QtQuick.Layouts 1.3
 
                 Rectangle {
                     width: 700
-                    height: 130
+                    height: 135
                     color: "#1b1e20"
                     radius: 5
                     border.width: 1
@@ -162,7 +162,7 @@ import QtQuick.Layouts 1.3
 
                 Rectangle {
                     width: 700
-                    height: 130
+                    height: 135
                     color: "#1b1e20"
                     radius: 5
                     border.width: 1
@@ -171,7 +171,7 @@ import QtQuick.Layouts 1.3
                         width: 600
                         height: 90
                         anchors.centerIn: parent
-                        text: qsTr("<strong>No Bootloader</strong><br><br>Selecting no bootloader might result in an <strong>un-bootable system</strong>,<br>If you don't already have a bootloader that you can add this install to manually.")
+                        text: qsTr("<strong>No Bootloader</strong><br><br>Selecting no bootloader might result in an <strong>un-bootable system</strong>,<br>If you don't already have a bootloader<br>that you can add this install to manually.")
                         font.pointSize: 10
                         color: "#ffffff"
                         anchors.verticalCenterOffset: 0
@@ -210,13 +210,13 @@ import QtQuick.Layouts 1.3
 
                         onCheckedChanged: {
                             if ( ! checked ) {
-                            print("no btl not checked")
-                            }
-                            else {
-                                print("no bootloader")
-                                config.packageChoice = "none"
+                                print("no btl not checked")
+                                }
+                                else {
+                                    print("no bootloader")
+                                    config.packageChoice = "none"
+                                }
                             }
                         }
                     }
                 }
-            }
