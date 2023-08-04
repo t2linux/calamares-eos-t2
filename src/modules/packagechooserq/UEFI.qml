@@ -171,7 +171,7 @@ import QtQuick.Layouts 1.3
                         width: 600
                         height: 90
                         anchors.centerIn: parent
-                        text: qsTr("<strong>No Bootloader</strong><br><br>Selecting no bootloader might result in an <strong>un-bootable system</strong>,<br>If you don't already have a bootloader<br>that you can add this install to manually.")
+                        text: qsTr("<strong>No Bootloader</strong><br><br>Selecting no bootloader might result in an <strong>un-bootable system</strong>,<br>If you don't already have a bootloader that you can add this install to.")
                         font.pointSize: 10
                         color: "#ffffff"
                         anchors.verticalCenterOffset: 0
