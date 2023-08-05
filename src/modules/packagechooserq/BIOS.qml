@@ -31,7 +31,7 @@ import QtQuick.Layouts 1.3
                 Text {
                     height: 25
                     anchors.centerIn: parent
-                    text: qsTr("Please select a bootloader option for your install, or leave the default option, <strong>GRUB 2</strong>.")
+                    text: qsTr("Please select a bootloader option for your install, or leave the already selected default option, <strong>Grub</strong>.")
                     font.pointSize: 11
                     color: "#ffffff"
                     wrapMode: Text.WordWrap
@@ -53,7 +53,7 @@ import QtQuick.Layouts 1.3
                         width: 600
                         height: 104
                         anchors.centerIn: parent
-                        text: qsTr("<strong>GRUB 2</strong><br><br>The GRand Unified Bootloader is the reference implementation<br>of the Free Software Foundation's Multiboot Specification,<br>which provides a user the choice<br>to boot one of multiple operating systems installed on a computer.")
+                        text: qsTr("<strong>Grub Bootloader</strong><br><br>The GRand Unified Bootloader is the reference implementation<br>of the Free Software Foundation's Multiboot Specification,<br>which provides a user the choice<br>to boot one of multiple operating systems installed on a computer.")
                         font.pointSize: 10
                         color: "#ffffff"
                         anchors.verticalCenterOffset:  0
