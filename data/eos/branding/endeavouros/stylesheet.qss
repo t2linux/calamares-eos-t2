@@ -33,12 +33,12 @@ EndeavourOS Calamares Theme
 /* ########## MAIN APPLICATION WINDOW ########## */
 
 #mainApp {
-	background-color: "#2a2e32";
+	background-color:#2a2e32;
 }
 
 #sidebarMenuApp {
 	background-image: url(/etc/calamares/branding/endeavouros/side-bar.png);
-	background-color: "#31363b";
+	background-color: #31363b;
 	padding-top: 0px;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -60,91 +60,48 @@ QDialogButtonBox {
 /* ########## BUTTONS GENERAL A/GENERAL B/SUBCATEGORY ########## */
 
 QPushButton {
-	background-color: #D3D1D9;
-    	border: 1px solid #1B0B3C;
-	border-top-right-radius: 10px;
-	border-bottom-left-radius: 10px;
-    	min-width: 4em;
-    	padding: 6px;
 }
 
 QPushButton:pressed {
-    	background-color: #7F3FBF;
-    	color: #C1BCCB;
 }
 
 QPushButton:hover {
-	background-color: #1B0B3C;
-	color: #C1BCCB;
-}
-
-QPushButton#view-button-modify, QPushButton#createButton, 
-QPushButton#deleteButton, QPushButton#editButton {
-	background-color: #C1BCCB;
-}
-
-QPushButton#view-button-modify:pressed, QPushButton#createButton:pressed, 
-QPushButton#deleteButton:pressed, QPushButton#editButton:pressed {
-	background-color: #7F3FBF;
-    	color: #C1BCCB;
-}
-
-QPushButton#view-button-modify:hover, QPushButton#createButton:hover, 
-QPushButton#deleteButton:hover, QPushButton#editButton:hover {
-	background-color: #1B0B3C;
-}
-
-QPushButton#newPartitionTableButton, QPushButton#newVolumeGroupButton, 
-QPushButton#resizeVolumeGroupButton, QPushButton#deactivateVolumeGroupButton, 
-QPushButton#removeVolumeGroupButton {
-	background-color: #978FA7;
-    	font: 13px;
-	padding: 5px;
-}
-
-QPushButton#newPartitionTableButton:pressed, QPushButton#newVolumeGroupButton:pressed, 
-QPushButton#resizeVolumeGroupButton:pressed, QPushButton#deactivateVolumeGroupButton:pressed, 
-QPushButton#removeVolumeGroupButton:pressed, QPushButton#buttonRestore:pressed {
-	background-color: #7F3FBF;
-    	color: #C1BCCB;
-}
-
-QPushButton#newPartitionTableButton:hover, QPushButton#newVolumeGroupButton:hover, 
-QPushButton#resizeVolumeGroupButton:hover, QPushButton#deactivateVolumeGroupButton:hover, 
-QPushButton#removeVolumeGroupButton:hover, QPushButton#buttonRestore:hover {
-	background-color: #1B0B3C;
+	background-color: #848d99;
+	color: #848d99;
 }
 
 #debugButton {
-	background-color: #1B0B3C;
+	background-color: #2a2e32;
 	font: bold 8px;
-	color: #C1BCCB;
+	color: #ffffff;
 	height: 32px;
     	padding: 0px;
 	border: none;
 }
 
 #debugButton:pressed {
-	color: #7F3FBF;
+	color: #7f3fbf;
 }
 
 #debugButton:hover {
-	color: #FFFFFF;
+	color: #7f3fbf;
 }
 
 #aboutButton {
-	background-color: none;
-	font: 16px;
-	color: #1B0B3C;
-    	border: none;
+	background-color: #2a2e32;
+	font: bold 8px;
+	color: #ffffff;
+	height: 32px;
+    	padding: 0px;
+	border: none;
 }
 
 #aboutButton:pressed {
-	color: #7F3FBF;
+	color: #7f3fbf;
 }
 
 #aboutButton:hover {
-	color: #7F3FBF;
+	color: #7f3fbf;
 }
 
 /* Partitioning module.
