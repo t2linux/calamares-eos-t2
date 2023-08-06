@@ -33,6 +33,7 @@ import QtQuick.Layouts 1.3
                     height: 25
                     anchors.centerIn: parent
                     text: qsTr("Please select a <strong>bootloader</strong> option for your install, or leave the already selected default option, <strong>Systemd-boot</strong>.")
+                    text[de]: qsTr("Bitte wähle eine <strong>Bootloader</strong> Option für diese Installation aus, oder belasse die bereits ausgewählte Standardoption <strong>Systemd-boot</strong>.")
                     font.pointSize: 11
                     color: "#ffffff"
                     wrapMode: Text.WordWrap
