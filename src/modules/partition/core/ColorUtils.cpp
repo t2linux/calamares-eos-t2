@@ -40,7 +40,7 @@ static const QColor PARTITION_COLORS[ NUM_PARTITION_COLORS ] = {
 };
 static const QColor NEW_PARTITION_COLORS[ NUM_NEW_PARTITION_COLORS ] = {
     "#c0392b",  //Dark Icon Red
-    "#5151af",  //Dark Blue
+    "#3b3b81",  //Dark Blue
     "#f1b7bc",  //Light Salmon
     "#fed999",  //Light Orange
 };
