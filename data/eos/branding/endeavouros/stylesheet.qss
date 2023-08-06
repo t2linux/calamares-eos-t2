@@ -70,7 +70,7 @@ QPushButton:hover {
 
 #debugButton {
 	background-color: #31363b;
-	font: bold 10px;
+	font: 10px;
 	color: #ffffff;
 	height: 32px;
     	padding: 0px;
@@ -87,7 +87,7 @@ QPushButton:hover {
 
 #aboutButton {
 	background-color: #31363b;
-	font: bold 10px;
+	font: 10px;
 	color: #ffffff;
 	height: 32px;
     	padding: 0px;
