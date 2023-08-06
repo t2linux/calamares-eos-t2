@@ -45,6 +45,10 @@ EndeavourOS Calamares Theme
 	background-repeat: no-repeat;
 }
 
+QScrollBar {
+	background-color: "#2a2e32";
+}
+
 QWidget {
 	font: 12px;
 	color: #ffffff;
