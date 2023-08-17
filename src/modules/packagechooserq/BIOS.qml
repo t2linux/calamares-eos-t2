@@ -22,6 +22,11 @@ import QtQuick.Layouts 1.3
             ButtonGroup {
                 id: switchGroup
             }
+
+            Component.onCompleted: {
+                config.packageChoice = "grub"
+            }
+
             Rectangle {
                 //id: rectangle
                 width: 700
@@ -35,7 +40,6 @@ import QtQuick.Layouts 1.3
                     font.pointSize: 11
                     color: "#ffffff"
                     wrapMode: Text.WordWrap
-                    }
                 }
 
                 Component.onCompleted: {
@@ -89,6 +93,7 @@ import QtQuick.Layouts 1.3
                                 border.color: element2.checked ? (element2.down ? "#3498db" : "#3498db") : "#999999"
                             }
                         }
+                    }
 
                         onCheckedChanged: {
                             if ( ! checked ) {
@@ -101,6 +106,7 @@ import QtQuick.Layouts 1.3
                         }
                     }
                 }
+            }
 
                 Rectangle {
                     width: 700
@@ -149,6 +155,7 @@ import QtQuick.Layouts 1.3
                                 border.color: element3.checked ? (element3.down ? "#ff8585" : "#ff8585") : "#999999"
                             }
                         }
+                    }
 
                         onCheckedChanged: {
                             if ( ! checked ) {
