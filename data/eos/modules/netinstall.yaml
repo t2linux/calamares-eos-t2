@@ -43,13 +43,6 @@
         - usb_modeswitch
         - wpa_supplicant
         - xl2tpd
-    - name: Firewall
-      description: "Firewall support"
-      selected: true
-      packages:
-        - firewalld
-        - python-pyqt5
-        - python-capng
     - name: "Package Management"
       description: "Packages tools"
       selected: true
@@ -198,6 +191,14 @@
   packages:
     - firefox
     - firefox-i18n-$LOCALE
+- name: Firewall
+  description: "Firewall support"
+  selected: true
+  critical: true
+  packages:
+    - firewalld
+    - python-pyqt5
+    - python-capng
 - name: Printing-Support
   description: "Support for printing (Cups)"
   hidden: false
