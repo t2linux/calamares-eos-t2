@@ -444,38 +444,16 @@ PartitionViewStep::onActivate()
 
     auto gs = Calamares::JobQueue::instance()->globalStorage();
 
-    // Alter GS based on prior module
-    QString efiLocation;
-    if ( !m_config->bootloaderVar().isEmpty() && gs->contains( m_config->bootloaderVar() ) )
-    {
-        m_bootloader = gs->value( m_config->bootloaderVar() ).toString();
-        gs->insert( "curBootloader", m_bootloader );
-
-        cDebug() << "The bootloader is " << m_bootloader;
-        if ( m_bootloader.toLower() == "grub" )
-        {
-            efiLocation = "/boot/efi";
-        }
-        else if ( m_bootloader.toLower() == "refind" )
-        {
-            efiLocation = "/boot";
-        }
-        else
-        {
-            efiLocation = "/efi";
-        }
-        cDebug() << "The efi location is " << efiLocation;
-        Calamares::JobQueue::instance()->globalStorage()->insert( "efiSystemPartition", efiLocation );
-    }
-
     if ( PartUtils::isEfiSystem() && !m_config->bootloaderVar().isEmpty() )
     {
         // Alter GS based on prior module
         QString efiLocation;
-        if ( Calamares::JobQueue::instance()->globalStorage()->contains( m_config->bootloaderVar() ) )
+        QString bootLoader;
+        bool efiChanged = false;
+        bool luksChanged = false;
+        if ( gs->contains( m_config->bootloaderVar() ) )
         {
-            QString bootLoader
-                = Calamares::JobQueue::instance()->globalStorage()->value( m_config->bootloaderVar() ).toString();
+            bootLoader = gs->value( m_config->bootloaderVar() ).toString();
             cDebug() << "The bootloader is " << bootLoader;
             if ( bootLoader.toLower() == "grub" )
             {
@@ -490,18 +468,31 @@ PartitionViewStep::onActivate()
                 efiLocation = "/efi";
             }
             cDebug() << "The efi location is " << efiLocation;
-            Calamares::JobQueue::instance()->globalStorage()->insert( "efiSystemPartition", efiLocation );
+
+            if ( gs->contains( "efiSystemPartition" ) && gs->value( "efiSystemPartition" ).toString() != efiLocation )
+            {
+                efiChanged = true;
+            }
+            gs->insert( "efiSystemPartition", efiLocation );
         }
 
-        // This may not be our first trip so reset the efi mountpoint if needed
-        if ( m_core->isDirty() )
+
+        // Set the luks type
+        Config::LuksGeneration currentLuks = m_config->luksFileSystemType();
+        const Config::LuksGeneration newLuks
+            = bootLoader == "grub" ? Config::LuksGeneration::Luks1 : Config::LuksGeneration::Luks2;
+
+        if ( newLuks != currentLuks )
         {
-            QList< Partition* > efiSystemPartitions = m_core->efiSystemPartitions();
-            if ( m_choicePage->efiIndex() >= 0
-                 && PartitionInfo::mountPoint( efiSystemPartitions.at( m_choicePage->efiIndex() ) ) != "" )
-            {
-                PartitionInfo::setMountPoint( efiSystemPartitions.at( m_choicePage->efiIndex() ), efiLocation );
-            }
+            m_config->setLuksFileSystemType( newLuks );
+            luksChanged = true;
+        }
+
+        // This may not be our first trip so reset things if needed
+        if ( m_core->isDirty() && ( luksChanged || efiChanged ) )
+        {
+            m_core->revertAllDevices();
+            m_choicePage->reset();
         }
     }
 
@@ -557,7 +548,7 @@ shouldWarnForGPTOnBIOS( const PartitionCoreModule* core )
 }
 
 static bool
-shouldWarnForNotEncryptedBoot( const Config* config, const PartitionCoreModule* core)
+shouldWarnForNotEncryptedBoot( const Config* config, const PartitionCoreModule* core )
 {
     if ( config->showNotEncryptedBootMessage() )
     {
@@ -566,8 +557,7 @@ shouldWarnForNotEncryptedBoot( const Config* config, const PartitionCoreModule* 
 
         if ( root_p and boot_p )
         {
-            if ( ( root_p->fileSystem().type() == FileSystem::Luks
-                   && boot_p->fileSystem().type() != FileSystem::Luks )
+            if ( ( root_p->fileSystem().type() == FileSystem::Luks && boot_p->fileSystem().type() != FileSystem::Luks )
                  || ( root_p->fileSystem().type() == FileSystem::Luks2
                       && boot_p->fileSystem().type() != FileSystem::Luks2 ) )
             {
@@ -728,20 +718,19 @@ PartitionViewStep::onLeave()
         {
             QString message = tr( "Boot partition not encrypted" );
             QString description = tr( "A separate boot partition was set up together with "
-                                         "an encrypted root partition, but the boot partition "
-                                         "is not encrypted."
-                                         "<br/><br/>"
-                                         "There are security concerns with this kind of "
-                                         "setup, because important system files are kept "
-                                         "on an unencrypted partition.<br/>"
-                                         "You may continue if you wish, but filesystem "
-                                         "unlocking will happen later during system startup."
-                                         "<br/>To encrypt the boot partition, go back and "
-                                         "recreate it, selecting <strong>Encrypt</strong> "
-                                         "in the partition creation window." );
+                                      "an encrypted root partition, but the boot partition "
+                                      "is not encrypted."
+                                      "<br/><br/>"
+                                      "There are security concerns with this kind of "
+                                      "setup, because important system files are kept "
+                                      "on an unencrypted partition.<br/>"
+                                      "You may continue if you wish, but filesystem "
+                                      "unlocking will happen later during system startup."
+                                      "<br/>To encrypt the boot partition, go back and "
+                                      "recreate it, selecting <strong>Encrypt</strong> "
+                                      "in the partition creation window." );
 
-            QMessageBox mb(
-                QMessageBox::Warning, message, description, QMessageBox::Ok, m_manualPartitionPage );
+            QMessageBox mb( QMessageBox::Warning, message, description, QMessageBox::Ok, m_manualPartitionPage );
             Calamares::fixButtonLabels( &mb );
             mb.exec();
         }

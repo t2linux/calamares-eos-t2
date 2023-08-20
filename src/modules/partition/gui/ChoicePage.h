@@ -88,6 +88,7 @@ public:
     int lastSelectedDeviceIndex();
     void setLastSelectedDeviceIndex( int index );
     int efiIndex();
+    void reset();
 
 signals:
     void nextStatusChanged( bool );
