@@ -429,6 +429,7 @@ Config::setConfigurationMap( const QVariantMap& configurationMap )
     m_allowZfsEncryption = CalamaresUtils::getBool( configurationMap, "allowZfsEncryption", true );
 
     m_allowManualPartitioning = CalamaresUtils::getBool( configurationMap, "allowManualPartitioning", true );
+    m_showNotEncryptedBootMessage = CalamaresUtils::getBool( configurationMap, "showNotEncryptedBootMessage", true );
     m_requiredPartitionTableType = CalamaresUtils::getStringList( configurationMap, "requiredPartitionTableType" );
 
     m_bootloaderVar = CalamaresUtils::getString( configurationMap, "efiBootLoaderVar", "" );
