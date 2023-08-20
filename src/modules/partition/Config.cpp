@@ -260,6 +260,12 @@ Config::setReplaceFilesystemChoice( const QString& filesystemName )
     }
 }
 
+void
+Config::setLuksFileSystemType( const LuksGeneration luks)
+{
+    m_luksFileSystemType = luks;
+}
+
 bool
 Config::acceptPartitionTableType( PartitionTable::TableType tableType ) const
 {

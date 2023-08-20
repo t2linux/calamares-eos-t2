@@ -178,6 +178,7 @@ public Q_SLOTS:
     void setSwapChoice( SwapChoice );
     void setEraseFsTypeChoice( const QString& filesystemName );  ///< See property eraseModeFilesystem
     void setReplaceFilesystemChoice( const QString& filesystemName );
+    void setLuksFileSystemType( const LuksGeneration );
 
 Q_SIGNALS:
     void installChoiceChanged( InstallChoice );
