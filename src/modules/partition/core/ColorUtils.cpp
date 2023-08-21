@@ -33,19 +33,19 @@ static const int NUM_NEW_PARTITION_COLORS = 4;
 //Let's try to use the Breeze palette
 static const QColor PARTITION_COLORS[ NUM_PARTITION_COLORS ] = {
     "#2980b9",  //Dark Plasma Blue
-    "#27ae60",  //Dark Icon Green
-    "#c9ce3b",  //Dirty Yellow
+    "#7f3fbf",  //Dark Purple
+    "#ff8585",  //Orange
     "#3daee9",  //Plasma Blue
     "#9b59b6",  //Purple
 };
 static const QColor NEW_PARTITION_COLORS[ NUM_NEW_PARTITION_COLORS ] = {
     "#c0392b",  //Dark Icon Red
-    "#f39c1f",  //Dark Icon Yellow
+    "#3b3b81",  //Dark Blue
     "#f1b7bc",  //Light Salmon
     "#fed999",  //Light Orange
 };
-static QColor FREE_SPACE_COLOR = "#777777";
-static QColor EXTENDED_COLOR = "#aaaaaa";
+static QColor FREE_SPACE_COLOR = "#6969ea";
+static QColor EXTENDED_COLOR = "#ffbbbb";
 static QColor UNKNOWN_DISKLABEL_COLOR = "#4d4151";
 
 static QMap< QString, QColor > s_partitionColorsCache;

@@ -17,7 +17,7 @@ import QtQuick.Layouts 1.3
 Item {
     Rectangle {
         anchors.fill: parent
-        color: "#f2f2f2"
+        color: "#2a2e32"
 
         ButtonGroup {
             id: switchGroup

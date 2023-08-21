@@ -33,20 +33,20 @@ EndeavourOS Calamares Theme
 /* ########## MAIN APPLICATION WINDOW ########## */
 
 #mainApp {
+	background-color:#2a2e32;
 }
 
-
 #sidebarMenuApp {
-	background-image: url(/etc/calamares/branding/endeavouros/img/side-bar.png);
-	font: 18px;
-	padding-top: 30px;
+	background-image: url(/etc/calamares/branding/endeavouros/side-bar.png);
+	background-color: #31363b;
+	padding-top: 0px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
 QWidget {
-	font: 14px;
-	color: #000000;
+	font: 12px;
+	color: #ffffff;
 }
 
 QListWidget::item:alternate {
@@ -57,29 +57,49 @@ QDialogButtonBox {
 	dialogbuttonbox-buttons-have-icons: 0;
 }
 
-#debugButton {
-	background-color: none;
-	font: 12px;
-	color: #edecf0;
-    	height: 32px;
-    	border: none;
+/* ########## BUTTONS GENERAL A/GENERAL B/SUBCATEGORY ########## */
+
+QPushButton {
 }
 
+QPushButton:pressed {
+}
+
+QPushButton:hover {
+}
+
+#debugButton {
+	background-color: #31363b;
+	font: 10px;
+	color: #ffffff;
+	height: 32px;
+    	padding: 0px;
+	border: none;
+}
+
+#debugButton:pressed {
+	color: #7f3fbf;
+}
 
 #debugButton:hover {
-	color: #ff7f7f;
+	color: #7f3fbf;
 }
 
 #aboutButton {
-	background-color: none;
-	font: 12px;
-	color: #edecf0;
-    	height: 32px;
-    	border: none;
+	background-color: #31363b;
+	font: 10px;
+	color: #ffffff;
+	height: 32px;
+    	padding: 0px;
+	border: none;
+}
+
+#aboutButton:pressed {
+	color: #7f3fbf;
 }
 
 #aboutButton:hover {
-	color: #ff7f7f;
+	color: #7f3fbf;
 }
 
 /* Partitioning module.

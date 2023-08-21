@@ -6,7 +6,7 @@ Presentation
     id: presentation
 
     function nextSlide() {
-        console.log("QML Component (default slideshow) Next slide");
+        console.log("Process is running in the background...");
         presentation.goToNextSlide();
     }
 
@@ -40,18 +40,6 @@ Presentation
         }
     }
 
-
-        Slide {
-
-        Image {
-            id: background_3
-            source: "slide-community-DE_s.jpg"
-            width: 1002; height: 651
-            fillMode: Image.PreserveAspectFit
-            anchors.centerIn: parent
-        }
-    }
-
     Slide {
 
         Image {
@@ -63,7 +51,7 @@ Presentation
         }
     }
     
-        Slide {
+    Slide {
 
         Image {
             id: background_5
@@ -74,7 +62,7 @@ Presentation
         }
     }
         
-        Slide {
+    Slide {
 
         Image {
             id: background_6
