@@ -26,6 +26,7 @@
 #include <kpmcore/core/partition.h>
 #include <kpmcore/fs/filesystem.h>
 #include <kpmcore/fs/luks.h>
+#include <kpmcore/fs/luks2.h>
 
 #include <QDebug>
 #include <QDir>
@@ -96,6 +97,12 @@ mapForPartition( Partition* partition, const QString& uuid )
          && dynamic_cast< FS::luks& >( partition->fileSystem() ).innerFS() )
     {
         map[ "fs" ] = untranslatedFS( dynamic_cast< FS::luks& >( partition->fileSystem() ).innerFS() );
+    }
+
+    if ( partition->fileSystem().type() == FileSystem::Luks2
+         && dynamic_cast< FS::luks2& >( partition->fileSystem() ).innerFS() )
+    {
+        map[ "fs" ] = untranslatedFS( dynamic_cast< FS::luks2& >( partition->fileSystem() ).innerFS() );
     }
 
     map[ "uuid" ] = uuid;
