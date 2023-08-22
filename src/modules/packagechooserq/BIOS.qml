@@ -23,6 +23,10 @@ Column {
         id: switchGroup
     }
 
+    Component.onCompleted: {
+                config.packageChoice = "grub"
+            }
+
     Rectangle {
         //id: rectangle
         width: 700
