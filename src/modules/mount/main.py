@@ -74,13 +74,14 @@ def is_ssd_disk(partition):
         return False
 
 
-def get_mount_options(filesystem, mount_options, partition):
+def get_mount_options(filesystem, mount_options, partition, efi_location = None):
     """
     Returns the mount options for the partition object and filesystem
 
     :param filesystem: A string containing the filesystem
     :param mount_options: A list of dicts that descripes the mount options for each mountpoint
     :param partition: A dict containing information about the partition
+    :param efi_location: A string holding the location of the EFI partition or None
     :return: A comma seperated string containing the mount options suitable for passing to mount
     """
 
@@ -92,7 +93,13 @@ def get_mount_options(filesystem, mount_options, partition):
     if mount_options is None:
         return "defaults"
 
-    options = next((x for x in mount_options if x["filesystem"] == filesystem), None)
+    # The EFI partition uses special mounting options
+    if efi_location and partition["mountpoint"] == efi_location:
+        effective_filesystem = "efi"
+    else:
+        effective_filesystem = filesystem
+
+    options = next((x for x in mount_options if x["filesystem"] == effective_filesystem), None)
 
     # If there is no match then check for default options
     if options is None:
@@ -214,7 +221,7 @@ def mount_zfs(root_mount_point, partition):
             raise ZfsException(_("Failed to set zfs mountpoint"))
 
 
-def mount_partition(root_mount_point, partition, partitions, mount_options, mount_options_list):
+def mount_partition(root_mount_point, partition, partitions, mount_options, mount_options_list, efi_location):
     """
     Do a single mount of @p partition inside @p root_mount_point.
 
@@ -223,6 +230,7 @@ def mount_partition(root_mount_point, partition, partitions, mount_options, moun
     :param partitions: The full list of partitions used to filter out btrfs subvols which have duplicate mountpoints
     :param mount_options: The mount options from the config file
     :param mount_options_list: A list of options for each mountpoint to be placed in global storage for future modules
+    :param efi_location: A string holding the location of the EFI partition or None
     :return:
     """
     # Create mount point with `+` rather than `os.path.join()` because
@@ -235,14 +243,18 @@ def mount_partition(root_mount_point, partition, partitions, mount_options, moun
 
     # Ensure that the created directory has the correct SELinux context on
     # SELinux-enabled systems.
+    set_selinux_context = libcalamares.job.configuration.get("setSELinux", True)
+
     os.makedirs(mount_point, exist_ok=True)
-    try:
-        subprocess.call(['chcon', '--reference=' + raw_mount_point, mount_point])
-    except FileNotFoundError as e:
-        libcalamares.utils.warning(str(e))
-    except OSError:
-        libcalamares.utils.error("Cannot run 'chcon' normally.")
-        raise
+
+    if set_selinux_context:
+        try:
+            subprocess.call(['chcon', '--reference=' + raw_mount_point, mount_point])
+        except FileNotFoundError as e:
+            libcalamares.utils.warning(str(e))
+        except OSError:
+            libcalamares.utils.error("Cannot run 'chcon' normally.")
+            raise
 
     fstype = partition.get("fs", "").lower()
     if fstype == "unformatted":
@@ -259,7 +271,7 @@ def mount_partition(root_mount_point, partition, partitions, mount_options, moun
     if fstype == "zfs":
         mount_zfs(root_mount_point, partition)
     else:  # fstype == "zfs"
-        mount_options_string = get_mount_options(fstype, mount_options, partition)
+        mount_options_string = get_mount_options(fstype, mount_options, partition, efi_location)
         if libcalamares.utils.mount(device,
                                     mount_point,
                                     fstype,
@@ -344,7 +356,10 @@ def run():
     if not extra_mounts:
         libcalamares.utils.warning("No extra mounts defined. Does mount.conf exist?")
 
-    if libcalamares.globalstorage.value("firmwareType") != "efi":
+    efi_location = None
+    if libcalamares.globalstorage.value("firmwareType") == "efi":
+        efi_location = libcalamares.globalstorage.value("efiSystemPartition")
+    else:
         for mount in extra_mounts:
             if mount.get("efi", None) is True:
                 extra_mounts.remove(mount)
@@ -360,7 +375,7 @@ def run():
     mount_options_list = []
     try:
         for partition in mountable_partitions:
-            mount_partition(root_mount_point, partition, partitions, mount_options, mount_options_list)
+            mount_partition(root_mount_point, partition, partitions, mount_options, mount_options_list, efi_location)
     except ZfsException as ze:
         return _("zfs mounting error"), ze.message
 

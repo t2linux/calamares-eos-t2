@@ -6,6 +6,7 @@ $id: https://calamares.io/schemas/mount
 additionalProperties: false
 type: object
 properties:
+    setSELinux: { type: string }
     extraMounts:
         type: array
         items:
