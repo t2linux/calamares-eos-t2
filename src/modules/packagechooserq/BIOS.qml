@@ -44,7 +44,7 @@ Column {
     }
 
     Rectangle {
-        width: 500
+        width: 700
         height: 150
         color: "#1b1e20"
         radius: 5
@@ -56,6 +56,7 @@ Column {
             anchors.centerIn: parent
             text: qsTr("<strong>Grub Bootloader</strong><br><br>The GRand Unified Bootloader is the reference implementation<br>of the Free Software Foundation's Multiboot Specification,<br>which provides a user the choice<br>to boot one of multiple operating systems installed on a computer.")
             font.pointSize: 10
+            color: "#ffffff"
             anchors.verticalCenterOffset: 0
             anchors.horizontalCenterOffset: -20.0
             wrapMode: Text.WordWrap
