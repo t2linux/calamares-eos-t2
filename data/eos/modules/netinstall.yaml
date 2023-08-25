@@ -1,11 +1,11 @@
 - name: "Desktop-Base + Common packages"
-  description: "Recommended. Don't change unless you know what you're doing (generic)."
+  description: "Recommended. Don't change unless you know what you're doing."
   hidden: false
   selected: true
   critical: true
   subgroups:
-    - name: X-System
-      description: "Default X-System"
+    - name: X11
+      description: "Default X11 system"
       selected: true
       packages:
         - libwnck3
@@ -43,7 +43,7 @@
         - usb_modeswitch
         - wpa_supplicant
         - xl2tpd
-    - name: "Package Management"
+    - name: "Package management"
       description: "Packages tools"
       selected: true
       packages:
@@ -74,7 +74,7 @@
         - xdg-user-dirs
         - xdg-utils
     - name: Filesystem
-      description: "Filesystem tools and apps"
+      description: "Filesystem tools and applications"
       selected: true
       packages:
         - efitools
@@ -131,58 +131,49 @@
       packages:
         - power-profiles-daemon
         - upower
-    - name: "EndeavourOS Apps"
-      description: "EndeavourOS tools and applications"
-      selected: true
-      packages:
-        - endeavouros-theming
-        - eos-apps-info
-        - eos-log-tool
-        - eos-packagelist
-        - eos-quickstart
-        - eos-rankmirrors
-        - eos-update-notifier
-        - reflector-simple
-        - welcome
-    - name: "EndeavourOS applications selection"
-      description: "General tools and applications"
-      selected: true
-      packages:
-        - duf
-        - findutils
-        - fsarchiver
-        - git
-        - glances
-        - hwinfo
-        - inxi
-        - meld
-        - nano-syntax-highlighting
-        - neofetch
-        - pv
-        - python-defusedxml
-        - python-packaging
-        - rsync
-        - tldr
-        - sed
-        - vi
-        - wget
-    - name: "CPU specific Microcode update packages"
-      description: "Microcode update image for AMD and Intel CPU"
+    - name: "CPU specific microcode update packages"
+      description: "Microcode update image for AMD and Intel CPUs"
       hidden: false
       selected: true
       critical: false
       packages:
         - amd-ucode
         - intel-ucode
-- name: "LTS Kernel in addition"
-  description: "Adding Long Term Supported Kernel in addition to main one"
-  hidden: false
-  selected: false
-  expanded: true
-  critical: false
+- name: "EndeavourOS applications"
+  description: "EndeavourOS tools and applications"
+  selected: true
   packages:
-    - linux-lts
-    - linux-lts-headers
+    - endeavouros-theming
+    - eos-apps-info
+    - eos-log-tool
+    - eos-packagelist
+    - eos-quickstart
+    - eos-rankmirrors
+    - eos-update-notifier
+    - reflector-simple
+    - welcome
+- name: "Recommended applications selection"
+  description: "General tools and applications"
+  selected: true
+  packages:
+    - duf
+    - findutils
+    - fsarchiver
+    - git
+    - glances
+    - hwinfo
+    - inxi
+    - meld
+    - nano-syntax-highlighting
+    - neofetch
+    - pv
+    - python-defusedxml
+    - python-packaging
+    - rsync
+    - tldr
+    - sed
+    - vi
+    - wget
 - name: "Firefox and language package"
   description: "Add firefox and language pack if possible"
   hidden: false
@@ -192,17 +183,26 @@
     - firefox
     - firefox-i18n-$LOCALE
 - name: Firewall
-  description: "Firewall support"
+  description: "Firewall installed and enabled"
   selected: true
   critical: true
   packages:
     - firewalld
     - python-pyqt5
     - python-capng
-- name: Printing-Support
+- name: "LTS kernel in addition"
+  description: "Adding Long Term Supported kernel in addition to main one"
+  hidden: false
+  selected: false
+  expanded: false
+  critical: false
+  packages:
+    - linux-lts
+    - linux-lts-headers
+- name: "Printing support"
   description: "Support for printing (Cups)"
   hidden: false
-  expanded: true
+  expanded: false
   selected: false
   critical: true
   packages:
@@ -220,10 +220,10 @@
     - gutenprint
     - splix
     - system-config-printer
-- name: "Support for HP Printer/Scanner"
-  description: "Extra Packages for HP Printer/Scanner"
+- name: "HP printer/scanner support"
+  description: "Packages for HP printer/scanner"
   hidden: false
-  expanded: true
+  expanded: false
   selected: false
   critical: true
   packages:
