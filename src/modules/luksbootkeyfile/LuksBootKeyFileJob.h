@@ -35,6 +35,7 @@ public:
 
 private:
     QString m_luks2Hash;
+    QString m_bootloaderVar;
 };
 
 CALAMARES_PLUGIN_FACTORY_DECLARATION( LuksBootKeyFileJobFactory )

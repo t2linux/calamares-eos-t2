@@ -155,14 +155,14 @@ setupLuks( const LuksDevice& d, const QString& luks2Hash )
     QRegularExpression version_re( QStringLiteral( R"(version:\s*([0-9]))" ),
                                    QRegularExpression::CaseInsensitiveOption );
     QRegularExpressionMatch match = version_re.match( luks_dump.getOutput() );
-    if ( ! match.hasMatch() )
+    if ( !match.hasMatch() )
     {
         cWarning() << "Could not get LUKS version on device: " << d.device;
         return false;
     }
     bool ok;
-    luks_version = match.captured(1).toInt(&ok);
-    if( ! ok )
+    luks_version = match.captured( 1 ).toInt( &ok );
+    if ( !ok )
     {
         cWarning() << "Could not get LUKS version on device: " << d.device;
         return false;
@@ -172,8 +172,7 @@ setupLuks( const LuksDevice& d, const QString& luks2Hash )
     // Check the number of slots used for LUKS1 devices
     if ( luks_version == 1 )
     {
-        QRegularExpression slots_re( QStringLiteral( R"(\d+:\s*enabled)" ),
-                                     QRegularExpression::CaseInsensitiveOption );
+        QRegularExpression slots_re( QStringLiteral( R"(\d+:\s*enabled)" ), QRegularExpression::CaseInsensitiveOption );
         if ( luks_dump.getOutput().count( slots_re ) == 8 )
         {
             cWarning() << "No key slots left on LUKS1 device: " << d.device;
@@ -185,14 +184,11 @@ setupLuks( const LuksDevice& d, const QString& luks2Hash )
     QStringList args = { QStringLiteral( "cryptsetup" ), QStringLiteral( "luksAddKey" ), d.device, keyfile };
     if ( luks_version == 2 && luks2Hash != QString() )
     {
-        args.insert(2, "--pbkdf");
-        args.insert(3, luks2Hash);
+        args.insert( 2, "--pbkdf" );
+        args.insert( 3, luks2Hash );
     }
     auto r = CalamaresUtils::System::instance()->targetEnvCommand(
-        args,
-        QString(),
-        d.passphrase,
-        std::chrono::seconds( 60 ) );
+        args, QString(), d.passphrase, std::chrono::seconds( 60 ) );
     if ( r.getExitCode() != 0 )
     {
         cWarning() << "Could not configure LUKS keyfile on" << d.device << ':' << r.getOutput() << "(exit code"
@@ -256,6 +252,15 @@ LuksBootKeyFileJob::exec()
         cError() << "No GS[partitions] key.";
         return Calamares::JobResult::internalError(
             "LuksBootKeyFile", tr( "No partitions are defined." ), Calamares::JobResult::InvalidConfiguration );
+    }
+
+    if ( !m_bootloaderVar.isEmpty() && gs->contains( m_bootloaderVar ) )
+    {
+        if ( gs->value( m_bootloaderVar ).toString() == "systemd-boot" )
+        {
+            cDebug() << Logger::SubEntry << "Using systemd-boot, skipping keyfile creation.";
+            return Calamares::JobResult::ok();
+        }
     }
 
     LuksDeviceList s( gs->value( "partitions" ) );
@@ -331,8 +336,9 @@ LuksBootKeyFileJob::exec()
 void
 LuksBootKeyFileJob::setConfigurationMap( const QVariantMap& configurationMap )
 {
-    m_luks2Hash = CalamaresUtils::getString(
-        configurationMap, QStringLiteral( "luks2Hash" ), QString() );
+    m_luks2Hash = CalamaresUtils::getString( configurationMap, QStringLiteral( "luks2Hash" ), QString() );
+
+    m_bootloaderVar = CalamaresUtils::getString( configurationMap, "efiBootLoaderVar", "" );
 }
 
 CALAMARES_PLUGIN_FACTORY_DEFINITION( LuksBootKeyFileJobFactory, registerPlugin< LuksBootKeyFileJob >(); )
