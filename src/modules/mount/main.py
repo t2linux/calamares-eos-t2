@@ -94,7 +94,7 @@ def get_mount_options(filesystem, mount_options, partition, efi_location = None)
         return "defaults"
 
     # The EFI partition uses special mounting options
-    if efi_location and partition["mountpoint"] == efi_location:
+    if efi_location and partition["mountPoint"] == efi_location:
         effective_filesystem = "efi"
     else:
         effective_filesystem = filesystem
