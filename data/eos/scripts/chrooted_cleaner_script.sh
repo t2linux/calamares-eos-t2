@@ -203,9 +203,9 @@ _clean_offline_packages(){
         ## Live iso tools
         clonezilla
         gpart
-        gparted
         grsync
         hdparm
+		partitionmanager
 
         # ENDEAVOUROS REPO
 
@@ -215,8 +215,6 @@ _clean_offline_packages(){
         ## Calamares EndeavourOS
         $(pacman -Qq | grep calamares)        # finds calamares related packages
         ckbcomp
-        kvantum
-        qt5ct
 
         # arm qemu dependency
         qemu-arm-aarch64-static-bin
