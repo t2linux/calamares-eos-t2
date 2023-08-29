@@ -34,18 +34,18 @@ static const int NUM_NEW_PARTITION_COLORS = 4;
 static const QColor PARTITION_COLORS[ NUM_PARTITION_COLORS ] = {
     "#2980b9",  //Dark Plasma Blue
     "#7f3fbf",  //Dark Purple
-    "#ff8585",  //Orange
+    "#ff5454",  //Orange
     "#3daee9",  //Plasma Blue
     "#9b59b6",  //Purple
 };
 static const QColor NEW_PARTITION_COLORS[ NUM_NEW_PARTITION_COLORS ] = {
     "#c0392b",  //Dark Icon Red
     "#3b3b81",  //Dark Blue
-    "#f1b7bc",  //Light Salmon
-    "#fed999",  //Light Orange
+    "#615c5d",  //Light Salmon
+    "#ff8585",  //Light Orange
 };
 static QColor FREE_SPACE_COLOR = "#6969ea";
-static QColor EXTENDED_COLOR = "#ffbbbb";
+static QColor EXTENDED_COLOR = "#6e5151";
 static QColor UNKNOWN_DISKLABEL_COLOR = "#4d4151";
 
 static QMap< QString, QColor > s_partitionColorsCache;
