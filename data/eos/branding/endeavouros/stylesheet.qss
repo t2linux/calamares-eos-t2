@@ -49,10 +49,6 @@ QWidget {
 	color: #ffffff;
 }
 
-QListWidget::item:alternate {
-	color: #353945;
-}
-
 QDialogButtonBox { 
 	dialogbuttonbox-buttons-have-icons: 0;
 }
