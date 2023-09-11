@@ -179,7 +179,6 @@ Item {
         id: notesWindow;
         width: 400
         height: 300
-        color: "#2a2e32"
 
         title: "QML Presentation: Notes"
         visible: root.showNotes
