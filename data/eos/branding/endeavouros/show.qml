@@ -35,7 +35,7 @@ Presentation
             border.width: 0
             color: "#2a2e32"
             Image {
-                id: slide-trust
+                id: slide_trust
                 source: "slide-trust.png"
                 width: 1002; height: 651
                 fillMode: Image.PreserveAspectFit
@@ -51,7 +51,7 @@ Presentation
                 border.width: 0
                 color: "#2a2e32"
                 Image {
-                    id: slide-welcome-app
+                    id: slide_welcome_app
                     source: "slide-welcome-app.png"
                     width: 1002; height: 651
                     fillMode: Image.PreserveAspectFit
@@ -67,7 +67,7 @@ Presentation
                 border.width: 0
                 color: "#2a2e32"
                 Image {
-                    id: slide-discover
+                    id: slide_discover
                     source: "slide-discover.png"
                     width: 1002; height: 651
                     fillMode: Image.PreserveAspectFit
