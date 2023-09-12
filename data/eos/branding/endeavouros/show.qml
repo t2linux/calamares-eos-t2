@@ -44,44 +44,44 @@ Presentation
         }
     }
 
-        Slide {
-               anchors.fill: parent
-            Rectangle {
+    Slide {
+           anchors.fill: parent
+        Rectangle {
+            anchors.fill: parent
+            border.width: 0
+            color: "#2a2e32"
+            Image {
+                id: slide_welcome_app
+                source: "slide-welcome-app.png"
+                width: 1002; height: 651
+                fillMode: Image.PreserveAspectFit
                 anchors.fill: parent
-                border.width: 0
-                color: "#2a2e32"
-                Image {
-                    id: slide_welcome_app
-                    source: "slide-welcome-app.png"
-                    width: 1002; height: 651
-                    fillMode: Image.PreserveAspectFit
-                    anchors.fill: parent
-                }
             }
-        }
-
-        Slide {
-               anchors.fill: parent
-            Rectangle {
-                anchors.fill: parent
-                border.width: 0
-                color: "#2a2e32"
-                Image {
-                    id: slide_discover
-                    source: "slide-discover.png"
-                    width: 1002; height: 651
-                    fillMode: Image.PreserveAspectFit
-                    anchors.fill: parent
-                }
-            }
-        }
-
-        function onActivate() {
-            console.log("QML Component (default slideshow) activated");
-            presentation.currentSlide = 0;
-        }
-
-        function onLeave() {
-            console.log("QML Component (default slideshow) deactivated");
         }
     }
+
+    Slide {
+            anchors.fill: parent
+        Rectangle {
+            anchors.fill: parent
+            border.width: 0
+            color: "#2a2e32"
+            Image {
+                id: slide_discover
+                source: "slide-discover.png"
+                width: 1002; height: 651
+                fillMode: Image.PreserveAspectFit
+                anchors.fill: parent
+            }
+        }
+    }
+
+    function onActivate() {
+        console.log("QML Component (default slideshow) activated");
+        presentation.currentSlide = 0;
+    }
+
+    function onLeave() {
+        console.log("QML Component (default slideshow) deactivated");
+    }
+}
