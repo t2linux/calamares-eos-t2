@@ -7,7 +7,7 @@ welcomeExpandingLogo: true
 # windowExpanding: normal
 windowExpanding: noexpand
 
-windowSize: 1215px,715px
+windowSize: 1200px,715px
 
 windowPlacement: center
 
