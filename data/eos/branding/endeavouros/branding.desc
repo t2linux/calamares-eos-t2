@@ -4,8 +4,8 @@ welcomeStyleCalamares: false
 
 welcomeExpandingLogo: true
 
-windowExpanding: normal
-# windowExpanding: noexpand
+# windowExpanding: normal
+windowExpanding: noexpand
 
 windowSize: 1200px,715px
 

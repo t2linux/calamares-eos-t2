@@ -22,7 +22,7 @@ Presentation
 
         Image {
             id: background_1
-            source: "slide-trust.jpg"
+            source: "slide-trust.png"
             width: 1002; height: 651
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: parent
@@ -33,7 +33,7 @@ Presentation
 
         Image {
             id: background_2
-            source: "slide-welcome-app.jpg"
+            source: "slide-welcome-app.png"
             width: 1002; height: 651
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: parent
@@ -44,7 +44,7 @@ Presentation
 
         Image {
             id: background_4
-            source: "slide-discover.jpg"
+            source: "slide-discover.png"
             width: 1002; height: 651
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: parent
