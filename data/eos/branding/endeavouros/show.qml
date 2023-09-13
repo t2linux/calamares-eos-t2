@@ -37,7 +37,6 @@ Presentation
             Image {
                 id: slide_trust
                 source: "slide-trust.png"
-                width: 1002; height: 651
                 fillMode: Image.PreserveAspectFit
                 anchors.fill: parent
             }
@@ -53,7 +52,6 @@ Presentation
             Image {
                 id: slide_welcome_app
                 source: "slide-welcome-app.png"
-                width: 1002; height: 651
                 fillMode: Image.PreserveAspectFit
                 anchors.fill: parent
             }
@@ -69,7 +67,6 @@ Presentation
             Image {
                 id: slide_discover
                 source: "slide-discover.png"
-                width: 1002; height: 651
                 fillMode: Image.PreserveAspectFit
                 anchors.fill: parent
             }
