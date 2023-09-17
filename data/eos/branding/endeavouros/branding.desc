@@ -18,10 +18,10 @@ navigation: widget
 strings:
     productName:         EndeavourOS
     shortProductName:    EndeavourOS
-    version:             Cassini_nova
-    shortVersion:        Cassini_nova
-    versionedName:       EndeavourOS
-    shortVersionedName:  EndeavourOS
+    version:             ${release_name} ${version}
+    shortVersion:        ${version}
+    versionedName:       EndeavourOS ${release_name}
+    shortVersionedName:  ${release_name}
     bootloaderEntryName: EndeavourOS
 
 images:
