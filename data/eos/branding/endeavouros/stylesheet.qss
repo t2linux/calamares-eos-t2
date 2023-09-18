@@ -30,7 +30,7 @@ EndeavourOS Calamares Theme
 
 */
 
-/* ########## MAIN APPLICATION WINDOW ########## */
+/* # MAIN APPLICATION WINDOW # */
 
 #mainApp {
 	background-color:#2a2e32;
@@ -53,7 +53,7 @@ QDialogButtonBox {
 	dialogbuttonbox-buttons-have-icons: 0;
 }
 
-/* ########## BUTTONS GENERAL A/GENERAL B/SUBCATEGORY ########## */
+/* # BUTTONS GENERAL A/GENERAL B/SUBCATEGORY # */
 
 QPushButton {
 }
@@ -96,6 +96,40 @@ QPushButton:hover {
 
 #aboutButton:hover {
 	color: #7f3fbf;
+}
+
+/*
+# VALUES FOR PACKAGECHOOSER MODULE UI (packagechooser.conf) #
+products = left side values for the Desktops (id:)
+productScreenshot = the Desktop screenschot (screenshot:)
+productName = title of the right part over the screenschot (name:)
+productDescription  = description text (description:)
+*/
+
+#products {
+	color: #ffffff;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 5px;
+	font: 15px;
+}
+
+#productScreenshot {
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+#productName {
+	padding-left: 40px;
+	font: 24px;
+	color: #7f3fbf;
+}
+
+#productDescription {
+	padding-left: 40px;
+        padding-right: 40px;
+	font: 14px;
+	color: #ffffff;
 }
 
 /* Partitioning module.
