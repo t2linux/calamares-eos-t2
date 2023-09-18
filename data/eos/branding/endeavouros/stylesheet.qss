@@ -119,7 +119,7 @@ productDescription  = description text (description:)
 	padding-bottom: 1px;
 }
 
-/*set to same as main app background-color and 1px to hide it
+/*set to same as main app background-color and 1px to hide it*/
 #productName {
 	padding-left: 40px;
 	font: 1px;
