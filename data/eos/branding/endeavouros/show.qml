@@ -73,6 +73,21 @@ Presentation
         }
     }
 
+    Slide {
+           anchors.fill: parent
+        Rectangle {
+            anchors.fill: parent
+            border.width: 0
+            color: "#2a2e32"
+            Image {
+                id: slide_forum
+                source: "slide-forum.png"
+                fillMode: Image.PreserveAspectFit
+                anchors.fill: parent
+            }
+        }
+    }
+
     function onActivate() {
         console.log("QML Component (default slideshow) activated");
         presentation.currentSlide = 0;
