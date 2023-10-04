@@ -206,6 +206,7 @@
   critical: true
   packages:
     - cups
+    - cups-browsed
     - cups-filters
     - cups-pdf
     - foomatic-db
@@ -231,5 +232,6 @@
     - python-reportlab
     - xsane
     - cups
+    - cups-browsed
     - cups-filters
     - cups-pdf
