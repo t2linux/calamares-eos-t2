@@ -29,7 +29,7 @@ trq			tr	pc105		-		terminate:ctrl_alt_bksp
 trf			tr	pc105		f		terminate:ctrl_alt_bksp
 uk			gb	pc105		-		terminate:ctrl_alt_bksp
 is-latin1		is	pc105		-		terminate:ctrl_alt_bksp
-de			de	pc105		-		terminate:ctrl_alt_bksp
+#de			de	pc105		-		terminate:ctrl_alt_bksp
 de			at	pc105		-		terminate:ctrl_alt_bksp
 la-latin1		latam	pc105		-		terminate:ctrl_alt_bksp
 us			us	pc105+inet	-		terminate:ctrl_alt_bksp
