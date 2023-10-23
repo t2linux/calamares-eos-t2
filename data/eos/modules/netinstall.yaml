@@ -22,13 +22,10 @@
       selected: true
       packages:
         - xf86-video-amdgpu
-        - xf86-video-ati
     - name: Network
       description: "Network apps drivers and tools"
       selected: true
       packages:
-        - b43-fwcutter
-        - broadcom-wl-dkms
         - dhclient
         - dnsmasq
         - dnsutils
@@ -132,12 +129,11 @@
         - power-profiles-daemon
         - upower
     - name: "CPU specific microcode update packages"
-      description: "Microcode update image for AMD and Intel CPUs"
+      description: "Microcode update image for Intel CPU"
       hidden: false
       selected: true
       critical: false
       packages:
-        - amd-ucode
         - intel-ucode
 - name: "EndeavourOS applications"
   description: "EndeavourOS tools and applications"
@@ -196,8 +192,26 @@
   expanded: false
   critical: false
   packages:
-    - linux-lts
-    - linux-lts-headers
+    - linux-lts-t2
+    - linux-lts-t2-headers
+- name: "Xanmod Kernel in addition"
+  description: "Adding Xanmod Kernel in addition to main one"
+  hidden: false
+  selected: false
+  expanded: false
+  critical: false
+  packages:
+    - linux-xanmod-t2
+    - linux-xanmod-t2-headers
+- name: "Xanmod LTS Kernel in addition"
+  description: "Adding Xanmod LTS Kernel in addition to main one"
+  hidden: false
+  selected: false
+  expanded: false
+  critical: false
+  packages:
+    - linux-xanmod-lts-t2
+    - linux-xanmod-lts-t2-headers
 - name: "Printing support"
   description: "Support for printing (Cups)"
   hidden: false
