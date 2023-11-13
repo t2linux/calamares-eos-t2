@@ -223,6 +223,7 @@ Main() {
     logterminal "" --nh
 
     if [ $retval -eq 0 ] ; then
+        AdjustMirrorlist
         logterminal "Arch mirrorlist by $ranker:"
         logterminal "" --nh
         logterminal "$(cat $tf)" --nh
@@ -239,6 +240,18 @@ Main() {
 
     rm -f $tf
     return 0            # return $retval   # 0=OK, other is FAIL
+}
+
+AdjustMirrorlist() {
+    # Remove problematic mirrors from the generated mirrorlist.
+    # Add a unique part of each mirror to exclude it from the list.
+    # Separate mirrors with a '|' like: "osbeck|sakamoto|pidginhost"
+
+    local excluded="mirror.osbeck.com/archlinux"              # currently only one mirror excluded: osbeck
+
+    mv $tf $tf.tmp
+    cat $tf.tmp | grep -Pv "$excluded" > $tf
+    rm -f $tf.tmp
 }
 
 Main "$@"
