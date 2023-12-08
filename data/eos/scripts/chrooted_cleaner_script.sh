@@ -205,7 +205,7 @@ _clean_offline_packages(){
         gpart
         grsync
         hdparm
-		partitionmanager
+	partitionmanager
 
         # ENDEAVOUROS REPO
 
