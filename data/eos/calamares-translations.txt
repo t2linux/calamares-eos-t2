@@ -63,7 +63,7 @@ label:
  title[ko]: "꾸러미 (설치할 꾸러미를 살펴보고 선택을 할 수 있습니다)"
 
 ---
-
+(archived)
 https://github.com/endeavouros-team/calamares/blob/calamares/data/eos/modules/netinstall_community_base.conf
 label:
  sidebar: "Packages"
@@ -278,7 +278,7 @@ items:
 
 ---
 
-
+(archived)
 https://github.com/endeavouros-team/calamares/blob/calamares/data/eos/modules/packagechooser_ce.conf
 labels:
     step: "Editions"

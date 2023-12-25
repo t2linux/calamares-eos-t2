@@ -448,18 +448,19 @@ PartitionViewStep::onActivate()
     {
         // Alter GS based on prior module
         QString efiLocation;
-        QString bootLoader;
         bool efiChanged = false;
         bool luksChanged = false;
         if ( gs->contains( m_config->bootloaderVar() ) )
         {
-            bootLoader = gs->value( m_config->bootloaderVar() ).toString();
-            cDebug() << "The bootloader is " << bootLoader;
-            if ( bootLoader.toLower() == "grub" )
+            m_bootloader = gs->value( m_config->bootloaderVar() ).toString();
+            gs->insert( "curBootloader", m_bootloader );
+
+            cDebug() << "The bootloader is " << m_bootloader;
+            if ( m_bootloader.toLower() == "grub" )
             {
                 efiLocation = "/boot/efi";
             }
-            else if ( bootLoader.toLower() == "refind" )
+            else if ( m_bootloader.toLower() == "refind" )
             {
                 efiLocation = "/boot";
             }
@@ -480,7 +481,7 @@ PartitionViewStep::onActivate()
         // Set the luks type
         Config::LuksGeneration currentLuks = m_config->luksFileSystemType();
         const Config::LuksGeneration newLuks
-            = bootLoader == "grub" ? Config::LuksGeneration::Luks1 : Config::LuksGeneration::Luks2;
+            = m_bootloader == "grub" ? Config::LuksGeneration::Luks1 : Config::LuksGeneration::Luks2;
 
         if ( newLuks != currentLuks )
         {

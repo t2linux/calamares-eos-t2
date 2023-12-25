@@ -82,7 +82,6 @@ Item {
     property color textColor: "black"
     property string fontFamily: "Helvetica"
     property string codeFontFamily: "Courier New"
-    property color backgroundColor: "#2a2e32"
 
     // This is set by the C++ part of Calamares when the slideshow
     // becomes visible. You can connect it to a timer, or whatever
