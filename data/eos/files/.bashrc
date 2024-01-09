@@ -59,6 +59,3 @@ _open_files_for_editing() {
 # alias ef='_open_files_for_editing'     # 'ef' opens given file(s) for editing
 # alias pacdiff=eos-pacdiff
 ################################################################################
-
-alias upgrade='sudo reflector --age 2 --number 23 --country DE,US,NL --save /etc/pacman.d/mirrorlist && sudo eos-rankmirrors && yay'
-alias unused='sudo pacman -Rns $(pacman -Qtdq)'
