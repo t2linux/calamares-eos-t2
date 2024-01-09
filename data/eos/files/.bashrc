@@ -1,35 +1,10 @@
 #
 # ~/.bashrc
 #
+# EndeavourOS default bashrc (2024)
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
-
-[[ -f ~/.welcome_screen ]] && . ~/.welcome_screen
-
-_set_liveuser_PS1() {
-    PS1='[\u@\h \W]\$ '
-    if [ "$(whoami)" = "liveuser" ] ; then
-        local iso_version="$(grep ^VERSION= /usr/lib/endeavouros-release 2>/dev/null | cut -d '=' -f 2)"
-        if [ -n "$iso_version" ] ; then
-            local prefix="eos-"
-            local iso_info="$prefix$iso_version"
-            PS1="[\u@$iso_info \W]\$ "
-        fi
-    fi
-}
-_set_liveuser_PS1
-unset -f _set_liveuser_PS1
-
-ShowInstallerIsoInfo() {
-    local file=/usr/lib/endeavouros-release
-    if [ -r $file ] ; then
-        cat $file
-    else
-        echo "Sorry, installer ISO info is not available." >&2
-    fi
-}
-
 
 alias ls='ls --color=auto'
 alias ll='ls -lav --ignore=..'   # show long listing of all except ".."
@@ -48,8 +23,8 @@ bind '"\e[B":history-search-forward'
 ## Some generally useful functions.
 ## Consider uncommenting aliases below to start using these functions.
 ##
-## October 2021: removed many obsolete functions. If you still need them, please look at
-## https://github.com/EndeavourOS-archive/EndeavourOS-archiso/raw/master/airootfs/etc/skel/.bashrc
+## October 2021: removed many obsolete functions.
+
 
 _open_files_for_editing() {
     # Open any given document file(s) for editing (or just viewing).
