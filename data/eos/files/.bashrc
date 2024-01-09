@@ -10,6 +10,9 @@ alias ls='ls --color=auto'
 alias ll='ls -lav --ignore=..'   # show long listing of all except ".."
 alias l='ls -lav --ignore=.?*'   # show long listing but no hidden dotfiles except "."
 
+# prompt
+PS1='[\[\e[1m\]\u\[\e[0m\]@\h:\[\e[1m\]\w\[\e[0m\]] \$'
+
 [[ "$(whoami)" = "root" ]] && return
 
 [[ -z "$FUNCNEST" ]] && export FUNCNEST=100          # limits recursive functions, see 'man bash'
