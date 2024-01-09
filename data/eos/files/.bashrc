@@ -24,6 +24,7 @@ bind '"\e[B":history-search-forward'
 ## Consider uncommenting aliases below to start using these functions.
 ##
 ## October 2021: removed many obsolete functions.
+## January 2024: seperate target bashrc from livesession
 
 
 _open_files_for_editing() {
