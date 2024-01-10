@@ -11,7 +11,7 @@ alias ll='ls -lav --ignore=..'   # show long listing of all except ".."
 alias l='ls -lav --ignore=.?*'   # show long listing but no hidden dotfiles except "."
 
 # prompt
-PS1='[\[\e[1m\]\u\[\e[0m\]@\h:\[\e[1m\]\w\[\e[0m\]] \$'
+PS1='[\[\e[1m\]\u\[\e[0m\]@\h:\[\e[1m\]\w\[\e[0m\]]\$ '
 
 [[ "$(whoami)" = "root" ]] && return
 
