@@ -15,6 +15,8 @@ alias l='ls -lav --ignore=.?*'                # show long listing but no hidden 
 
 # prompt
 PS1='[\[\e[1m\]\u\[\e[0m\]@\h:\[\e[1m\]\w\[\e[0m\]]\$ '
+# eos-colored prompt
+# PS1='\[\e[38;5;132m\]\u\[\e[38;5;19m\]@\[\e[38;5;33m\]\h \[\e[38;5;14m\]\w \[\033[0m\]$ '
 
 [ "$(whoami)" = "root" ] && return            # root stops here
 
