@@ -392,11 +392,23 @@ _run_if_exists_or_complain() {
 }
 
 _RunUserCommands() {
-    local usercmdfile=/tmp/user_commands.bash
-    if [ -r $usercmdfile ] ; then
-        _c_c_s_msg info "running script $(basename $usercmdfile)"
-        bash $usercmdfile $NEW_USER
-    fi
+    # Executes only the first of: user-commands-end.bash, user_commands.bash (if found).
+    local usercmdfile
+
+    for usercmdfile in /tmp/user-commands-end.bash   /tmp/user_commands.bash
+    do
+        if [ -e $usercmdfile ] ; then
+            _c_c_s_msg info "running script ${usercmdfile##*/}"
+
+            # ad hoc validity check
+            case "$NEW_USER" in
+                offline | online | community) _c_c_s_msg suspicious "${usercmdfile##*/} called with parameter '$NEW_USER'" ;;
+            esac
+
+            bash $usercmdfile $NEW_USER
+            break
+        fi
+    done
 }
 
 _misc_cleanups() {
