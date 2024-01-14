@@ -331,6 +331,8 @@ _install_extra_drivers_to_target() {
         else
             # Install r8168 package from the mirrors.
             _install_needed_packages r8168
+	    # Handle the r8168-lts package if LTS is installed.
+            [[ $(pacman -Q linux-lts  2</dev/null) ]] &&  _install_needed_packages r8168-lts
         fi
     fi
 }
