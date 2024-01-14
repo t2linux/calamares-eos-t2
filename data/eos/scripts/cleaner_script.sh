@@ -88,11 +88,8 @@ _copy_files(){
     echo "nvidia_card=$card"     >> $nvidia_file
     echo "nvidia_driver=$driver" >> $nvidia_file
 
-    # If found, copy user_commands.bash and/or user-commands-end.bash to target.
-    local fff
-    for fff in user_commands.bash user-commands-end.bash ; do
-        [ -e "/home/liveuser/$fff" ] && _CopyFileToTarget /home/liveuser/$fff   $target/tmp
-    done
+    # copy user_commands.bash to target
+    _CopyFileToTarget /home/liveuser/user_commands.bash $target/tmp
 
     # copy 30-touchpad.conf Xorg config file
     _cleaner_msg info "copying 30-touchpad.conf to target"
