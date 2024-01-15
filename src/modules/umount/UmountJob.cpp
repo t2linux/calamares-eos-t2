@@ -78,6 +78,18 @@ unmountTargetMounts( const QString& rootMountPoint )
                     .arg( m.device, m.mountPoint ) );
         }
     }
+
+    // Last we unmount the root
+    if ( CalamaresUtils::Partition::unmount( rootMountPoint, { "-lv" } ) != 0 )
+    {
+        return Calamares::JobResult::error(
+            QCoreApplication::translate( UmountJob::staticMetaObject.className(),
+                                         "Could not unmount target system." ),
+            QCoreApplication::translate( UmountJob::staticMetaObject.className(),
+                                         "The device mounted at %1 could not be unmounted." )
+                .arg( rootMountPoint ) );
+    }
+
     return Calamares::JobResult::ok();
 }
 
