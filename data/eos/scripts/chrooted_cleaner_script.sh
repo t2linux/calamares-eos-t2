@@ -393,17 +393,17 @@ _run_if_exists_or_complain() {
     fi
 }
 
-_RunUserCommands() {
-    local usercmdfile=/tmp/user_commands.bash
-    if [ -r $usercmdfile ] ; then
-        _c_c_s_msg info "running script ${usercmdfile##*/}"
-        # ad hoc validity check
-        case "$NEW_USER" in
-            -* | offline | online | community) _c_c_s_msg warning "${usercmdfile##*/} called with parameter '$NEW_USER'" ;;
-        esac
-        bash $usercmdfile $NEW_USER
-    fi
-}
+#_RunUserCommands() {
+#    local usercmdfile=/tmp/user_commands.bash
+#    if [ -r $usercmdfile ] ; then
+#        _c_c_s_msg info "running script ${usercmdfile##*/}"
+#        # ad hoc validity check
+#        case "$NEW_USER" in
+#            -* | offline | online | community) _c_c_s_msg warning "${usercmdfile##*/} called with parameter '$NEW_USER'" ;;
+#        esac
+#        bash $usercmdfile $NEW_USER
+#    fi
+#}
 
 _misc_cleanups() {
     # /etc/resolv.conf.pacnew may be unnecessary, so delete it
@@ -448,7 +448,7 @@ _clean_up(){
     [ -r /var/log/Calamares.log ]         && chown root:root /var/log/Calamares.log
 
     # run possible user-given commands
-    _RunUserCommands
+    # _RunUserCommands     # this is in calamares directly now
 }
 
 _show_info_about_installed_system() {
