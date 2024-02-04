@@ -112,14 +112,28 @@ RunCmd() {
     UseBestMirrorsIfAvailable
 
     if [ -x /usr/bin/rate-mirrors ] ; then
+
+        # ad hoc failure test for rate-mirrors because it exits with 0 always
+        local err_strings=("NO RESULTS TO RE-TEST"
+                           "FAILED TO TEST SPEEDS, RETURNING UNTESTED MIRRORS"
+                          )
+        local str
+        for str in "${err_strings[@]}" ; do
+            if grep "$str" $tf >/dev/null ; then
+                logterminal "$progname: rate-mirrors failed ($str)."
+                retval=1
+                return    # now we simply use the mirrorlist in the ISO
+            fi
+        done
+
         grep '^Server = ' $tf > $tf.tmp
         mv $tf.tmp $tf
     fi
 }
 
 Main() {
-    local VERSION="2.1"                   # started from 2.0!
-    local progname="$(basename "$0")"
+    local VERSION="2.2"                   # started from 2.0!
+    local progname="${0##*/}"
     local mf=/etc/pacman.d/mirrorlist
     local bu=/tmp/mirrorlist.bu             # original mirrorlist, saved by Welcome
 

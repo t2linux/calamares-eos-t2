@@ -331,6 +331,8 @@ _install_extra_drivers_to_target() {
         else
             # Install r8168 package from the mirrors.
             _install_needed_packages r8168
+	    # Handle the r8168-lts package if LTS is installed.
+            [[ $(pacman -Q linux-lts  2</dev/null) ]] &&  _install_needed_packages r8168-lts
         fi
     fi
 }
@@ -391,13 +393,17 @@ _run_if_exists_or_complain() {
     fi
 }
 
-_RunUserCommands() {
-    local usercmdfile=/tmp/user_commands.bash
-    if [ -r $usercmdfile ] ; then
-        _c_c_s_msg info "running script $(basename $usercmdfile)"
-        bash $usercmdfile $NEW_USER
-    fi
-}
+#_RunUserCommands() {
+#    local usercmdfile=/tmp/user_commands.bash
+#    if [ -r $usercmdfile ] ; then
+#        _c_c_s_msg info "running script ${usercmdfile##*/}"
+#        # ad hoc validity check
+#        case "$NEW_USER" in
+#            -* | offline | online | community) _c_c_s_msg warning "${usercmdfile##*/} called with parameter '$NEW_USER'" ;;
+#        esac
+#        bash $usercmdfile $NEW_USER
+#    fi
+#}
 
 _misc_cleanups() {
     # /etc/resolv.conf.pacnew may be unnecessary, so delete it
@@ -441,7 +447,7 @@ _clean_up(){
     [ -r /var/log/Calamares.log ]         && chown root:root /var/log/Calamares.log
 
     # run possible user-given commands
-    _RunUserCommands
+    # _RunUserCommands     # this is in calamares directly now
 }
 
 _show_info_about_installed_system() {

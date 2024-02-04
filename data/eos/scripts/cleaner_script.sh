@@ -88,7 +88,7 @@ _copy_files(){
     echo "nvidia_card=$card"     >> $nvidia_file
     echo "nvidia_driver=$driver" >> $nvidia_file
 
-    # copy user_commands.bash
+    # copy user_commands.bash to target
     _CopyFileToTarget /home/liveuser/user_commands.bash $target/tmp
 
     # copy 30-touchpad.conf Xorg config file
