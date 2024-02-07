@@ -73,7 +73,6 @@ _copy_files(){
     local card=no
     local driver=no
     local lspci="$(lspci -k)"
-    local latest_nvidia_series=495     # TODO: this number must be changed when Arch changes the Nvidia driver series number !!!
 
     if [ -n "$(echo "$lspci" | grep -P 'VGA|3D|Display' | grep -w NVIDIA)" ] ; then
         card=yes
