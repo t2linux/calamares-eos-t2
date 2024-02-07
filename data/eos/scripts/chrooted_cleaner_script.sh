@@ -266,7 +266,7 @@ _remove_ucode(){
 }
 
 _remove_other_graphics_drivers() {
-    local graphics="$(device-info --vga ; device-info --display)"
+    local graphics="$(device-info --graphics)"
     local amd=no
 
     # remove AMD graphics driver if it is not needed
