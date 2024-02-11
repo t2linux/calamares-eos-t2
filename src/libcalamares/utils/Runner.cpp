@@ -41,7 +41,6 @@ relativeChangeDirectory( QDir& directory, const QString& subdir )
     return directory.cd( relPath );
 }
 
-
 STATICTEST std::pair< bool, QDir >
 calculateWorkingDirectory( Calamares::Utils::RunLocation location, const QString& directory )
 {
@@ -98,10 +97,8 @@ namespace Utils
 
 Runner::Runner() {}
 
-
 }  // namespace Utils
 }  // namespace Calamares
-
 
 Calamares::Utils::Runner::Runner( const QStringList& command )
 {
@@ -131,6 +128,14 @@ Calamares::Utils::Runner::run()
     {
         auto env = QProcessEnvironment::systemEnvironment();
         env.insert( "LC_ALL", "C" );
+        // No guarantees that host settings for /tmp/ make sense in target
+        if ( m_location == RunLocation::RunInTarget )
+        {
+            env.remove( "TEMP" );
+            env.remove( "TEMPDIR" );
+            env.remove( "TMP" );
+            env.remove( "TMPDIR" );
+        }
         process.setProcessEnvironment( env );
     }
     process.setProcessChannelMode( QProcess::MergedChannels );
