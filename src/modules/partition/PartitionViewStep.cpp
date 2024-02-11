@@ -630,7 +630,6 @@ PartitionViewStep::onLeave()
             const bool okFlag = esp && PartUtils::isEfiBootable( esp );
 
             const bool espExistsButIsWrong = esp && !( okType && okMinimumSize && okFlag );
-            else if ( !( okType && okFlag ) )
 
             const QString genericWrongnessMessage = tr( "An EFI system partition is necessary to start %1."
                                                         "<br/><br/>"

@@ -802,7 +802,7 @@ ChoicePage::doAlongsideApply()
             if ( PartUtils::isEfiSystem() && isNewEfiSelected() )
             {
                 qint64 uefisys_part_sizeB = PartUtils::efiFilesystemMinimumSize();
-                qint64 efiSectorCount = CalamaresUtils::bytesToSectors( uefisys_part_sizeB, dev->logicalSize() );
+                qint64 efiSectorCount = Calamares::bytesToSectors( uefisys_part_sizeB, dev->logicalSize() );
                 Q_ASSERT( efiSectorCount > 0 );
 
                 // Since sectors count from 0, and this partition is created starting
@@ -1269,7 +1269,6 @@ ChoicePage::setupEfiSystemPartitionSelector()
                                  .arg( Calamares::Branding::instance()->shortProductName() ) );
         updateNextEnabled();
     }
-                                 "starting %2.", "@info, %1 is partition path, %2 is product name" )
     else
     {
         m_efiComboBox->show();

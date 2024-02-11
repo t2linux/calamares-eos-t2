@@ -80,7 +80,7 @@ unmountTargetMounts( const QString& rootMountPoint )
     }
 
     // Last we unmount the root
-    if ( CalamaresUtils::Partition::unmount( rootMountPoint, { "-lv" } ) != 0 )
+    if ( Calamares::Partition::unmount( rootMountPoint, { "-lv" } ) != 0 )
     {
         return Calamares::JobResult::error(
             QCoreApplication::translate( UmountJob::staticMetaObject.className(),

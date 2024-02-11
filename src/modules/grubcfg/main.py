@@ -152,6 +152,9 @@ def modify_grub_default(partitions, root_mount_point, distributor):
     uses_systemd_hook = libcalamares.utils.target_env_call(
         ["sh", "-c", "grep -q \"^HOOKS.*systemd\" /etc/mkinitcpio.conf"]
         ) == 0
+
+    try:
+        gpu_drivers = libcalamares.globalstorage.value("gpuDrivers")
     except KeyError:
         pass
 

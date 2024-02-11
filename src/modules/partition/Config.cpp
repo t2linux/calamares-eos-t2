@@ -324,8 +324,8 @@ fillGSConfigurationEFI( Calamares::GlobalStorage* gs, const QVariantMap& configu
         if ( !efiMinimumSize.isEmpty() )
     if ( configurationMap.contains( "efiSystemPartitionMinSize" ) )
     {
-        const QString sizeString = CalamaresUtils::getString( configurationMap, "efiSystemPartitionMinSize" );
-        CalamaresUtils::Partition::PartitionSize part_size = CalamaresUtils::Partition::PartitionSize( sizeString );
+        const QString sizeString = Calamares::getString( configurationMap, "efiSystemPartitionMinSize" );
+        Calamares::Partition::PartitionSize part_size = Calamares::Partition::PartitionSize( sizeString );
         if ( part_size.isValid() )
         {
             // Insert once as string, once as a size-in-bytes;
@@ -471,7 +471,7 @@ Config::setConfigurationMap( const QVariantMap& configurationMap )
     m_showNotEncryptedBootMessage = Calamares::getBool( configurationMap, "showNotEncryptedBootMessage", true );
     m_requiredPartitionTableType = Calamares::getStringList( configurationMap, "requiredPartitionTableType" );
 
-    m_bootloaderVar = CalamaresUtils::getString( configurationMap, "efiBootLoaderVar", "" );
+    m_bootloaderVar = Calamares::getString( configurationMap, "efiBootLoaderVar", "" );
 
     Calamares::GlobalStorage* gs = Calamares::JobQueue::instance()->globalStorage();
     gs->insert( "armInstall", Calamares::getBool( configurationMap, "armInstall", false ) );
