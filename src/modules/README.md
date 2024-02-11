@@ -1,4 +1,6 @@
 ### Documentation on why we are using this modified versions will follow here:
+Python modules (it is implemented in C++ and injected into the Python
+environment by Calamares).
 
 
 1. **copy_kernel:** *unused* now a shellprocess: [shellprocess_ck.conf](https://github.com/endeavouros-team/EndeavourOS-calamares/blob/main/calamares/modules/shellprocess_ck.conf)

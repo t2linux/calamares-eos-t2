@@ -42,8 +42,8 @@
 #include <QRegularExpressionValidator>
 #include <QSet>
 
-using CalamaresUtils::Partition::untranslatedFS;
-using CalamaresUtils::Partition::userVisibleFS;
+using Calamares::Partition::untranslatedFS;
+using Calamares::Partition::userVisibleFS;
 
 static QSet< FileSystem::Type > s_unmountableFS( { FileSystem::Unformatted,
                                                    FileSystem::LinuxSwap,
@@ -63,7 +63,7 @@ CreatePartitionDialog::CreatePartitionDialog( Device* device,
     , m_usedMountPoints( usedMountPoints )
 {
     m_ui->setupUi( this );
-    m_ui->encryptWidget->setText( tr( "En&crypt" ) );
+    m_ui->encryptWidget->setText( tr( "En&crypt", "@action" ) );
     m_ui->encryptWidget->hide();
 
     if ( m_device->type() != Device::Type::LVM_Device )
@@ -191,12 +191,12 @@ CreatePartitionDialog::initMbrPartitionTypeUi()
     if ( !parentIsPartitionTable )
     {
         m_role = PartitionRole( PartitionRole::Logical );
-        fixedPartitionString = tr( "Logical" );
+        fixedPartitionString = tr( "Logical", "@label" );
     }
     else if ( m_device->partitionTable()->hasExtended() )
     {
         m_role = PartitionRole( PartitionRole::Primary );
-        fixedPartitionString = tr( "Primary" );
+        fixedPartitionString = tr( "Primary", "@label" );
     }
 
     if ( fixedPartitionString.isEmpty() )
@@ -215,7 +215,7 @@ void
 CreatePartitionDialog::initGptPartitionTypeUi()
 {
     m_role = PartitionRole( PartitionRole::Primary );
-    m_ui->fixedPartitionLabel->setText( tr( "GPT" ) );
+    m_ui->fixedPartitionLabel->setText( tr( "GPT", "@label" ) );
     m_ui->primaryRadioButton->hide();
     m_ui->extendedRadioButton->hide();
 }
@@ -249,16 +249,17 @@ CreatePartitionDialog::getNewlyCreatedPartition()
     if ( m_ui->encryptWidget->state() == EncryptWidget::Encryption::Confirmed && !luksPassphrase.isEmpty()
          && fsType != FileSystem::Zfs )
     {
-        partition = KPMHelpers::createNewEncryptedPartition( m_parent,
-                                                             *m_device,
-                                                             m_role,
-                                                             fsType,
-                                                             fsLabel,
-                                                             first,
-                                                             last,
-                                                             Config::luksGenerationNames().find(luksFsType, Config::LuksGeneration::Luks1),
-                                                             luksPassphrase,
-                                                             PartitionTable::Flags() );
+        partition = KPMHelpers::createNewEncryptedPartition(
+            m_parent,
+            *m_device,
+            m_role,
+            fsType,
+            fsLabel,
+            first,
+            last,
+            Config::luksGenerationNames().find( luksFsType, Config::LuksGeneration::Luks1 ),
+            luksPassphrase,
+            PartitionTable::Flags() );
     }
     else
     {
@@ -345,7 +346,7 @@ CreatePartitionDialog::checkMountPointSelection()
 void
 CreatePartitionDialog::initPartResizerWidget( Partition* partition )
 {
-    QColor color = CalamaresUtils::Partition::isPartitionFreeSpace( partition )
+    QColor color = Calamares::Partition::isPartitionFreeSpace( partition )
         ? ColorUtils::colorForPartitionInFreeSpace( partition )
         : ColorUtils::colorForPartition( partition );
     m_partitionSizeController->init( m_device, partition, color );
