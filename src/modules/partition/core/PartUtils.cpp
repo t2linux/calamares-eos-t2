@@ -569,16 +569,21 @@ efiFilesystemMinimumSize()
 {
     const QString key = efiFilesystemMinimumSizeGSKey();
 
-    qint64 uefisys_part_sizeB = efiFilesystemRecommendedSize();
+    qint64 uefisys_part_sizeB = 0;
 
     // The default can be overridden; the key used here comes
     // from the partition module Config.cpp
     auto* gs = Calamares::JobQueue::instance()->globalStorage();
     if ( gs->contains( key ) )
     {
-        qint64 v = gs->value( key ).toLongLong();
-        uefisys_part_sizeB = v > 0 ? v : 0;
+        // Ignore the minimum size when grub is the bootloader
+        if ( !gs->contains( "curBootloader" ) || gs->value( "curBootloader" ).toString().toLower() != "grub" )
+        {
+            qint64 v = gs->value( key ).toLongLong();
+            uefisys_part_sizeB = v > 0 ? v : 0;
+        }
     }
+
     // There is a lower limit of what can be configured
     if ( uefisys_part_sizeB < efiSpecificationHardMinimumSize )
     {

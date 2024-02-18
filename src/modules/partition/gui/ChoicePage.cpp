@@ -1276,13 +1276,10 @@ ChoicePage::setupEfiSystemPartitionSelector()
         for ( int i = 0; i < efiSystemPartitions.count(); ++i )
         {
             Partition* efiPartition = efiSystemPartitions.at( i );
-            m_efiComboBox->addItem( efiPartition->partitionPath(), i );
-            
             if ( gs->contains( "curBootloader" )
                  && gs->value( "curBootloader" ).toString().trimmed() == QStringLiteral( "systemd-boot" ) )
             {
-                qint64 minEspSize = gs->value( "efiSystemPartitionMinSize_i" ).toLongLong();
-                if ( efiPartition->capacity() < minEspSize )
+                if ( efiPartition->capacity() < PartUtils::efiFilesystemMinimumSize() )
                 {
                     continue;
                 }

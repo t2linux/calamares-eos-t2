@@ -701,11 +701,6 @@ PartitionViewStep::onLeave()
                 description.append( endList );
                 description.append( mayFail );
             }
-            else if ( !okRecommendedSize )
-            {
-                message = tr( "EFI system partition recommendation" );
-                description = genericRecommendationMessage + suggestConfiguredSize + possibleFail;
-            }
 
             if ( !message.isEmpty() )
             {
