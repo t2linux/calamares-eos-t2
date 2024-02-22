@@ -555,9 +555,9 @@ ChoicePage::applyActionChoice( InstallChoice choice )
                 this );
         }
         connect( m_beforePartitionBarsView->selectionModel(),
-                 SIGNAL( currentRowChanged( QModelIndex, QModelIndex ) ),
+                 &QItemSelectionModel::currentRowChanged,
                  this,
-                 SLOT( onPartitionToReplaceSelected( QModelIndex, QModelIndex ) ),
+                 &ChoicePage::onPartitionToReplaceSelected,
                  Qt::UniqueConnection );
 
         // Maintain the selection for replace
@@ -588,9 +588,9 @@ ChoicePage::applyActionChoice( InstallChoice choice )
         }
 
         connect( m_beforePartitionBarsView->selectionModel(),
-                 SIGNAL( currentRowChanged( QModelIndex, QModelIndex ) ),
+                 &QItemSelectionModel::currentRowChanged,
                  this,
-                 SLOT( doAlongsideSetupSplitter( QModelIndex, QModelIndex ) ),
+                 &ChoicePage::doAlongsideSetupSplitter,
                  Qt::UniqueConnection );
         break;
     case InstallChoice::NoChoice:
