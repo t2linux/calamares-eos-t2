@@ -29,7 +29,6 @@
       packages:
         - b43-fwcutter
         - broadcom-wl-dkms
-        - dhclient
         - dnsmasq
         - dnsutils
         - ethtool
