@@ -732,11 +732,6 @@ ChoicePage::onLeave()
                 cError() << "No valid efi partition found matching the selected partition" << Qt::endl;
             }
         }
-        else if ( !isNewEfiSelected() )
-        {
-            cError() << "cannot set up EFI system partition.\nESP count:" << efiSystemPartitions.count()
-                     << "\nm_efiComboBox:" << m_efiComboBox;
-        }
     }
     else  // installPath is then passed to the bootloader module for MBR setup
     {
@@ -801,7 +796,7 @@ ChoicePage::doAlongsideApply()
             // Add an EFI partition if required
             if ( PartUtils::isEfiSystem() && isNewEfiSelected() )
             {
-                qint64 uefisys_part_sizeB = PartUtils::efiFilesystemMinimumSize();
+                qint64 uefisys_part_sizeB = PartUtils::efiFilesystemRecommendedSize();
                 qint64 efiSectorCount = Calamares::bytesToSectors( uefisys_part_sizeB, dev->logicalSize() );
                 Q_ASSERT( efiSectorCount > 0 );
 
