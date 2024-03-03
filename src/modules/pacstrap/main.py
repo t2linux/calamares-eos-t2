@@ -47,12 +47,9 @@ def line_cb(line):
     :param line: The line of output text from the command
     """
     global custom_status_message
-    global status_update_time
     custom_status_message = line.strip()
     libcalamares.utils.debug("pacstrap: " + line.strip())
-    if (time.time() - status_update_time) > 0.5:
-        libcalamares.job.setprogress(0)
-        status_update_time = time.time()
+    libcalamares.job.setprogress(0)
 
 
 def run_in_host(command, line_func):

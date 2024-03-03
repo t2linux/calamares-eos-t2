@@ -434,14 +434,11 @@ class PMPacman(PackageManager):
                     # progress percentage, since there may be more "installing..."
                     # lines in the output for the group, than packages listed
                     # explicitly. We don't know how to calculate proper progress.
-                    if (time.time() - self.status_update_time) > 0.5:
-                        global custom_status_message
-                        custom_status_message = "pacman: " + line.strip()
-                        self.status_update_time = time.time()
-                        libcalamares.job.setprogress(self.progress_fraction)
+                    global custom_status_message
+                    custom_status_message = "pacman: " + line.strip()
+                    libcalamares.job.setprogress(self.progress_fraction)
             libcalamares.utils.debug(line.strip())
 
-        self.status_update_time = 0
         self.in_package_changes = False
         self.line_cb = line_cb
 
