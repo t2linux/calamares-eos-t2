@@ -180,6 +180,14 @@
   packages:
     - firefox
     - firefox-i18n-$LOCALE
+- name: "Spell Checker and language package"
+  description: "Add spell check and language pack if possible"
+  hidden: false
+  selected: true
+  critical: false
+  packages:
+    - aspell
+    - aspell-$LOCALE
 - name: Firewall
   description: "Firewall installed and enabled"
   selected: true
