@@ -25,8 +25,14 @@ _pkg_msg() {            # use this to provide all package management messages (i
     echo "==> $op $pkgs"
 }
 
-_check_internet_connection(){
-    eos-connection-checker
+_check_internet_connection() {
+    case "$_CHROOTED_HAS_CONNECTION" in
+        yes) return 0 ;;
+        no)  return 1 ;;
+        *)   eos-connection-checker && _CHROOTED_HAS_CONNECTION=yes || _CHROOTED_HAS_CONNECTION=no
+             _check_internet_connection
+             ;;
+    esac
 }
 
 _is_pkg_installed() {  # this is not meant for offline mode !?
@@ -57,11 +63,15 @@ _remove_pkgs_if_installed() {  # this is not meant for offline mode !?
 }
 
 _install_needed_packages() {
-    if eos-connection-checker ; then
-        _pkg_msg install "if missing: $*"
-        pacman -S --needed --noconfirm "$@"
+    if _is_online_mode ; then
+        if _check_internet_connection ; then
+            _pkg_msg install "if missing: $*"
+            pacman -S --needed --noconfirm "$@"
+        else
+            _c_c_s_msg warning "no internet connection, cannot install packages $*"
+        fi
     else
-        _c_c_s_msg warning "no internet connection, cannot install packages $*"
+        _c_c_s_msg warning "offline mode, not installing packages $*"
     fi
 }
 
@@ -265,7 +275,7 @@ _remove_ucode(){
     _remove_a_pkg "$ucode"
 }
 
-_remove_other_graphics_drivers() {
+_manage_other_graphics_drivers() {
     local graphics="$(device-info --graphics)"
     local amd=no
 
@@ -277,10 +287,15 @@ _remove_other_graphics_drivers() {
     elif [ -n "$(echo "$graphics" | grep "Radeon")" ] ; then
         amd=yes
     fi
-    if [ "$amd" = "no" ] ; then
-        _remove_a_pkg xf86-video-amdgpu
-        _remove_a_pkg xf86-video-ati
-    fi
+    case "$amd" in
+        no)
+            _remove_a_pkg xf86-video-amdgpu
+            _remove_a_pkg xf86-video-ati
+            ;;
+        yes)
+            # _install_needed_packages vulkan-radeon   # vulkan is beyond scope here...
+            ;;
+    esac
 }
 
 _remove_broadcom_wifi_driver_old() {
@@ -421,8 +436,8 @@ _clean_up(){
     # install or remove nvidia graphics stuff
     _manage_nvidia_packages
 
-    # remove AMD and Intel graphics drivers if they are not needed
-    _remove_other_graphics_drivers
+    # install or remove AMD and Intel graphics stuff if needed
+    _manage_other_graphics_drivers
 
     # remove broadcom-wl-dkms if it is not needed
     _remove_broadcom_wifi_driver
@@ -481,6 +496,8 @@ _run_hotfix_end() {
 Main() {
     local filename=chrooted_cleaner_script.sh
 
+    local _CHROOTED_HAS_CONNECTION=""
+    
     _c_c_s_msg info "$filename started."
 
     local i
