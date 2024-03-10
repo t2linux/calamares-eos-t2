@@ -484,6 +484,7 @@ PartitionViewStep::onActivate()
         if ( newLuks != currentLuks )
         {
             m_config->setLuksFileSystemType( newLuks );
+            gs->insert( "luksFileSystemType", Config::luksGenerationNames().find( newLuks ) );
             luksChanged = true;
         }
 
