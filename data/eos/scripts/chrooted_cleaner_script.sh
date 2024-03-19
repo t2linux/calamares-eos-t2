@@ -498,7 +498,7 @@ Main() {
 
     local _CHROOTED_HAS_CONNECTION=""
     
-    _c_c_s_msg info "$filename started."
+    _c_c_s_msg info "$filename started, parameters: $*"
 
     local i
     local NEW_USER="" INSTALL_TYPE="" BOOTLOADER=""
