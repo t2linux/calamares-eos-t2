@@ -213,6 +213,7 @@ _clean_offline_packages(){
         ## Live iso tools
         clonezilla
         gpart
+	gparted
         grsync
         hdparm
         partitionmanager
