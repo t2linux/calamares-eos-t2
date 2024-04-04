@@ -371,7 +371,7 @@ _remove_nvidia_drivers() {
 
     if _is_offline_mode ; then
         # delete packages separately to avoid all failing if one fails
-        [ -r /usr/share/licenses/nvidia-dkms/LICENSE ]      && _nvidia_remove nvidia-dkms
+        [ -r /usr/share/licenses/nvidia/LICENSE ]      && _nvidia_remove nvidia
         [ -x /usr/bin/nvidia-modprobe ]                     && _nvidia_remove nvidia-utils
         [ -x /usr/bin/nvidia-settings ]                     && _nvidia_remove nvidia-settings
         [ -x /usr/bin/nvidia-inst ]                         && _nvidia_remove nvidia-inst
@@ -393,7 +393,7 @@ _manage_nvidia_packages() {
         if [ "$nvidia_driver" = "no" ] ; then
             _remove_nvidia_drivers
         elif [ "$nvidia_card" = "yes" ] ; then
-            _install_needed_packages nvidia-inst nvidia-hook nvidia-dkms
+            _install_needed_packages nvidia-inst nvidia-hook nvidia
         fi
     fi
 }
