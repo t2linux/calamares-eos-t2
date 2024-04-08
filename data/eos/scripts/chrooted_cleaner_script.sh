@@ -395,7 +395,6 @@ _manage_nvidia_packages() {
         elif [ "$nvidia_card" = "yes" ] ; then
             _install_needed_packages nvidia-inst nvidia
 	    [[ $(pacman -Q linux-lts  2</dev/null) ]] &&  _install_needed_packages nvidia-lts
-            dracut-rebuild
 	    _install_needed_packages nvidia-hook
         fi
     fi
