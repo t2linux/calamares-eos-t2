@@ -226,9 +226,7 @@ _clean_offline_packages(){
         ## Calamares EndeavourOS
         $(pacman -Qq | grep calamares)        # finds calamares related packages
         ckbcomp
-
-        # arm qemu dependency
-        qemu-arm-aarch64-static-bin
+	
     )
 
     pacman -Rsn --noconfirm "${packages_to_remove[@]}"
