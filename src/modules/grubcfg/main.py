@@ -240,7 +240,7 @@ def modify_grub_default(partitions, root_mount_point, distributor):
         kernel_params.append(f"resume=/dev/mapper/{swap_outer_mappername}")
 
     if "nvidia" in gpu_drivers:
-        kernel_params.append("nvidia-drm.modeset=1")
+        kernel_params.append("nvidia_drm.modeset=1")
 
     overwrite = libcalamares.job.configuration.get("overwrite", False)
 
