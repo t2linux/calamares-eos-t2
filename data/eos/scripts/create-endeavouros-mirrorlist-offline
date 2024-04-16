@@ -19,12 +19,12 @@ Main()
 
     if [ "$(grep -w "eos-rankmirrors" "$mirrorlist")" ] ; then
         # a ranked list exists
-        cat "$mirrorlist" > "$offline"
+        cp "$mirrorlist" "$offline"
     else
         # a non-ranked list, prefer German mirrors
         printf "# EndeavourOS mirrorlist for offline install only.\n\n" > "$offline"
-        cat "$mirrorlist" | sed -n '/^## Germany/,/^$/p'  >> "$offline"
-        cat "$mirrorlist" | sed -n '/^## [A-Z].*/,$p'     >> "$offline"
+        sed -n '/^## Germany/,/^$/p' "$mirrorlist"  >> "$offline"
+        sed -n '/^## [A-Z].*/,$p'    "$mirrorlist"  >> "$offline"
     fi
 
 }
