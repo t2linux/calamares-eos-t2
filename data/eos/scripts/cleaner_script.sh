@@ -42,13 +42,8 @@ _manage_broadcom_wifi_driver() {
     local targetfile=/tmp/$chroot_path/tmp/$pkgname.txt
     local wifi_pci="$(lspci -k | sed -n '/ Network controller: /,/^[^ \t]/p' | sed '$d')"
 
-    if [ -n "$(echo "$wifi_pci" | grep -w Broadcom)" ] ; then
-        echo "yes" > $targetfile
-    elif [ -n "$(lsusb | grep -w Broadcom)" ] ; then
-        echo "yes" > $targetfile
-    else
-        echo "no" > $targetfile
-    fi
+		# We at T2Linux use brcmfmac for Broadcom Wi-Fi and Bluetooth devices.
+    echo "no" > $targetfile
 }
 
 _copy_files(){
