@@ -9,14 +9,15 @@
  *
  */
 
-#include "CalamaresUtilsSystem.h"
 #include "CommandList.h"
 #include "Entropy.h"
 #include "Logger.h"
+#include "Permissions.h"
 #include "RAII.h"
 #include "Runner.h"
 #include "String.h"
 #include "StringExpander.h"
+#include "System.h"
 #include "Traits.h"
 #include "UMask.h"
 #include "Variant.h"
@@ -24,6 +25,7 @@
 
 #include "GlobalStorage.h"
 #include "JobQueue.h"
+#include "compat/Variant.h"
 
 #include <QTemporaryFile>
 
@@ -51,6 +53,9 @@ private Q_SLOTS:
     void testCommands();
     void testCommandExpansion_data();
     void testCommandExpansion();  // See also shellprocess tests
+    void testCommandConstructors();
+    void testCommandConstructorsYAML();
+    void testCommandRunning();
 
     /** @section Test that all the UMask objects work correctly. */
     void testUmask();
@@ -149,9 +154,9 @@ LibCalamaresTests::testLoadSaveYaml()
     cDebug() << QDir().absolutePath() << f.fileName() << f.exists();
     QVERIFY( f.exists() );
 
-    auto map = CalamaresUtils::loadYaml( f.fileName() );
+    auto map = Calamares::YAML::load( f.fileName() );
     QVERIFY( map.contains( "sequence" ) );
-    QCOMPARE( map[ "sequence" ].type(), QVariant::List );
+    QCOMPARE( Calamares::typeOf( map[ "sequence" ] ), Calamares::ListVariantType );
 
     // The source-repo example `settings.conf` has a show and an exec phase
     auto sequence = map[ "sequence" ].toList();
@@ -159,14 +164,14 @@ LibCalamaresTests::testLoadSaveYaml()
     for ( const auto& v : sequence )
     {
         cDebug() << Logger::SubEntry << v;
-        QCOMPARE( v.type(), QVariant::Map );
+        QCOMPARE( Calamares::typeOf( v ), Calamares::MapVariantType );
         QVERIFY( v.toMap().contains( "show" ) || v.toMap().contains( "exec" ) );
     }
 
-    CalamaresUtils::saveYaml( "out.yaml", map );
+    Calamares::YAML::save( "out.yaml", map );
 
-    auto other_map = CalamaresUtils::loadYaml( "out.yaml" );
-    CalamaresUtils::saveYaml( "out2.yaml", other_map );
+    auto other_map = Calamares::YAML::load( "out.yaml" );
+    Calamares::YAML::save( "out2.yaml", other_map );
     QCOMPARE( map, other_map );
 
     QFile::remove( "out.yaml" );
@@ -182,7 +187,9 @@ findConf( const QDir& d )
         QString path = d.absolutePath();
         path.append( d.separator() );
         for ( const auto& confname : d.entryList( { "*.conf" } ) )
+        {
             mine.append( path + confname );
+        }
         for ( const auto& subdirname : d.entryList( QDir::AllDirs | QDir::NoDotAndDotDot ) )
         {
             QDir subdir( d );
@@ -221,7 +228,6 @@ LibCalamaresTests::recursiveCompareMap( const QVariantMap& a, const QVariantMap&
     }
 }
 
-
 void
 LibCalamaresTests::testLoadSaveYamlExtended()
 {
@@ -231,10 +237,10 @@ LibCalamaresTests::testLoadSaveYamlExtended()
     {
         loaded_ok = true;
         cDebug() << "Testing" << confname;
-        auto map = CalamaresUtils::loadYaml( confname, &loaded_ok );
+        auto map = Calamares::YAML::load( confname, &loaded_ok );
         QVERIFY( loaded_ok );
-        QVERIFY( CalamaresUtils::saveYaml( "out.yaml", map ) );
-        auto othermap = CalamaresUtils::loadYaml( "out.yaml", &loaded_ok );
+        QVERIFY( Calamares::YAML::save( "out.yaml", map ) );
+        auto othermap = Calamares::YAML::load( "out.yaml", &loaded_ok );
         QVERIFY( loaded_ok );
         QCOMPARE( map.keys(), othermap.keys() );
         recursiveCompareMap( map, othermap, 0 );
@@ -246,7 +252,7 @@ LibCalamaresTests::testLoadSaveYamlExtended()
 void
 LibCalamaresTests::testCommands()
 {
-    using CalamaresUtils::System;
+    using Calamares::System;
     auto r = System::runCommand( System::RunLocation::RunInHost, { "/bin/ls", "/tmp" } );
 
     QVERIFY( r.getExitCode() == 0 );
@@ -291,11 +297,141 @@ LibCalamaresTests::testCommandExpansion()
 
     QFETCH( QString, command );
     QFETCH( QString, expected );
-    CalamaresUtils::CommandLine c( command, std::chrono::seconds( 0 ) );
-    CalamaresUtils::CommandLine e = c.expand();
+    Calamares::CommandLine c( command, std::chrono::seconds( 0 ) );
+    Calamares::CommandLine e = c.expand();
 
     QCOMPARE( c.command(), command );
     QCOMPARE( e.command(), expected );
+}
+
+void
+LibCalamaresTests::testCommandConstructors()
+{
+    const QString command( "do this" );
+    Calamares::CommandLine c0( command );
+
+    QCOMPARE( c0.command(), command );
+    QCOMPARE( c0.timeout(), Calamares::CommandLine::TimeoutNotSet() );
+    QVERIFY( c0.environment().isEmpty() );
+
+    const QStringList env { "-la", "/tmp" };
+    Calamares::CommandLine c1( command, env, Calamares::CommandLine::TimeoutNotSet() );
+
+    QCOMPARE( c1.command(), command );
+    QCOMPARE( c1.timeout(), Calamares::CommandLine::TimeoutNotSet() );
+    QVERIFY( !c1.environment().isEmpty() );
+    QCOMPARE( c1.environment().count(), 2 );
+    QCOMPARE( c1.environment(), env );
+}
+
+void
+LibCalamaresTests::testCommandConstructorsYAML()
+{
+    QTemporaryFile f;
+    QVERIFY( f.open() );
+    f.write( R"(---
+commands:
+  - one-string-command
+  - command: only-command
+  - command: with-timeout
+    timeout: 12
+  - command: all-three
+    timeout: 20
+    environment:
+      - PATH=/USER
+      - DISPLAY=:0
+      )" );
+    f.close();
+    bool ok = false;
+    QVariantMap m = Calamares::YAML::load( f.fileName(), &ok );
+
+    QVERIFY( ok );
+    QCOMPARE( m.count(), 1 );
+    QCOMPARE( m[ "commands" ].toList().count(), 4 );
+
+    {
+        // Take care! The second parameter is a bool, so "3" here means "true"
+        Calamares::CommandList cmds( m[ "commands" ], 3 );
+        QCOMPARE( cmds.defaultTimeout(), std::chrono::seconds( 10 ) );
+        // But the 4 commands are there anyway
+        QCOMPARE( cmds.count(), 4 );
+        QCOMPARE( cmds.at( 0 ).command(), QString( "one-string-command" ) );
+        QCOMPARE( cmds.at( 0 ).environment(), QStringList() );
+        QCOMPARE( cmds.at( 0 ).timeout(), Calamares::CommandLine::TimeoutNotSet() );
+        QCOMPARE( cmds.at( 1 ).command(), QString( "only-command" ) );
+        QCOMPARE( cmds.at( 2 ).command(), QString( "with-timeout" ) );
+        QCOMPARE( cmds.at( 2 ).environment(), QStringList() );
+        QCOMPARE( cmds.at( 2 ).timeout(), std::chrono::seconds( 12 ) );
+
+        QStringList expectedEnvironment = { "PATH=/USER", "DISPLAY=:0" };
+        QCOMPARE( cmds.at( 3 ).command(), QString( "all-three" ) );
+        QCOMPARE( cmds.at( 3 ).environment(), expectedEnvironment );
+        QCOMPARE( cmds.at( 3 ).timeout(), std::chrono::seconds( 20 ) );
+    }
+
+    {
+        Calamares::CommandList cmds( m[ "commands" ], true, std::chrono::seconds( 3 ) );
+        QCOMPARE( cmds.defaultTimeout(), std::chrono::seconds( 3 ) );
+        QCOMPARE( cmds.at( 0 ).timeout(), Calamares::CommandLine::TimeoutNotSet() );
+        QCOMPARE( cmds.at( 2 ).timeout(), std::chrono::seconds( 12 ) );
+    }
+}
+
+void
+LibCalamaresTests::testCommandRunning()
+{
+
+    QTemporaryDir tempRoot( QDir::tempPath() + QStringLiteral( "/test-job-XXXXXX" ) );
+    tempRoot.setAutoRemove( false );
+
+    const QString testExecutable = tempRoot.filePath( "example.sh" );
+    const QString testFile = tempRoot.filePath( "example.txt" );
+
+    {
+        QFile f( testExecutable );
+        QVERIFY( f.open( QIODevice::WriteOnly ) );
+        f.write( "#! /bin/sh\necho \"$calamares_test_variable\"\n" );
+        f.close();
+        Calamares::Permissions::apply( testExecutable, 0755 );
+    }
+
+    const QString echoCommand = testExecutable + QStringLiteral( " > " ) + testFile;
+
+    // Without an environment, the variable echoed in the example
+    // executable is empty, and we write a single newline to stdout,
+    // which is redirected to testFile.
+    {
+        Calamares::CommandList l( false );  // no chroot
+        Calamares::CommandLine c( echoCommand, {}, std::chrono::seconds( 2 ) );
+        l.push_back( c );
+
+        const auto r = l.run();
+        QVERIFY( bool( r ) );
+
+        QCOMPARE( QFileInfo( testFile ).size(), 1 );  // single newline
+    }
+
+    // With an environment, echoes the value of the variable and a newline
+    {
+        const QString world = QStringLiteral( "Hello world" );
+        Calamares::CommandList l( false );  // no chroot
+        Calamares::CommandLine c(
+            echoCommand,
+            { QStringLiteral( "calamares_test_variable=" ) + QChar( '"' ) + world + QChar( '"' ) },
+            std::chrono::seconds( 2 ) );
+        l.push_back( c );
+
+        const auto r = l.run();
+        QVERIFY( bool( r ) );
+
+        QCOMPARE( QFileInfo( testFile ).size(), world.length() + 1 );  // plus newline
+        QFile f( testFile );
+        QVERIFY( f.open( QIODevice::ReadOnly ) );
+        QCOMPARE( f.readAll(), world + QChar( '\n' ) );
+    }
+
+
+    tempRoot.setAutoRemove( true );
 }
 
 void
@@ -308,13 +444,13 @@ LibCalamaresTests::testUmask()
 
     // m gets the previous value of the mask (depends on the environment the
     // test is run in, might be 002, might be 077), ..
-    mode_t m = CalamaresUtils::setUMask( 022 );
-    QCOMPARE( CalamaresUtils::setUMask( m ), mode_t( 022 ) );  // But now most recently set was 022
+    mode_t m = Calamares::setUMask( 022 );
+    QCOMPARE( Calamares::setUMask( m ), mode_t( 022 ) );  // But now most recently set was 022
 
     for ( mode_t i = 0; i <= 0777 /* octal! */; ++i )
     {
         QByteArray name = ( ft.fileName() + QChar( '.' ) + QString::number( i, 8 ) ).toLatin1();
-        CalamaresUtils::UMask um( i );
+        Calamares::UMask um( i );
         int fd = creat( name, 0777 );
         QVERIFY( fd >= 0 );
         close( fd );
@@ -324,8 +460,8 @@ LibCalamaresTests::testUmask()
         QCOMPARE( mystat.st_mode & 0777, 0777 & ~i );
         QCOMPARE( unlink( name ), 0 );
     }
-    QCOMPARE( CalamaresUtils::setUMask( 022 ), m );
-    QCOMPARE( CalamaresUtils::setUMask( m ), mode_t( 022 ) );
+    QCOMPARE( Calamares::setUMask( 022 ), m );
+    QCOMPARE( Calamares::setUMask( m ), mode_t( 022 ) );
 }
 
 void
@@ -333,18 +469,18 @@ LibCalamaresTests::testEntropy()
 {
     QByteArray data;
 
-    auto r0 = CalamaresUtils::getEntropy( 0, data );
-    QCOMPARE( CalamaresUtils::EntropySource::None, r0 );
+    auto r0 = Calamares::getEntropy( 0, data );
+    QCOMPARE( Calamares::EntropySource::None, r0 );
     QCOMPARE( data.size(), 0 );
 
-    auto r1 = CalamaresUtils::getEntropy( 16, data );
-    QVERIFY( r1 != CalamaresUtils::EntropySource::None );
+    auto r1 = Calamares::getEntropy( 16, data );
+    QVERIFY( r1 != Calamares::EntropySource::None );
     QCOMPARE( data.size(), 16 );
     // This can randomly fail (but not often)
     QVERIFY( data.at( data.size() - 1 ) != char( 0xcb ) );
 
-    auto r2 = CalamaresUtils::getEntropy( 8, data );
-    QVERIFY( r2 != CalamaresUtils::EntropySource::None );
+    auto r2 = Calamares::getEntropy( 8, data );
+    QVERIFY( r2 != Calamares::EntropySource::None );
     QCOMPARE( data.size(), 8 );
     QCOMPARE( r1, r2 );
     // This can randomly fail (but not often)
@@ -356,12 +492,12 @@ LibCalamaresTests::testPrintableEntropy()
 {
     QString s;
 
-    auto r0 = CalamaresUtils::getPrintableEntropy( 0, s );
-    QCOMPARE( CalamaresUtils::EntropySource::None, r0 );
+    auto r0 = Calamares::getPrintableEntropy( 0, s );
+    QCOMPARE( Calamares::EntropySource::None, r0 );
     QCOMPARE( s.length(), 0 );
 
-    auto r1 = CalamaresUtils::getPrintableEntropy( 16, s );
-    QVERIFY( r1 != CalamaresUtils::EntropySource::None );
+    auto r1 = Calamares::getPrintableEntropy( 16, s );
+    QVERIFY( r1 != Calamares::EntropySource::None );
     QCOMPARE( s.length(), 16 );
     for ( QChar c : s )
     {
@@ -378,14 +514,14 @@ LibCalamaresTests::testOddSizedPrintable()
     QString s;
     for ( int l = 0; l <= 37; ++l )
     {
-        auto r = CalamaresUtils::getPrintableEntropy( l, s );
+        auto r = Calamares::getPrintableEntropy( l, s );
         if ( l == 0 )
         {
-            QCOMPARE( r, CalamaresUtils::EntropySource::None );
+            QCOMPARE( r, Calamares::EntropySource::None );
         }
         else
         {
-            QVERIFY( r != CalamaresUtils::EntropySource::None );
+            QVERIFY( r != Calamares::EntropySource::None );
         }
         QCOMPARE( s.length(), l );
 
@@ -442,7 +578,6 @@ LibCalamaresTests::testPointerSetter()
     QCOMPARE( special, 34 );
 }
 
-
 /* Demonstration of Traits support for has-a-method or not.
  *
  * We have two classes, c1 and c2; one has a method do_the_thing() and the
@@ -483,7 +618,6 @@ public:
     }
 };
 
-
 void
 LibCalamaresTests::testTraits()
 {
@@ -506,7 +640,7 @@ LibCalamaresTests::testTraits()
 void
 LibCalamaresTests::testVariantStringListCode()
 {
-    using namespace CalamaresUtils;
+    using namespace Calamares;
     const QString key( "strings" );
     {
         // Things that are not stringlists
@@ -546,21 +680,21 @@ LibCalamaresTests::testVariantStringListCode()
 void
 LibCalamaresTests::testVariantStringListYAMLDashed()
 {
-    using namespace CalamaresUtils;
+    using namespace Calamares;
     const QString key( "strings" );
 
     // Looks like a stringlist to me
     QTemporaryFile f;
     QVERIFY( f.open() );
     f.write( R"(---
-strings:
-    - aap
-    - noot
-    - mies
-)" );
+             strings:
+             - aap
+             - noot
+             - mies
+           )" );
     f.close();
     bool ok = false;
-    QVariantMap m = loadYaml( f.fileName(), &ok );
+    QVariantMap m = Calamares::YAML::load( f.fileName(), &ok );
 
     QVERIFY( ok );
     QCOMPARE( m.count(), 1 );
@@ -574,18 +708,18 @@ strings:
 void
 LibCalamaresTests::testVariantStringListYAMLBracketed()
 {
-    using namespace CalamaresUtils;
+    using namespace Calamares;
     const QString key( "strings" );
 
     // Looks like a stringlist to me
     QTemporaryFile f;
     QVERIFY( f.open() );
     f.write( R"(---
-strings: [ aap, noot, mies ]
-)" );
+             strings: [ aap, noot, mies ]
+           )" );
     f.close();
     bool ok = false;
-    QVariantMap m = loadYaml( f.fileName(), &ok );
+    QVariantMap m = Calamares::YAML::load( f.fileName(), &ok );
 
     QVERIFY( ok );
     QCOMPARE( m.count(), 1 );
@@ -602,13 +736,13 @@ LibCalamaresTests::testStringTruncation()
     Logger::setupLogLevel( Logger::LOGDEBUG );
 
     using namespace Calamares::String;
-
+    // *INDENT-OFF*
     const QString longString( R"(---
 --- src/libcalamares/utils/String.h
 +++ src/libcalamares/utils/String.h
 @@ -62,15 +62,22 @@ DLLEXPORT QString removeDiacritics( const QString& string );
-  */
- DLLEXPORT QString obscure( const QString& string );
+*/
+DLLEXPORT QString obscure( const QString& string );
 
 +/** @brief Parameter for counting lines at beginning and end of string
 + *
@@ -622,6 +756,7 @@ LibCalamaresTests::testStringTruncation()
 +    int atStart = 0;
 +    int atEnd = 0;
 )" );
+    // *INDENT-ON*
 
     const int sufficientLength = 812;
     // There's 18 lines in all
@@ -684,9 +819,12 @@ LibCalamaresTests::testStringTruncationShorter()
 
     using namespace Calamares::String;
 
+    // *INDENT-OFF*
     const QString longString( R"(Some strange string artifacts appeared, leading to `{1?}` being
 displayed in various user-facing messages. These have been removed
 and the translations updated.)" );
+    // *INDENT-ON*
+
     const char NEWLINE = '\n';
 
     const int insufficientLength = 42;
@@ -1028,24 +1166,24 @@ LibCalamaresTests::testCalculateWorkingDirectory()
     gs->insert( "rootMountPoint", tempRoot.path() );
 
     {
-        auto [ ok, d ] = calculateWorkingDirectory( CalamaresUtils::System::RunLocation::RunInHost, QString() );
+        auto [ ok, d ] = calculateWorkingDirectory( Calamares::System::RunLocation::RunInHost, QString() );
         QVERIFY( ok );
         QCOMPARE( d, QDir::current() );
     }
     {
-        auto [ ok, d ] = calculateWorkingDirectory( CalamaresUtils::System::RunLocation::RunInTarget, QString() );
+        auto [ ok, d ] = calculateWorkingDirectory( Calamares::System::RunLocation::RunInTarget, QString() );
         QVERIFY( ok );
         QCOMPARE( d.absolutePath(), tempRoot.path() );
     }
 
     gs->remove( "rootMountPoint" );
     {
-        auto [ ok, d ] = calculateWorkingDirectory( CalamaresUtils::System::RunLocation::RunInHost, QString() );
+        auto [ ok, d ] = calculateWorkingDirectory( Calamares::System::RunLocation::RunInHost, QString() );
         QVERIFY( ok );
         QCOMPARE( d, QDir::current() );
     }
     {
-        auto [ ok, d ] = calculateWorkingDirectory( CalamaresUtils::System::RunLocation::RunInTarget, QString() );
+        auto [ ok, d ] = calculateWorkingDirectory( Calamares::System::RunLocation::RunInTarget, QString() );
         QVERIFY( !ok );
         QCOMPARE( d, QDir::current() );
     }
@@ -1115,14 +1253,13 @@ LibCalamaresTests::testRunnerOutput()
     }
 }
 
-
-CalamaresUtils::System*
+Calamares::System*
 file_setup( const QTemporaryDir& tempRoot )
 {
-    CalamaresUtils::System* ss = CalamaresUtils::System::instance();
+    Calamares::System* ss = Calamares::System::instance();
     if ( !ss )
     {
-        ss = new CalamaresUtils::System( true );
+        ss = new Calamares::System( true );
     }
 
     Calamares::GlobalStorage* gs
@@ -1151,7 +1288,7 @@ LibCalamaresTests::testReadWriteFile()
 
     QVERIFY( ss );
     {
-        auto fullPath = ss->createTargetFile( "test0", QByteArray(), CalamaresUtils::System::WriteMode::Overwrite );
+        auto fullPath = ss->createTargetFile( "test0", QByteArray(), Calamares::System::WriteMode::Overwrite );
         QVERIFY( fullPath );
         QVERIFY( !fullPath.path().isEmpty() );
 
@@ -1174,7 +1311,7 @@ LibCalamaresTests::testReadWriteFile()
     }
     // But it will if you say so explicitly
     {
-        auto fullPath = ss->createTargetFile( "test0", otherContents, CalamaresUtils::System::WriteMode::Overwrite );
+        auto fullPath = ss->createTargetFile( "test0", otherContents, Calamares::System::WriteMode::Overwrite );
         QVERIFY( fullPath );
         QVERIFY( !fullPath.path().isEmpty() );
 
@@ -1193,7 +1330,6 @@ LibCalamaresTests::testReadWriteFile()
         QCOMPARE( contents[ 1 ], QStringLiteral( "second" ) );  // No trailing \n
     }
 }
-
 
 QTEST_GUILESS_MAIN( LibCalamaresTests )
 

@@ -63,9 +63,9 @@
 #include <QStandardItemModel>
 #include <QtConcurrent/QtConcurrent>
 
-using CalamaresUtils::Partition::isPartitionFreeSpace;
-using CalamaresUtils::Partition::isPartitionNew;
-using CalamaresUtils::Partition::PartitionIterator;
+using Calamares::Partition::isPartitionFreeSpace;
+using Calamares::Partition::isPartitionNew;
+using Calamares::Partition::PartitionIterator;
 
 PartitionCoreModule::RefreshHelper::RefreshHelper( PartitionCoreModule* module )
     : m_module( module )
@@ -164,6 +164,23 @@ struct PartitionCoreModule::DeviceInfo
         }
 
         return Calamares::job_ptr( nullptr );
+    }
+
+    /** @brief Take the jobs of any type that apply to @p partition */
+    void takeJobs( Partition* partition )
+    {
+        for ( auto it = m_jobs.begin(); it != m_jobs.end(); )
+        {
+            PartitionJob* job = qobject_cast< PartitionJob* >( it->data() );
+            if ( job && job->partition() == partition )
+            {
+                it = m_jobs.erase( it );
+            }
+            else
+            {
+                ++it;
+            }
+        }
     }
 
     /** @brief Add a job of given type to the job list
@@ -315,6 +332,7 @@ PartitionCoreModule::doInit()
     DeviceList bootLoaderDevices;
 
     for ( DeviceList::Iterator it = devices.begin(); it != devices.end(); ++it )
+    {
         if ( ( *it )->type() != Device::Type::Disk_Device )
         {
             cDebug() << "Ignoring device that is not Disk_Device to bootLoaderDevices list.";
@@ -324,6 +342,7 @@ PartitionCoreModule::doInit()
         {
             bootLoaderDevices.append( *it );
         }
+    }
 
     m_bootLoaderModel->init( bootLoaderDevices );
 
@@ -482,10 +501,12 @@ PartitionCoreModule::deletePartition( Device* device, Partition* partition )
         // deleting them, so let's play it safe and keep our own list.
         QList< Partition* > lst;
         for ( auto childPartition : partition->children() )
+        {
             if ( !isPartitionFreeSpace( childPartition ) )
             {
                 lst << childPartition;
             }
+        }
 
         for ( auto childPartition : lst )
         {
@@ -553,15 +574,17 @@ PartitionCoreModule::formatPartition( Device* device, Partition* partition )
 void
 PartitionCoreModule::setFilesystemLabel( Device* device, Partition* partition, const QString& newLabel )
 {
-    if ( newLabel.isEmpty() )
+    if ( newLabel == PartitionInfo::label( partition ) )
     {
-        // Don't bother
         return;
     }
+
     auto deviceInfo = infoForDevice( device );
     Q_ASSERT( deviceInfo );
 
     OperationHelper helper( partitionModelForDevice( device ), this );
+    PartitionInfo::setLabel( partition, newLabel );
+    deviceInfo->takeJob< ChangeFilesystemLabelJob >( partition );
     deviceInfo->makeJob< ChangeFilesystemLabelJob >( partition, newLabel );
 }
 
@@ -781,11 +804,13 @@ PartitionCoreModule::updateIsDirty()
     bool oldValue = m_isDirty;
     m_isDirty = false;
     for ( auto info : m_deviceInfos )
+    {
         if ( info->isDirty() )
         {
             m_isDirty = true;
             break;
         }
+    }
     if ( oldValue != m_isDirty )
     {
         isDirtyChanged( m_isDirty );
@@ -806,8 +831,7 @@ PartitionCoreModule::scanForEfiSystemPartitions()
         devices.append( device );
     }
 
-    QList< Partition* > efiSystemPartitions
-        = CalamaresUtils::Partition::findPartitions( devices, PartUtils::isEfiBootable );
+    QList< Partition* > efiSystemPartitions = Calamares::Partition::findPartitions( devices, PartUtils::isEfiBootable );
 
     if ( efiSystemPartitions.isEmpty() )
     {
@@ -853,12 +877,14 @@ PartitionCoreModule::scanForLVMPVs()
         m_lvmPVs << p.partition().data();
 
         for ( LvmDevice* device : vgDevices )
+        {
             if ( p.vgName() == device->name() )
             {
                 // Adding scanned VG to PV list
                 device->physicalVolumes() << p.partition();
                 break;
             }
+        }
     }
 
     for ( DeviceInfo* d : m_deviceInfos )
@@ -924,10 +950,12 @@ PartitionCoreModule::findPartitionByMountPoint( const QString& mountPoint ) cons
     {
         Device* device = deviceInfo->device.data();
         for ( auto it = PartitionIterator::begin( device ); it != PartitionIterator::end( device ); ++it )
+        {
             if ( PartitionInfo::mountPoint( *it ) == mountPoint )
             {
                 return *it;
             }
+        }
     }
     return nullptr;
 }
@@ -1114,7 +1142,11 @@ PartitionCoreModule::asyncRevertDevice( Device* dev, std::function< void() > cal
                  watcher->deleteLater();
              } );
 
+#if QT_VERSION < QT_VERSION_CHECK( 6, 0, 0 )
     QFuture< void > future = QtConcurrent::run( this, &PartitionCoreModule::revertDevice, dev, true );
+#else
+    QFuture< void > future = QtConcurrent::run( &PartitionCoreModule::revertDevice, this, dev, true );
+#endif
     watcher->setFuture( future );
 }
 
@@ -1129,6 +1161,17 @@ PartitionCoreModule::clearJobs()
     updateIsDirty();
 }
 
+void
+PartitionCoreModule::clearJobs( Device* device, Partition* partition )
+{
+    DeviceInfo* devInfo = infoForDevice( device );
+
+    if ( devInfo )
+    {
+        devInfo->takeJobs( partition );
+    }
+}
+
 
 bool
 PartitionCoreModule::isDirty()
@@ -1140,10 +1183,12 @@ bool
 PartitionCoreModule::isVGdeactivated( LvmDevice* device )
 {
     for ( DeviceInfo* deviceInfo : m_deviceInfos )
+    {
         if ( device == deviceInfo->device.data() && !deviceInfo->isAvailable )
         {
             return true;
         }
+    }
 
     return false;
 }

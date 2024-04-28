@@ -310,7 +310,12 @@ def mount_partition(root_mount_point, partition, partitions, mount_options, moun
                 mount_option_no_subvol = get_mount_options("btrfs_swap", mount_options, partition)
             else:
                 mount_option_no_subvol = get_mount_options(fstype, mount_options, partition)
-            mount_option = f"subvol={s['subvolume']},{mount_option_no_subvol}"
+
+            # Only add subvol= argument if we are not mounting the entire filesystem
+            if s['subvolume']:
+                mount_option = f"subvol={s['subvolume']},{mount_option_no_subvol}"
+            else:
+                mount_option = mount_option_no_subvol
             subvolume_mountpoint = mount_point[:-1] + s['mountPoint']
             mount_options_list.append({"mountpoint": s['mountPoint'], "option_string": mount_option_no_subvol})
             if libcalamares.utils.mount(device,
@@ -342,7 +347,7 @@ def run():
                 _("No partitions are defined for <pre>{!s}</pre> to use.").format("mount"))
 
     # Find existing swap partitions that are part of the installation and enable them now
-    swap_devices = [p['device'] for p in partitions if (p['fs'] == 'linuxswap' and p['claimed'])]
+    swap_devices = [p["device"] for p in partitions if (p["fs"] == "linuxswap" and p.get("claimed", False))]
 
     enable_swap_partition(swap_devices)
 

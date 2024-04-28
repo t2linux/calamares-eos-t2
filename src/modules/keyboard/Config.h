@@ -27,6 +27,7 @@ class Config : public QObject
     Q_PROPERTY( KeyboardModelsModel* keyboardModelsModel READ keyboardModels CONSTANT FINAL )
     Q_PROPERTY( KeyboardLayoutModel* keyboardLayoutsModel READ keyboardLayouts CONSTANT FINAL )
     Q_PROPERTY( KeyboardVariantsModel* keyboardVariantsModel READ keyboardVariants CONSTANT FINAL )
+    Q_PROPERTY( KeyboardGroupsSwitchersModel* keyboardGroupsSwitchersModel READ keyboardGroupsSwitchers CONSTANT FINAL )
     Q_PROPERTY( QString prettyStatus READ prettyStatus NOTIFY prettyStatusChanged FINAL )
 
 public:
@@ -58,6 +59,9 @@ public:
      * (dvorak).
      */
     KeyboardVariantsModel* keyboardVariants() const;
+    /* A group describes a toggle groups of change layouts
+     */
+    KeyboardGroupsSwitchersModel* keyboardGroupsSwitchers() const;
 
     /** @brief Call this to change application language
      *
@@ -87,16 +91,22 @@ private:
      * xkbChanged() is called when the selection changes, and triggers
      * a delayed call to xkbApply() which does the actual work.
      */
-    void xkbChanged( int index );
+    void xkbChanged();
     void xkbApply();
+    void locale1Apply();
+
+    void getCurrentKeyboardLayoutXkb( QString& currentLayout, QString& currentVariant, QString& currentModel );
+    void getCurrentKeyboardLayoutLocale1( QString& currentLayout, QString& currentVariant, QString& currentModel );
 
     KeyboardModelsModel* m_keyboardModelsModel;
     KeyboardLayoutModel* m_keyboardLayoutsModel;
     KeyboardVariantsModel* m_keyboardVariantsModel;
+    KeyboardGroupsSwitchersModel* m_KeyboardGroupSwitcherModel;
 
     QString m_selectedLayout;
     QString m_selectedModel;
     QString m_selectedVariant;
+    QString m_selectedGroup;
 
     // Layout (and corresponding info) added if current one doesn't support ASCII (e.g. Russian or Japanese)
     AdditionalLayoutInfo m_additionalLayoutInfo;
@@ -107,6 +117,8 @@ private:
     QString m_xOrgConfFileName;
     QString m_convertedKeymapPath;
     bool m_writeEtcDefaultKeyboard = true;
+    bool m_useLocale1 = false;
+    bool m_guessLayout = false;
 
     // The state determines whether we guess settings or preserve them:
     // - Initial -> Guessing

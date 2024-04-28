@@ -20,11 +20,16 @@ static const char s_footer[]
     = QT_TRANSLATE_NOOP( "AboutData",
                          "Thanks to <a href=\"https://calamares.io/team/\">the Calamares team</a> "
                          "and the <a href=\"https://app.transifex.com/calamares/calamares/\">Calamares "
-                         "translators team</a>.<br/><br/>"
-                         "<a href=\"https://calamares.io/\">Calamares</a> "
-                         "development is sponsored by <br/>"
-                         "<a href=\"http://www.blue-systems.com/\">Blue Systems</a> - "
-                         "Liberating Software." );
+                         "translators team</a>." );
+
+#if 0
+// Blue Systems sponsored until June 2022
+static const char s_sponsor[] = QT_TRANSLATE_NOOP( "AboutData",
+                                                   "<a href=\"https://calamares.io/\">Calamares</a> "
+                                                   "development is sponsored by <br/>"
+                                                   "<a href=\"http://www.blue-systems.com/\">Blue Systems</a> - "
+                                                   "Liberating Software." );
+#endif
 
 struct Maintainer
 {
@@ -46,6 +51,7 @@ struct Maintainer
 static constexpr const Maintainer maintainers[] = {
     { 2014, 2017, "Teo Mrnjavac", "teo@kde.org" },
     { 2017, 2022, "Adriaan de Groot", "groot@kde.org" },
+    { 2022, 2024, "Adriaan de Groot (community)", "groot@kde.org" },
 };
 
 static QString

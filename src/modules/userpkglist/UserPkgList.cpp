@@ -9,13 +9,11 @@
 
 #include "UserPkgList.h"
 
-#include "utils/CalamaresUtilsSystem.h"
 #include "utils/Logger.h"
 #include "utils/Variant.h"
 
 #include "GlobalStorage.h"
 #include "JobQueue.h"
-#include "Settings.h"
 
 #include <QFile>
 #include <QProcess>
@@ -48,8 +46,8 @@ static QVariantMap
 getNetinstallData( const QStringList& packages, const QVariantMap& map )
 {
     return { { "source", "userPkgList" },
-             { "name", CalamaresUtils::getString( map, "netinstall_name", "Custom Packages" ) },
-             { "description", CalamaresUtils::getString( map, "netinstall_desc", "The custom packagelist defined" ) },
+             { "name", Calamares::getString( map, "netinstall_name", "Custom Packages" ) },
+             { "description", Calamares::getString( map, "netinstall_desc", "The custom packagelist defined" ) },
              { "hidden", false },
              { "selected", true },
              { "critical", false },
@@ -61,7 +59,7 @@ void
 UserPkgListJob::setConfigurationMap( const QVariantMap& map )
 {
     // Get the file location from the configuration file
-    QString fileLocation = CalamaresUtils::getString( map, "file_location" );
+    QString fileLocation = Calamares::getString( map, "file_location" );
 
     // Open the file
     QFile packagesFile( fileLocation );

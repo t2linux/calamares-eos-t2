@@ -25,8 +25,14 @@ _pkg_msg() {            # use this to provide all package management messages (i
     echo "==> $op $pkgs"
 }
 
-_check_internet_connection(){
-    eos-connection-checker
+_check_internet_connection() {
+    case "$_CHROOTED_HAS_CONNECTION" in
+        yes) return 0 ;;
+        no)  return 1 ;;
+        *)   eos-connection-checker && _CHROOTED_HAS_CONNECTION=yes || _CHROOTED_HAS_CONNECTION=no
+             _check_internet_connection
+             ;;
+    esac
 }
 
 _is_pkg_installed() {  # this is not meant for offline mode !?
@@ -57,11 +63,15 @@ _remove_pkgs_if_installed() {  # this is not meant for offline mode !?
 }
 
 _install_needed_packages() {
-    if eos-connection-checker ; then
-        _pkg_msg install "if missing: $*"
-        pacman -S --needed --noconfirm "$@"
+    if _is_online_mode ; then
+        if _check_internet_connection ; then
+            _pkg_msg install "if missing: $*"
+            pacman -S --needed --noconfirm "$@"
+        else
+            _c_c_s_msg warning "no internet connection, cannot install packages $*"
+        fi
     else
-        _c_c_s_msg warning "no internet connection, cannot install packages $*"
+        _c_c_s_msg warning "offline mode, not installing packages $*"
     fi
 }
 
@@ -203,9 +213,10 @@ _clean_offline_packages(){
         ## Live iso tools
         clonezilla
         gpart
+	gparted
         grsync
         hdparm
-	partitionmanager
+        partitionmanager
 
         # ENDEAVOUROS REPO
 
@@ -216,8 +227,6 @@ _clean_offline_packages(){
         $(pacman -Qq | grep calamares)        # finds calamares related packages
         ckbcomp
 
-        # arm qemu dependency
-        qemu-arm-aarch64-static-bin
     )
 
     pacman -Rsn --noconfirm "${packages_to_remove[@]}"
@@ -265,8 +274,8 @@ _remove_ucode(){
     _remove_a_pkg "$ucode"
 }
 
-_remove_other_graphics_drivers() {
-    local graphics="$(device-info --vga ; device-info --display)"
+_manage_other_graphics_drivers() {
+    local graphics="$(device-info --graphics)"
     local amd=no
 
     # remove AMD graphics driver if it is not needed
@@ -277,10 +286,15 @@ _remove_other_graphics_drivers() {
     elif [ -n "$(echo "$graphics" | grep "Radeon")" ] ; then
         amd=yes
     fi
-    if [ "$amd" = "no" ] ; then
-        _remove_a_pkg xf86-video-amdgpu
-        _remove_a_pkg xf86-video-ati
-    fi
+    case "$amd" in
+        no)
+            _remove_a_pkg xf86-video-amdgpu
+            _remove_a_pkg xf86-video-ati
+            ;;
+        yes)
+            # _install_needed_packages vulkan-radeon   # vulkan is beyond scope here...
+            ;;
+    esac
 }
 
 _remove_broadcom_wifi_driver_old() {
@@ -355,7 +369,7 @@ _remove_nvidia_drivers() {
 
     if _is_offline_mode ; then
         # delete packages separately to avoid all failing if one fails
-        [ -r /usr/share/licenses/nvidia-dkms/LICENSE ]      && _nvidia_remove nvidia-dkms
+        [ -r /usr/share/licenses/nvidia/LICENSE ]      && _nvidia_remove nvidia
         [ -x /usr/bin/nvidia-modprobe ]                     && _nvidia_remove nvidia-utils
         [ -x /usr/bin/nvidia-settings ]                     && _nvidia_remove nvidia-settings
         [ -x /usr/bin/nvidia-inst ]                         && _nvidia_remove nvidia-inst
@@ -369,17 +383,7 @@ _manage_nvidia_packages() {
     local nvidia_card=""                    # these two variables are defined in $file
     local nvidia_driver=""
 
-    if [ ! -r $file ] ; then
-        _c_c_s_msg warning "file $file does not exist!"
-        _remove_nvidia_drivers
-    else
-        source $file
-        if [ "$nvidia_driver" = "no" ] ; then
-            _remove_nvidia_drivers
-        elif [ "$nvidia_card" = "yes" ] ; then
-            _install_needed_packages nvidia-inst nvidia-hook nvidia-dkms
-        fi
-    fi
+    _remove_nvidia_drivers
 }
 
 _run_if_exists_or_complain() {
@@ -421,8 +425,8 @@ _clean_up(){
     # install or remove nvidia graphics stuff
     _manage_nvidia_packages
 
-    # remove AMD and Intel graphics drivers if they are not needed
-    _remove_other_graphics_drivers
+    # install or remove AMD and Intel graphics stuff if needed
+    _manage_other_graphics_drivers
 
     # remove broadcom-wl-dkms if it is not needed
 
@@ -480,7 +484,9 @@ _run_hotfix_end() {
 Main() {
     local filename=chrooted_cleaner_script.sh
 
-    _c_c_s_msg info "$filename started."
+    local _CHROOTED_HAS_CONNECTION=""
+
+    _c_c_s_msg info "$filename started, parameters: $*"
 
     local i
     local NEW_USER="" INSTALL_TYPE="" BOOTLOADER=""

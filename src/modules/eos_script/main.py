@@ -74,7 +74,7 @@ def run():
     # build the paramater list
     command = [script_path]
     if online:
-        gs_online = libcalamares.globalstorage.value("online")
+        gs_online = libcalamares.globalstorage.value("hasInternet")
         if gs_online is True:
             command.append("--online")
 

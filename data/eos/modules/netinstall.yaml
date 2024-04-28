@@ -138,6 +138,7 @@
 - name: "EndeavourOS applications"
   description: "EndeavourOS tools and applications"
   selected: true
+  critical: true
   packages:
     - endeavouros-theming
     - eos-apps-info
@@ -145,12 +146,12 @@
     - eos-packagelist
     - eos-quickstart
     - eos-rankmirrors
-    - eos-update-notifier
     - reflector-simple
     - welcome
 - name: "Recommended applications selection"
   description: "General tools and applications"
   selected: true
+  critical: true
   packages:
     - duf
     - findutils
@@ -177,6 +178,14 @@
   packages:
     - firefox
     - firefox-i18n-$LOCALE
+- name: "Spell Checker and language package"
+  description: "Add spell check and language pack if possible"
+  hidden: false
+  selected: true
+  critical: false
+  packages:
+    - aspell
+    - aspell-$LOCALE
 - name: Firewall
   description: "Firewall installed and enabled"
   selected: true

@@ -12,6 +12,8 @@
 #ifndef UTILS_PLUGINFACTORY_H
 #define UTILS_PLUGINFACTORY_H
 
+#include "DllMacro.h"
+
 #include <QObject>
 
 #define CalamaresPluginFactory_iid "io.calamares.PluginFactory"
@@ -24,7 +26,7 @@
  * the function is set when registerPlugin() is called in a subclass.
  *
  */
-class CalamaresPluginFactory : public QObject
+class DLLEXPORT CalamaresPluginFactory : public QObject
 {
     Q_OBJECT
 public:

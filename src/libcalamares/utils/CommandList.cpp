@@ -13,31 +13,18 @@
 #include "GlobalStorage.h"
 #include "JobQueue.h"
 
-// #include "utils/CalamaresUtils.h"
-#include "utils/CalamaresUtilsSystem.h"
+#include "compat/Variant.h"
+#include "locale/Global.h"
 #include "utils/Logger.h"
 #include "utils/StringExpander.h"
+#include "utils/System.h"
 #include "utils/Variant.h"
 
 #include <QCoreApplication>
 #include <QVariantList>
 
-namespace CalamaresUtils
+namespace Calamares
 {
-
-static CommandLine
-get_variant_object( const QVariantMap& m )
-{
-    QString command = CalamaresUtils::getString( m, "command" );
-    qint64 timeout = CalamaresUtils::getInteger( m, "timeout", -1 );
-
-    if ( !command.isEmpty() )
-    {
-        return CommandLine( command, timeout >= 0 ? std::chrono::seconds( timeout ) : CommandLine::TimeoutNotSet() );
-    }
-    cWarning() << "Bad CommandLine element" << m;
-    return CommandLine();
-}
 
 static CommandList_t
 get_variant_stringlist( const QVariantList& l )
@@ -46,13 +33,13 @@ get_variant_stringlist( const QVariantList& l )
     unsigned int count = 0;
     for ( const auto& v : l )
     {
-        if ( v.type() == QVariant::String )
+        if ( Calamares::typeOf( v ) == Calamares::StringVariantType )
         {
             retl.append( CommandLine( v.toString(), CommandLine::TimeoutNotSet() ) );
         }
-        else if ( v.type() == QVariant::Map )
+        else if ( Calamares::typeOf( v ) == Calamares::MapVariantType )
         {
-            auto command( get_variant_object( v.toMap() ) );
+            CommandLine command( v.toMap() );
             if ( command.isValid() )
             {
                 retl.append( command );
@@ -61,7 +48,7 @@ get_variant_stringlist( const QVariantList& l )
         }
         else
         {
-            cWarning() << "Bad CommandList element" << count << v.type() << v;
+            cWarning() << "Bad CommandList element" << count << v;
         }
         ++count;
     }
@@ -91,24 +78,56 @@ get_gs_expander( System::RunLocation location )
         expander.insert( QStringLiteral( "USER" ), gs->value( "username" ).toString() );
     }
 
+    if ( gs )
+    {
+        const auto key = QStringLiteral( "LANG" );
+        const QString lang = Calamares::Locale::readGS( *gs, key );
+        if ( !lang.isEmpty() )
+        {
+            expander.insert( key, lang );
+        }
+    }
+
     return expander;
+}
+
+CommandLine::CommandLine( const QVariantMap& m )
+{
+    const QString command = Calamares::getString( m, "command" );
+    const qint64 timeout = Calamares::getInteger( m, "timeout", -1 );
+    if ( !command.isEmpty() )
+    {
+        m_command = command;
+        m_timeout = timeout >= 0 ? std::chrono::seconds( timeout ) : CommandLine::TimeoutNotSet();
+        m_environment = Calamares::getStringList( m, "environment" );
+    }
+    else
+    {
+        cWarning() << "Bad CommandLine element" << m;
+        // this CommandLine is invalid
+    }
 }
 
 CommandLine
 CommandLine::expand( KMacroExpanderBase& expander ) const
 {
-    QString c = first;
+    // Calamares variable expansion in the command
+    QString c = m_command;
     expander.expandMacrosShellQuote( c );
-    return { c, second };
+
+    // .. and expand in each environment key=value string.
+    QStringList e = m_environment;
+    std::for_each( e.begin(), e.end(), [ &expander ]( QString& s ) { expander.expandMacrosShellQuote( s ); } );
+
+    return { c, m_environment, m_timeout };
 }
 
-CalamaresUtils::CommandLine
+Calamares::CommandLine
 CommandLine::expand() const
 {
     auto expander = get_gs_expander( System::RunLocation::RunInHost );
     return expand( expander );
 }
-
 
 CommandList::CommandList( bool doChroot, std::chrono::seconds timeout )
     : m_doChroot( doChroot )
@@ -119,7 +138,7 @@ CommandList::CommandList( bool doChroot, std::chrono::seconds timeout )
 CommandList::CommandList::CommandList( const QVariant& v, bool doChroot, std::chrono::seconds timeout )
     : CommandList( doChroot, timeout )
 {
-    if ( v.type() == QVariant::List )
+    if ( Calamares::typeOf( v ) == Calamares::ListVariantType )
     {
         const auto v_list = v.toList();
         if ( v_list.count() )
@@ -131,13 +150,13 @@ CommandList::CommandList::CommandList( const QVariant& v, bool doChroot, std::ch
             cWarning() << "Empty CommandList";
         }
     }
-    else if ( v.type() == QVariant::String )
+    else if ( Calamares::typeOf( v ) == Calamares::StringVariantType )
     {
         append( { v.toString(), m_timeout } );
     }
-    else if ( v.type() == QVariant::Map )
+    else if ( Calamares::typeOf( v ) == Calamares::MapVariantType )
     {
-        auto c( get_variant_object( v.toMap() ) );
+        CommandLine c( v.toMap() );
         if ( c.isValid() )
         {
             append( c );
@@ -146,7 +165,7 @@ CommandList::CommandList::CommandList( const QVariant& v, bool doChroot, std::ch
     }
     else
     {
-        cWarning() << "CommandList does not understand variant" << v.type();
+        cWarning() << "CommandList does not understand variant" << Calamares::typeOf( v );
     }
 }
 
@@ -179,8 +198,18 @@ CommandList::run()
             processed_cmd.remove( 0, 1 );  // Drop the -
         }
 
+        const QString environmentSetting = []( const QStringList& l ) -> QString
+        {
+            if ( l.isEmpty() )
+            {
+                return {};
+            }
+
+            return QStringLiteral( "export " ) + l.join( " " ) + QStringLiteral( " ; " );
+        }( i->environment() );
+
         QStringList shell_cmd { "/bin/sh", "-c" };
-        shell_cmd << processed_cmd;
+        shell_cmd << ( environmentSetting + processed_cmd );
 
         std::chrono::seconds timeout = i->timeout() >= std::chrono::seconds::zero() ? i->timeout() : m_timeout;
         ProcessResult r = System::runCommand( location, shell_cmd, QString(), QString(), timeout );
@@ -220,5 +249,4 @@ CommandList::expand() const
     return expand( expander );
 }
 
-
-}  // namespace CalamaresUtils
+}  // namespace Calamares

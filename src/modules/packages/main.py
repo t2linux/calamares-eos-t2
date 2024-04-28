@@ -280,6 +280,11 @@ class PMApt(PackageManager):
 
 
 class PMDnf(PackageManager):
+    """
+    This is "legacy" DNF, called DNF-4 even though the
+    executable is dnf-3 in modern Fedora. Executable dnf
+    is a symlink to dnf-3 in systems that use it.
+    """
     backend = "dnf"
 
     def install(self, pkgs, from_local=False):
@@ -297,6 +302,30 @@ class PMDnf(PackageManager):
 
     def update_system(self):
         check_target_env_call(["dnf-3", "-y", "upgrade"])
+
+
+class PMDnf5(PackageManager):
+    """
+    This is "modern" DNF, DNF-5 which is for Fedora 41 (presumably)
+    and later. Executable dnf is a symlink to dnf5 in systems that use it.
+    """
+    backend = "dnf5"
+
+    def install(self, pkgs, from_local=False):
+        check_target_env_call(["dnf5", "-y", "install"] + pkgs)
+
+    def remove(self, pkgs):
+        # ignore the error code for now because dnf thinks removing a
+        # nonexistent package is an error
+        target_env_call(["dnf5", "--disablerepo=*", "-C", "-y",
+                         "remove"] + pkgs)
+
+    def update_db(self):
+        # Doesn't need updates
+        pass
+
+    def update_system(self):
+        check_target_env_call(["dnf5", "-y", "upgrade"])
 
 
 class PMDummy(PackageManager):
@@ -405,14 +434,11 @@ class PMPacman(PackageManager):
                     # progress percentage, since there may be more "installing..."
                     # lines in the output for the group, than packages listed
                     # explicitly. We don't know how to calculate proper progress.
-                    if (time.time() - self.status_update_time) > 0.5:
-                        global custom_status_message
-                        custom_status_message = "pacman: " + line.strip()
-                        self.status_update_time = time.time()
-                        libcalamares.job.setprogress(self.progress_fraction)
+                    global custom_status_message
+                    custom_status_message = "pacman: " + line.strip()
+                    libcalamares.job.setprogress(self.progress_fraction)
             libcalamares.utils.debug(line.strip())
 
-        self.status_update_time = 0
         self.in_package_changes = False
         self.line_cb = line_cb
 

@@ -1,9 +1,20 @@
 ### Documentation on why we are using this modified versions will follow here:
+Python modules (it is implemented in C++ and injected into the Python
+environment by Calamares).
 
 
 1. **copy_kernel:** *unused* now a shellprocess: [shellprocess_ck.conf](https://github.com/endeavouros-team/EndeavourOS-calamares/blob/main/calamares/modules/shellprocess_ck.conf)
+Use of this kind of module is **not** recommended. Use *shellprocess*
+instead, which is more configurable.
 
 2. **eos_script:** This module is unique to EndeavourOS, and used to integrate the scripts we need to create EndeavourOS and mainly Archlinux specific configurations.
+passed to the shell -- remember to quote it properly in YAML. It is generally
+easier to have multiple instances). There is no configuration outside
+of the module-descriptor. The *command* undergoes Calamares variable-
+expansion (e.g. replacing `${ROOT}` by the target of the installation).
+See *shellprocess* documentation for details.
+
+Optional keys are *timeout* and *chroot*.
 
 3. **fstab** and ***mount:** We use the fstab and mount modules from Calamares 3.3. There are a couple of big advantages:
    * Mount options are now set prior to installation so things like compression are applied to the install itself

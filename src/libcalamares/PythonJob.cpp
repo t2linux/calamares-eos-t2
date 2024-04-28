@@ -19,6 +19,11 @@
 
 #include <QDir>
 
+#ifdef WITH_PYBIND11
+#error Source only for Boost::Python
+#else
+#endif
+
 static const char* s_preScript = nullptr;
 
 namespace bp = boost::python;
@@ -230,7 +235,7 @@ PythonJob::prettyStatusMessage() const
     // The description is updated when progress is reported, see emitProgress()
     if ( m_description.isEmpty() )
     {
-        return tr( "Running %1 operation." ).arg( QDir( m_workingPath ).dirName() );
+        return tr( "Running %1 operation…", "@status" ).arg( QDir( m_workingPath ).dirName() );
     }
     else
     {
@@ -258,16 +263,17 @@ PythonJob::exec()
     QDir workingDir( m_workingPath );
     if ( !workingDir.exists() || !workingDir.isReadable() )
     {
-        return JobResult::error(
-            tr( "Bad working directory path" ),
-            tr( "Working directory %1 for python job %2 is not readable." ).arg( m_workingPath ).arg( prettyName() ) );
+        return JobResult::error( tr( "Bad working directory path", "@error" ),
+                                 tr( "Working directory %1 for python job %2 is not readable.", "@error" )
+                                     .arg( m_workingPath )
+                                     .arg( prettyName() ) );
     }
 
     QFileInfo scriptFI( workingDir.absoluteFilePath( m_scriptFile ) );
     if ( !scriptFI.exists() || !scriptFI.isFile() || !scriptFI.isReadable() )
     {
-        return JobResult::error( tr( "Bad main script file" ),
-                                 tr( "Main script file %1 for python job %2 is not readable." )
+        return JobResult::error( tr( "Bad main script file", "@error" ),
+                                 tr( "Main script file %1 for python job %2 is not readable.", "@error" )
                                      .arg( scriptFI.absoluteFilePath() )
                                      .arg( prettyName() ) );
     }
@@ -339,8 +345,9 @@ PythonJob::exec()
         }
         bp::handle_exception();
         PyErr_Clear();
-        return JobResult::internalError(
-            tr( "Boost.Python error in job \"%1\"." ).arg( prettyName() ), msg, JobResult::PythonUncaughtException );
+        return JobResult::internalError( tr( "Boost.Python error in job \"%1\"", "@error" ).arg( prettyName() ),
+                                         msg,
+                                         JobResult::PythonUncaughtException );
     }
 }
 

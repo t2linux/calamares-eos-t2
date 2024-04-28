@@ -21,6 +21,8 @@
 #ifndef UTILS_YAML_H
 #define UTILS_YAML_H
 
+#include "DllMacro.h"
+
 #include <QStringList>
 #include <QVariant>
 #include <QVariantList>
@@ -48,9 +50,11 @@ class QFileInfo;
 #endif
 
 /// @brief Appends all the elements of @p node to the string list @p v
-void operator>>( const YAML::Node& node, QStringList& v );
+DLLEXPORT void operator>>( const ::YAML::Node& node, QStringList& v );
 
-namespace CalamaresUtils
+namespace Calamares
+{
+namespace YAML
 {
 /**
  * Loads a given @p filename and returns the YAML data
@@ -58,30 +62,31 @@ namespace CalamaresUtils
  * malformed in some way, returns an empty map and sets
  * @p *ok to false. Otherwise sets @p *ok to true.
  */
-QVariantMap loadYaml( const QString& filename, bool* ok = nullptr );
+DLLEXPORT QVariantMap load( const QString& filename, bool* ok = nullptr );
 /** Convenience overload. */
-QVariantMap loadYaml( const QFileInfo&, bool* ok = nullptr );
+DLLEXPORT QVariantMap load( const QFileInfo&, bool* ok = nullptr );
 
-QVariant yamlToVariant( const YAML::Node& node );
-QVariant yamlScalarToVariant( const YAML::Node& scalarNode );
-QVariantList yamlSequenceToVariant( const YAML::Node& sequenceNode );
-QVariantMap yamlMapToVariant( const YAML::Node& mapNode );
+DLLEXPORT QVariant toVariant( const ::YAML::Node& node );
+DLLEXPORT QVariant scalarToVariant( const ::YAML::Node& scalarNode );
+DLLEXPORT QVariantList sequenceToVariant( const ::YAML::Node& sequenceNode );
+DLLEXPORT QVariantMap mapToVariant( const ::YAML::Node& mapNode );
 
 /// @brief Returns all the elements of @p listNode in a StringList
-QStringList yamlToStringList( const YAML::Node& listNode );
+DLLEXPORT QStringList toStringList( const ::YAML::Node& listNode );
 
 /// @brief Save a @p map to @p filename as YAML
-bool saveYaml( const QString& filename, const QVariantMap& map );
+DLLEXPORT bool save( const QString& filename, const QVariantMap& map );
 
 /**
  * Given an exception from the YAML parser library, explain
  * what is going on in terms of the data passed to the parser.
  * Uses @p label when labeling the data source (e.g. "netinstall data")
  */
-void explainYamlException( const YAML::Exception& e, const QByteArray& data, const char* label );
-void explainYamlException( const YAML::Exception& e, const QByteArray& data, const QString& label );
-void explainYamlException( const YAML::Exception& e, const QByteArray& data );
+DLLEXPORT void explainException( const ::YAML::Exception& e, const QByteArray& data, const char* label );
+DLLEXPORT void explainException( const ::YAML::Exception& e, const QByteArray& data, const QString& label );
+DLLEXPORT void explainException( const ::YAML::Exception& e, const QByteArray& data );
 
-}  // namespace CalamaresUtils
+}  // namespace YAML
+}  // namespace Calamares
 
 #endif
