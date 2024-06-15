@@ -125,9 +125,20 @@ def is_zfs_root(partition):
     return partition["mountPoint"] == "/" and partition["fs"] == "zfs"
 
 
+def have_program_in_target(program : str):
+    """Returns @c True if @p program is in path in the target"""
+    return libcalamares.utils.target_env_call(["/usr/bin/which", program]) == 0
+
+
 def get_kernel_params(uuid):
+    # Configured kernel parameters (default "quiet"), if plymouth installed, add splash
+    # screen parameter and then "rw".
     kernel_params = libcalamares.job.configuration.get("kernelParams", ["quiet"])
+    if have_program_in_target("plymouth"):
+        kernel_params.append("splash")
     kernel_params.append("rw")
+
+    use_systemd_naming = have_program_in_target("dracut") or (libcalamares.utils.target_env_call(["/usr/bin/grep", "-q", "^HOOKS.*systemd", "/etc/mkinitcpio.conf"]) == 0)
 
     partitions = libcalamares.globalstorage.value("partitions")
     try:
@@ -139,14 +150,9 @@ def get_kernel_params(uuid):
     swap_outer_mappername = None
     swap_outer_uuid = None
 
+    
     cryptdevice_params = []
-
-    has_dracut = libcalamares.utils.target_env_call(["sh", "-c", "which dracut"]) == 0
-    uses_systemd_hook = libcalamares.utils.target_env_call(["sh", "-c",
-                                                            "grep -q \"^HOOKS.*systemd\" /etc/mkinitcpio.conf"]) == 0
-    use_systemd_naming = has_dracut or uses_systemd_hook
-
-
+    
     # Take over swap settings:
     #  - unencrypted swap partition sets swap_uuid
     #  - encrypted root sets cryptdevice_params
@@ -218,6 +224,14 @@ def create_systemd_boot_conf(installation_root_path, efi_dir, uuid, kernel, kern
     :param kernel: A string containing the path to the kernel relative to the root of the installation
     :param kernel_version: The kernel version string
     """
+
+    # Get the kernel params and write them to /etc/kernel/cmdline
+    # This file is used by kernel-install
+    kernel_params = " ".join(get_kernel_params(uuid))
+    kernel_cmdline_path = os.path.join(installation_root_path, "etc", "kernel")
+    os.makedirs(kernel_cmdline_path, exist_ok=True)
+    with open(os.path.join(kernel_cmdline_path, "cmdline"), "w") as cmdline_file:
+        cmdline_file.write(kernel_params)
 
     libcalamares.utils.debug(f"Configuring kernel version {kernel_version}")
 
