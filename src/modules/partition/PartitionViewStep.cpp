@@ -224,9 +224,15 @@ PartitionViewStep::prettyStatus() const
     const QList< PartitionCoreModule::SummaryInfo > list = m_core->createSummaryInfo();
 
     cDebug() << "Summary for Partition" << list.length() << choice;
-    auto joinDiskInfo = [ choice = choice ]( QString& s, const PartitionCoreModule::SummaryInfo& i )
-    { return s + diskDescription( 1, i, choice ); };
-    const QString diskInfoLabel = std::accumulate( list.begin(), list.end(), QString(), joinDiskInfo );
+    const QString diskInfoLabel = [ &choice, &list ]()
+    {
+        QStringList s;
+        for ( const auto& i : list )
+        {
+            s.append( diskDescription( 1, i, choice ) );
+        }
+        return s.join( QString() );
+    }();
     const QString jobsLabel = jobDescriptions( jobs() ).join( QStringLiteral( "<br/>" ) );
     return diskInfoLabel + "<br/>" + jobsLabel;
 }
@@ -555,11 +561,12 @@ shouldWarnForNotEncryptedBoot( const Config* config, const PartitionCoreModule* 
         Partition* root_p = core->findPartitionByMountPoint( "/" );
         Partition* boot_p = core->findPartitionByMountPoint( "/boot" );
 
-        if ( root_p and boot_p )
+        if ( root_p && boot_p )
         {
-            if ( ( root_p->fileSystem().type() == FileSystem::Luks && boot_p->fileSystem().type() != FileSystem::Luks )
-                 || ( root_p->fileSystem().type() == FileSystem::Luks2
-                      && boot_p->fileSystem().type() != FileSystem::Luks2 ) )
+            const auto encryptionMismatch
+                = [ root_t = root_p->fileSystem().type(), boot_t = boot_p->fileSystem().type() ]( FileSystem::Type t )
+            { return root_t == t && boot_t != t; };
+            if ( encryptionMismatch( FileSystem::Luks ) || encryptionMismatch( FileSystem::Luks2 ) )
             {
                 return true;
             }
@@ -633,7 +640,6 @@ PartitionViewStep::onLeave()
             Logger::Once o;
 
             const bool okType = esp && PartUtils::isEfiFilesystemSuitableType( esp );
-            const bool okRecommendedSize = esp && PartUtils::isEfiFilesystemRecommendedSize( esp );
             const bool okMinimumSize = esp && PartUtils::isEfiFilesystemMinimumSize( esp );
             const bool okFlag = esp && PartUtils::isEfiBootable( esp );
 
