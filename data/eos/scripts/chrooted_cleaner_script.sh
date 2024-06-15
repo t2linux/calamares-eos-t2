@@ -226,9 +226,7 @@ _clean_offline_packages(){
         ## Calamares EndeavourOS
         $(pacman -Qq | grep calamares)        # finds calamares related packages
         ckbcomp
-
-        # arm qemu dependency
-        qemu-arm-aarch64-static-bin
+	
     )
 
     pacman -Rsn --noconfirm "${packages_to_remove[@]}"
@@ -333,7 +331,7 @@ _install_extra_drivers_to_target() {
     local pkg
 
     # Handle the r8168 package.
-    if [ -r /tmp/r8168_in_use ] ; then
+    if false && [ -r /tmp/r8168_in_use ] ; then
         # We must install r8168 now.
         if _is_offline_mode ; then
             # Install using the copied r8168 package.
@@ -371,7 +369,7 @@ _remove_nvidia_drivers() {
 
     if _is_offline_mode ; then
         # delete packages separately to avoid all failing if one fails
-        [ -r /usr/share/licenses/nvidia-dkms/LICENSE ]      && _nvidia_remove nvidia-dkms
+        [ -r /usr/share/licenses/nvidia/LICENSE ]      && _nvidia_remove nvidia
         [ -x /usr/bin/nvidia-modprobe ]                     && _nvidia_remove nvidia-utils
         [ -x /usr/bin/nvidia-settings ]                     && _nvidia_remove nvidia-settings
         [ -x /usr/bin/nvidia-inst ]                         && _nvidia_remove nvidia-inst
@@ -393,7 +391,9 @@ _manage_nvidia_packages() {
         if [ "$nvidia_driver" = "no" ] ; then
             _remove_nvidia_drivers
         elif [ "$nvidia_card" = "yes" ] ; then
-            _install_needed_packages nvidia-inst nvidia-hook nvidia-dkms
+            _install_needed_packages nvidia-inst nvidia
+	    [[ $(pacman -Q linux-lts  2</dev/null) ]] &&  _install_needed_packages nvidia-lts
+	    _install_needed_packages nvidia-hook
         fi
     fi
 }

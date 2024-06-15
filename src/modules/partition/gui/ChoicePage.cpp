@@ -890,6 +890,9 @@ ChoicePage::doReplaceSelectedPartition( const QModelIndex& current )
                     //NOTE: if the selected partition is free space, we don't deal with
                     //      a separate /home partition at all because there's no existing
                     //      rootfs to read it from.
+
+                    Calamares::GlobalStorage* gs = Calamares::JobQueue::instance()->globalStorage();
+
                     PartitionRole newRoles = PartitionRole( PartitionRole::Primary );
                     PartitionNode* newParent = selectedDevice()->partitionTable();
 
@@ -903,8 +906,38 @@ ChoicePage::doReplaceSelectedPartition( const QModelIndex& current )
                         }
                     }
 
-                    m_core->layoutApply( selectedDevice(),
-                                         selectedPartition->firstSector(),
+                    auto dev = selectedDevice();
+                    qint64 newFirstSector = selectedPartition->firstSector();
+                    if ( isNewEfiSelected() && PartUtils::isEfiSystem() )
+                    {
+                        qint64 uefisys_part_sizeB = PartUtils::efiFilesystemRecommendedSize();
+                        qint64 efiSectorCount = Calamares::bytesToSectors( uefisys_part_sizeB, dev->logicalSize() );
+                        Q_ASSERT( efiSectorCount > 0 );
+
+                        // Since sectors count from 0, and this partition is created starting
+                        // at firstFreeSector, we need efiSectorCount sectors, numbered
+                        // firstFreeSector..firstFreeSector+efiSectorCount-1.
+                        qint64 lastSector = newFirstSector + efiSectorCount - 1;
+                        Partition* efiPartition
+                            = KPMHelpers::createNewPartition( dev->partitionTable(),
+                                                              *dev,
+                                                              PartitionRole( PartitionRole::Primary ),
+                                                              FileSystem::Fat32,
+                                                              QString(),
+                                                              newFirstSector,
+                                                              lastSector,
+                                                              KPM_PARTITION_FLAG( None ) );
+                        PartitionInfo::setFormat( efiPartition, true );
+                        PartitionInfo::setMountPoint( efiPartition, gs->value( "efiSystemPartition" ).toString() );
+                        if ( gs->contains( "efiSystemPartitionName" ) )
+                        {
+                            efiPartition->setLabel( gs->value( "efiSystemPartitionName" ).toString() );
+                        }
+                        m_core->createPartition( dev, efiPartition, KPM_PARTITION_FLAG_ESP );
+                        newFirstSector = lastSector + 1;
+                    }
+                    m_core->layoutApply( dev,
+                                         newFirstSector,
                                          selectedPartition->lastSector(),
                                          m_config->luksFileSystemType(),
                                          m_encryptWidget->passphrase(),

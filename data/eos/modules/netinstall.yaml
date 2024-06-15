@@ -141,6 +141,7 @@
 - name: "EndeavourOS applications"
   description: "EndeavourOS tools and applications"
   selected: true
+  critical: true
   packages:
     - endeavouros-theming
     - eos-apps-info
@@ -148,12 +149,12 @@
     - eos-packagelist
     - eos-quickstart
     - eos-rankmirrors
-    - eos-update-notifier
     - reflector-simple
     - welcome
 - name: "Recommended applications selection"
   description: "General tools and applications"
   selected: true
+  critical: true
   packages:
     - duf
     - findutils
