@@ -474,7 +474,7 @@ ChoicePage::onActionChanged()
             m_encryptWidget->setFilesystem( FileSystem::typeForName( m_replaceFsTypesChoiceComboBox->currentText() ) );
         }
 
-        m_encryptWidget->setEncryptionCheckbox( m_config->preCheckEncryption() );
+        //m_encryptWidget->setEncryptionCheckbox( m_config->preCheckEncryption() );
     }
 
     Device* currd = selectedDevice();
