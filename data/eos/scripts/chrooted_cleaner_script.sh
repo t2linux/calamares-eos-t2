@@ -212,6 +212,7 @@ _clean_offline_packages(){
 
         ## Live iso tools
         clonezilla
+	fsarchiver
         gpart
 	gparted
         grsync
