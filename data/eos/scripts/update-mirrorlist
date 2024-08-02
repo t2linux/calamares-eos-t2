@@ -84,7 +84,7 @@ UseBestMirrorsIfAvailable() {
     declare -A BEST_MIRRORS     # mirrors here will be the *first* mirrors
 
     # Add a list of *known* best mirrors for a country:
-    BEST_MIRRORS[FI]='https://mirror.f4st.host/archlinux/$repo/os/$arch https://mirror.pseudoform.org/$repo/os/$arch'  # FI uses these!
+    BEST_MIRRORS[FI]='https://mirror.moson.org/arch/$repo/os/$arch https://mirror.pseudoform.org/$repo/os/$arch'  # FI uses these!
 
     local best="${BEST_MIRRORS[$this_country]}"
     local bb

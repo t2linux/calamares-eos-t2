@@ -96,10 +96,10 @@ _copy_files(){
         mkdir -p $target/opt/extra-drivers || _cleaner_msg warning "creating folder /opt/extra-drivers on target failed."
         cp /opt/extra-drivers/*.zst $target/opt/extra-drivers/ || _cleaner_msg warning "copying drivers to /opt/extra-drivers on target failed."
     fi
-    if [ -n "$(lsmod | grep r8168)" ] ; then
-        _cleaner_msg info "detected usage of r8168 driver"
-        touch $target/tmp/r8168_in_use
-    fi
+    #if [ -n "$(lsmod | grep r8168)" ] ; then
+    #    _cleaner_msg info "detected usage of r8168 driver"
+    #    touch $target/tmp/r8168_in_use
+    #fi
 
     _manage_broadcom_wifi_driver
 

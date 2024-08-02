@@ -63,6 +63,7 @@ def run():
     run_in_target = libcalamares.job.configuration.get("runInTarget", False)
     include_root = libcalamares.job.configuration.get("includeRoot", False)
     include_user = libcalamares.job.configuration.get("includeUser", False)
+    include_raw_user = libcalamares.job.configuration.get("includeRawUser", False)
     global user_output
     user_output = libcalamares.job.configuration.get("userOutput", False)
 
@@ -99,10 +100,12 @@ def run():
 
         command.append("--root=" + root_mount_point)
 
-    if include_user:
+    if include_user or include_raw_user:
         user = libcalamares.globalstorage.value("username")
         if user:
-            command.append("--user=" + user)
+            if include_user:
+                command.append("--user=")
+            command.append(user)
         else:
             return "Username missing", "Username not available in global storage"
 

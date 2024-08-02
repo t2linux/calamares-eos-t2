@@ -155,7 +155,6 @@
   packages:
     - duf
     - findutils
-    - fsarchiver
     - git
     - glances
     - hwinfo

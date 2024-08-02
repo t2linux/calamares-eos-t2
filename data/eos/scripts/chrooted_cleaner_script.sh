@@ -212,6 +212,7 @@ _clean_offline_packages(){
 
         ## Live iso tools
         clonezilla
+	fsarchiver
         gpart
 	gparted
         grsync
@@ -331,7 +332,7 @@ _install_extra_drivers_to_target() {
     local pkg
 
     # Handle the r8168 package.
-    if [ -r /tmp/r8168_in_use ] ; then
+    if false && [ -r /tmp/r8168_in_use ] ; then
         # We must install r8168 now.
         if _is_offline_mode ; then
             # Install using the copied r8168 package.
