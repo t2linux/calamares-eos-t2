@@ -160,9 +160,7 @@ Main() {
         _cleaner_msg "FATAL ERROR" "cleaner_script.sh: chroot_path is empty!"
         return  # no point in continuing here
     fi
-    if [ -z "$NEW_USER" ] ; then
-        _cleaner_msg "error" "cleaner_script.sh: new username is unknown!"
-    fi
+    # [ -z "$NEW_USER" ] && _cleaner_msg "error" "cleaner_script.sh: new username is unknown!"
 
     # If the Intel X driver was installed, also install it on the target
     echo "Checking if Intel X11 driver is needed"
