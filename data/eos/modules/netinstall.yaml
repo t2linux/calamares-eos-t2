@@ -68,7 +68,7 @@
         - libdvdcss
         - libgsf
         - libopenraw
-        - mlocate
+        - plocate
         - poppler-glib
         - xdg-user-dirs
         - xdg-utils
