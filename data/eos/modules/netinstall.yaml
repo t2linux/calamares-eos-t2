@@ -235,8 +235,10 @@
   critical: true
   packages:
     - hplip
+    - python-pillow
     - python-pyqt5
     - python-reportlab
+    - sane
     - cups
     - cups-browsed
     - cups-filters
