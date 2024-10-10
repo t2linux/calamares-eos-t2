@@ -114,7 +114,7 @@ _virtual_machines() {
     local pkgs_remove_from_vm="power-profiles-daemon"
     local pkgs_vbox="virtualbox-guest-utils"
     local pkgs_qemu="qemu-guest-agent spice-vdagent"
-    local pkgs_vmware="open-vm-tools xf86-input-vmmouse"
+    local pkgs_vmware="open-vm-tools gtkmm3 xf86-input-vmmouse"
 
     [ -n "$detected_vm" ] || detected_vm="$(device-info --vm)"
 
