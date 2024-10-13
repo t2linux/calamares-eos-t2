@@ -39,7 +39,7 @@ struct ReplacePartitionOptions
     ReplacePartitionOptions( const QString& pt,
                              const QString& fs,
                              Config::LuksGeneration luksFs,
-                             const QString& passphrase )
+                             const QString& passphrase,
                              const bool& newEsp
                              )
         : defaultPartitionTableType( pt )

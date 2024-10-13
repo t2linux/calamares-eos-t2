@@ -1823,6 +1823,29 @@ ChoicePage::shouldShowEncryptWidget( Config::InstallChoice choice ) const
 }
 
 void
+ChoicePage::reset()
+{
+    m_grp->setExclusive( false );
+    if ( m_alongsideButton->isChecked() )
+    {
+        m_alongsideButton->setChecked( false );
+    }
+    if ( m_eraseButton->isChecked() )
+    {
+        m_eraseButton->setChecked( false );
+    }
+    if ( m_replaceButton->isChecked() )
+    {
+        m_replaceButton->setChecked( false );
+    }
+    if ( m_somethingElseButton->isChecked() )
+    {
+        m_somethingElseButton->setChecked( false );
+    }
+    m_grp->setExclusive( true );
+}
+
+void
 ChoicePage::updateActionDescriptionsTr()
 {
     if ( m_osproberEntriesCount == 0 )
