@@ -1293,6 +1293,12 @@ ChoicePage::setupEfiSystemPartitionSelector()
 {
     Q_ASSERT( m_isEfi );
 
+    // Ensure the EFI selector is not already configured
+    if ( m_efiComboBox->count() > 0 )
+    {
+        return;
+    }
+
     auto gs = Calamares::JobQueue::instance()->globalStorage();
 
     m_efiNewIndex = -1;
@@ -1300,47 +1306,36 @@ ChoicePage::setupEfiSystemPartitionSelector()
     // Only the already existing ones:
     QList< Partition* > efiSystemPartitions = m_core->efiSystemPartitions();
 
-    if ( efiSystemPartitions.count() == 0 )  //should never happen
+     m_efiLabel->setText( tr( "EFI system partition:", "@label" ) );
+    for ( int i = 0; i < efiSystemPartitions.count(); ++i )
     {
-        m_efiLabel->setText( tr( "An EFI system partition cannot be found anywhere "
-                                 "on this system. Please go back and use manual "
-                                 "partitioning to set up %1.",
-                                 "@info, %1 is product name" )
-                                 .arg( Calamares::Branding::instance()->shortProductName() ) );
-        updateNextEnabled();
+        Partition* efiPartition = efiSystemPartitions.at( i );
+        if ( gs->contains( "curBootloader" )
+             && gs->value( "curBootloader" ).toString().trimmed() == QStringLiteral( "systemd-boot" ) )
+        {
+            if ( efiPartition->capacity() < PartUtils::efiFilesystemMinimumSize() )
+            {
+                continue;
+            }
+        }
+
+        m_efiComboBox->addItem( efiPartition->partitionPath() );
+
+        // We pick an ESP on the currently selected device, if possible
+        if ( efiPartition->devicePath() == selectedDevice()->deviceNode() && m_efiComboBox->currentIndex() < 0 )
+        {
+            m_efiComboBox->setCurrentIndex( m_efiComboBox->findText( efiPartition->partitionPath() ) );
+        }
     }
-    else
+    m_efiComboBox->addItem( tr( "New" ) );
+    m_efiNewIndex = m_efiComboBox->count() - 1;
+
+    m_efiComboBox->show();
+
+    // Ensure the combobox has something selected
+    if ( m_efiComboBox->currentIndex() < 0 )
     {
-        m_efiComboBox->show();
-        m_efiLabel->setText( tr( "EFI system partition:", "@label" ) );
-        for ( int i = 0; i < efiSystemPartitions.count(); ++i )
-        {
-            Partition* efiPartition = efiSystemPartitions.at( i );
-            if ( gs->contains( "curBootloader" )
-                 && gs->value( "curBootloader" ).toString().trimmed() == QStringLiteral( "systemd-boot" ) )
-            {
-                if ( efiPartition->capacity() < PartUtils::efiFilesystemMinimumSize() )
-                {
-                    continue;
-                }
-            }
-
-            m_efiComboBox->addItem( efiPartition->partitionPath() );
-
-            // We pick an ESP on the currently selected device, if possible
-            if ( efiPartition->devicePath() == selectedDevice()->deviceNode() && m_efiComboBox->currentIndex() < 0 )
-            {
-                m_efiComboBox->setCurrentIndex( m_efiComboBox->findText( efiPartition->partitionPath() ) );
-            }
-        }
-        m_efiComboBox->addItem( tr( "New" ) );
-        m_efiNewIndex = m_efiComboBox->count() - 1;
-
-        // Ensure the combobox has something selected
-        if ( m_efiComboBox->currentIndex() < 0 )
-        {
-            m_efiComboBox->setCurrentIndex( 0 );
-        }
+        m_efiComboBox->setCurrentIndex( 0 );
     }
 }
 
