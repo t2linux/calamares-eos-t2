@@ -104,8 +104,9 @@ def run():
         user = libcalamares.globalstorage.value("username")
         if user:
             if include_user:
-                command.append("--user=")
-            command.append(user)
+                command.append(f"--user={user}")
+            else:
+                command.append(user)
         else:
             return "Username missing", "Username not available in global storage"
 
