@@ -135,7 +135,9 @@ Main() {
     local VERSION="2.2"                   # started from 2.0!
     local progname="${0##*/}"
     local mf=/etc/pacman.d/mirrorlist
-    local bu=/tmp/mirrorlist.bu             # original mirrorlist, saved by Welcome
+    local bu=/tmp/mirrorlist.bu                        # original mirrorlist, saved by Welcome
+    local mfe=/etc/pacman.d/endeavouros-mirrorlist
+    local bue=/tmp/endeavouros-mirrorlist.bu           # original endeavouros-mirrorlist, saved by Welcome
 
     logterminal "version $VERSION"
 
@@ -154,6 +156,23 @@ Main() {
             logterminal "This is the current mirrorlist:"
             echo "#===================================#"
             cat "$mf"
+            echo "#===================================#"
+            return
+        fi
+    fi
+
+    if [ -r $mfe ] && [ -r $bue ] ; then
+        if (/usr/bin/diff $mfe $bue >& /dev/null) ; then
+            # Current and original endeavouros mirrorlists are the same, so run eos-rankmirrors.
+            logterminal "Updating endeavouros-mirrorlist."
+            eos-rankmirrors
+            return
+        else
+            # Current and original endeavouros mirrorlists are different, so stop.
+            logterminal "EndeavourOS mirrorlist already changed, not updating it."
+            logterminal "This is the current endeavouros-mirrorlist:"
+            echo "#===================================#"
+            cat "$mfe"
             echo "#===================================#"
             return
         fi
