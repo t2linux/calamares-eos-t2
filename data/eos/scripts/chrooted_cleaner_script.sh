@@ -510,11 +510,9 @@ Main() {
         case $i in
             --user=*)
                 NEW_USER="${i#*=}"
-                shift
                 ;;
             --online)
                 INSTALL_TYPE="online"
-                shift
                 ;;
             --bootloader=*)
                 BOOTLOADER="${i#*=}"
