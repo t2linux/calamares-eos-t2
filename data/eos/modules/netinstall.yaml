@@ -194,8 +194,7 @@
   critical: true
   packages:
     - firewalld
-    - python-pyqt5
-    - python-capng
+    - python-pyqt6
 - name: "LTS kernel in addition"
   description: "Adding Long Term Supported kernel in addition to main one"
   hidden: false
