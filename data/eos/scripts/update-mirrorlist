@@ -84,7 +84,7 @@ UseBestMirrorsIfAvailable() {
     declare -A BEST_MIRRORS     # mirrors here will be the *first* mirrors
 
     # Add a list of *known* best mirrors for a country:
-    BEST_MIRRORS[FI]='https://mirror.moson.org/arch/$repo/os/$arch https://mirror.pseudoform.org/$repo/os/$arch'  # FI uses these!
+    BEST_MIRRORS[FI]='https://mirror.accum.se/mirror/archlinux/$repo/os/$arch https://berlin.mirror.pkgbuild.com/$repo/os/$arch'
 
     local best="${BEST_MIRRORS[$this_country]}"
     local bb
@@ -138,6 +138,7 @@ Main() {
     local bu=/tmp/mirrorlist.bu                        # original mirrorlist, saved by Welcome
     local mfe=/etc/pacman.d/endeavouros-mirrorlist
     local bue=/tmp/endeavouros-mirrorlist.bu           # original endeavouros-mirrorlist, saved by Welcome
+    local rank_ml=no
 
     logterminal "version $VERSION"
 
@@ -150,6 +151,7 @@ Main() {
         if (/usr/bin/diff $mf $bu >& /dev/null) ; then
             # Current and original mirrorlists are the same, so carry on.
             logterminal "Updating mirrorlist."
+            rank_ml=yes
         else
             # Current and original mirrorlist are different, so stop.
             logterminal "Mirrorlist already changed, not updating it."
@@ -157,7 +159,6 @@ Main() {
             echo "#===================================#"
             cat "$mf"
             echo "#===================================#"
-            return
         fi
     fi
 
@@ -166,7 +167,6 @@ Main() {
             # Current and original endeavouros mirrorlists are the same, so run eos-rankmirrors.
             logterminal "Updating endeavouros-mirrorlist."
             eos-rankmirrors
-            return
         else
             # Current and original endeavouros mirrorlists are different, so stop.
             logterminal "EndeavourOS mirrorlist already changed, not updating it."
@@ -174,9 +174,9 @@ Main() {
             echo "#===================================#"
             cat "$mfe"
             echo "#===================================#"
-            return
         fi
     fi
+    [ $rank_ml = no ] && return
 
     REFLECTOR_COUNTRIES="$(reflector --list-countries --connection-timeout 20 --download-timeout 20)"
     if [ -z "$REFLECTOR_COUNTRIES" ] ; then
