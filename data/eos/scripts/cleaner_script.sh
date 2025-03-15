@@ -90,6 +90,9 @@ _copy_files(){
     # copy user_commands.bash to target
     _CopyFileToTarget /home/liveuser/user_commands.bash $target/tmp
 
+    # copy hotfix-end.bash to target
+    _CopyFileToTarget /usr/share/endeavouros/hotfix/hotfixes/hotfix-end.bash $target/tmp
+
     # copy 30-touchpad.conf Xorg config file
     _cleaner_msg info "copying 30-touchpad.conf to target"
     mkdir -p $target/usr/share/X11/xorg.conf.d
@@ -137,7 +140,7 @@ Main() {
                 NEW_USER="${i#*=}"
                 shift
                 ;;
-			--online)
+            --online)
                 INSTALL_TYPE="online"
                 shift
                 ;;

@@ -488,11 +488,15 @@ _run_hotfix_end() {
         _c_c_s_msg $type "cannot fetch $file, no connection."
         return
     fi
-    local url=$(eos-github2gitlab https://raw.githubusercontent.com/endeavouros-team/ISO-hotfixes/main/$file)
-    wget --timeout=60 -q -O /tmp/$file $url && {
-        _c_c_s_msg info "running script $file"
-        bash /tmp/$file
-    }
+    if [ ! -e /tmp/$file ] ; then
+        local url=$(eos-github2gitlab https://raw.githubusercontent.com/endeavouros-team/ISO-hotfixes/main/$file)
+        wget --timeout=60 -q -O /tmp/$file $url || {
+            _c_c_s_msg warning "fetching $file failed."
+            return
+        }
+    fi
+    _c_c_s_msg info "running script $file"
+    bash /tmp/$file
 }
 
 Main() {
