@@ -366,15 +366,13 @@ _nvidia_remove() {
 }
 
 _remove_nvidia_drivers() {
-    local remove="pacman -Rsc --noconfirm"
-
     if _is_offline_mode ; then
-        # delete packages separately to avoid all failing if one fails
-        [ -r /usr/share/licenses/nvidia/LICENSE ]      && _nvidia_remove nvidia
-        [ -x /usr/bin/nvidia-modprobe ]                     && _nvidia_remove nvidia-utils
-        [ -x /usr/bin/nvidia-settings ]                     && _nvidia_remove nvidia-settings
-        [ -x /usr/bin/nvidia-inst ]                         && _nvidia_remove nvidia-inst
-        [ -r /usr/share/libalpm/hooks/eos-nvidia-fix.hook ] && _nvidia_remove nvidia-hook
+        local pkgs=( nvidia nvidia-lts nvidia-dkms
+                     nvidia-open nvidia-open-lts nvidia-open-dkms
+                     nvidia-utils nvidia-settings
+                     nvidia-hook nvidia-inst )
+        local remove=($(expac %n "${pkgs[@]}"))
+        [ "$remove" ] && _nvidia_remove "${remove[@]}"
         true
     fi
 }
@@ -390,11 +388,11 @@ _manage_nvidia_packages() {
     else
         source $file
         if [ "$nvidia_driver" = "no" ] ; then
-            _remove_nvidia_drivers
+            _remove_nvidia_drivers                   # no Nvidia GPU or using nouveau
         elif [ "$nvidia_card" = "yes" ] ; then
-            _install_needed_packages nvidia-inst nvidia
-	    [[ $(pacman -Q linux-lts  2</dev/null) ]] &&  _install_needed_packages nvidia-lts
-	    _install_needed_packages nvidia-hook
+            _install_needed_packages nvidia-inst     # choose the recommended packages for the Nvidia GPU
+            nvidia-inst --no-dkms --no-settings
+            true
         fi
     fi
 }
