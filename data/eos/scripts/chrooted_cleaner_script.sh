@@ -110,7 +110,7 @@ _sway_in_vm_settings() {
 
 _virtual_machines() {
     local detected_vm="$1"
-    local pkgs_common="xf86-video-vmware"
+    local pkgs_common=""    # xf86-video-vmware
     local pkgs_remove_from_vm="power-profiles-daemon"
     local pkgs_vbox="virtualbox-guest-utils"
     local pkgs_qemu="qemu-guest-agent spice-vdagent"
