@@ -69,23 +69,13 @@ _copy_files(){
     # - nvidia card is detected
     # - livesession is running nvidia driver
 
-    local nvidia_file=$target/tmp/nvidia-info.bash
-    local card=no
-    local driver=no
-    local lspci="$(lspci -k)"
-
-    if [ -n "$(echo "$lspci" | grep -P 'VGA|3D|Display' | grep -w NVIDIA)" ] ; then
-        card=yes
-        [ -n "$(lsmod | grep -w nvidia)" ]                                                   && driver=yes
-        [ -n "$(echo "$lspci" | grep -wA2 NVIDIA | grep "Kernel driver in use: nvidia")" ]   && driver=yes
-        if [ "$driver" = "yes" ] ; then
-            _cleaner_msg info "using nvidia driver"
-        else
-            _cleaner_msg info "using nouveau driver"
-        fi
+    if grep -qw "nvidia=1" /proc/cmdline ; then
+        local nvidia_file=$target/tmp/nvidia-info.bash
+        local driver="$(/usr/bin/nvidia-inst --recommended-driver)"
+        case "$driver" in
+            nvidia | nvidia-open) echo "$nvidia_driver=$driver" >> $nvidia_file ;;
+        esac
     fi
-    echo "nvidia_card=$card"     >> $nvidia_file
-    echo "nvidia_driver=$driver" >> $nvidia_file
 
     # copy user_commands.bash to target
     _CopyFileToTarget /home/liveuser/user_commands.bash $target/tmp

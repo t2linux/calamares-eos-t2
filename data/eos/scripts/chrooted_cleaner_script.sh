@@ -366,35 +366,53 @@ _nvidia_remove() {
 }
 
 _remove_nvidia_drivers() {
-    if _is_offline_mode ; then
-        local pkgs=( nvidia nvidia-lts nvidia-dkms
-                     nvidia-open nvidia-open-lts nvidia-open-dkms
-                     nvidia-utils nvidia-settings
-                     nvidia-hook nvidia-inst )
-        local remove=($(expac %n "${pkgs[@]}"))
-        [ "$remove" ] && _nvidia_remove "${remove[@]}"
-        true
-    fi
+    local pkgs=( nvidia nvidia-lts nvidia-dkms
+                 nvidia-open nvidia-open-lts nvidia-open-dkms
+                 nvidia-utils nvidia-settings
+                 nvidia-hook nvidia-inst )
+    local remove=($(expac %n "${pkgs[@]}"))
+    [ "$remove" ] && _nvidia_remove "${remove[@]}"
+    true
 }
 
 _manage_nvidia_packages() {
     local file=/tmp/nvidia-info.bash        # nvidia info from livesession
-    local nvidia_card=""                    # these two variables are defined in $file
-    local nvidia_driver=""
 
-    if [ ! -r $file ] ; then
-        _c_c_s_msg warning "file $file does not exist!"
-        _remove_nvidia_drivers
-    else
+    if [ -r $file ] ; then
+        local nvidia_driver=""
         source $file
-        if [ "$nvidia_driver" = "no" ] ; then
-            _remove_nvidia_drivers                   # no Nvidia GPU or using nouveau
-        elif [ "$nvidia_card" = "yes" ] ; then
-            _install_needed_packages nvidia-inst     # choose the recommended packages for the Nvidia GPU
-            nvidia-inst --no-dkms --no-settings
-            true
-        fi
+        case "$nvidia_driver" in
+            nvidia | nvidia-open)
+                if _is_online_mode ; then
+                    if _check_internet_connection ; then
+                        _install_needed_packages nvidia-inst
+                        /usr/bin/nvidia-inst --no-dkms --no-settings
+                    else
+                        _c_c_s_msg warning "$FUNCNAME: no internet connection!"
+                    fi
+                else
+                    # offline: install nvidia packages from /usr/share/packages/
+                    local dir=/usr/share/packages
+                    local pkgs=""
+                    case "$nvidia_driver" in
+                        nvidia)      pkgs="$(/usr/bin/ls -1 $dir/nvidia*.pkg.tar.zst 2>/dev/null | grep -v nvidia-open)" ;;
+                        nvidia-open) pkgs="$(/usr/bin/ls -1 $dir/nvidia*.pkg.tar.zst 2>/dev/null | grep -v nvidia-[0-9])" ;;
+                    esac
+                    if [ "$pkgs" ] ; then
+                        pacman -U --noconfirm $pkgs
+                    else
+                        _c_c_s_msg warning "$FUNCNAME: no Nvidia packages in $dir !"
+                    fi
+                fi
+                ;;
+            nouveau | "" | *)
+                _remove_nvidia_drivers               # no Nvidia GPU or using nouveau
+                ;;
+        esac
+    else
+        _remove_nvidia_drivers                       # for both offline and online ??
     fi
+    true
 }
 
 _run_if_exists_or_complain() {
