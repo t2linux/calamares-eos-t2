@@ -28,7 +28,6 @@
       selected: true
       packages:
         - b43-fwcutter
-        - broadcom-wl-dkms
         - dnsmasq
         - dnsutils
         - ethtool
