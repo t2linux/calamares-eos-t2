@@ -387,6 +387,9 @@ _manage_nvidia_packages() {
                     if _check_internet_connection ; then
                         _install_needed_packages nvidia-inst
                         /usr/bin/nvidia-inst --no-dkms --no-settings
+                        if [[ $(pacman -Q linux-lts 2>/dev/null) ]]; then
+                            _install_needed_packages nvidia-lts
+                        fi
                     else
                         _c_c_s_msg warning "$FUNCNAME: no internet connection!"
                     fi
@@ -395,7 +398,7 @@ _manage_nvidia_packages() {
                     local dir=/usr/share/packages
                     local pkgs=""
                     case "$nvidia_driver" in
-                        nvidia)      pkgs="$(/usr/bin/ls -1 $dir/nvidia*.pkg.tar.zst 2>/dev/null | grep -v nvidia-open)" ;;
+                        nvidia) pkgs="$(/usr/bin/ls -1 $dir/nvidia*.pkg.tar.zst 2>/dev/null | grep -v nvidia-open)" ;;
                         nvidia-open) pkgs="$(/usr/bin/ls -1 $dir/nvidia*.pkg.tar.zst 2>/dev/null | grep -v nvidia-[0-9])" ;;
                     esac
                     if [ "$pkgs" ] ; then
@@ -406,14 +409,15 @@ _manage_nvidia_packages() {
                 fi
                 ;;
             nouveau | "" | *)
-                _remove_nvidia_drivers               # no Nvidia GPU or using nouveau
+                _remove_nvidia_drivers
                 ;;
         esac
     else
-        _remove_nvidia_drivers                       # for both offline and online ??
+        _remove_nvidia_drivers
     fi
     true
 }
+
 
 _run_if_exists_or_complain() {
     local app="$1"
