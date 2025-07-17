@@ -208,9 +208,6 @@ def get_kernel_params(uuid):
     if swap_outer_mappername:
         kernel_params.append(f"resume=/dev/mapper/{swap_outer_mappername}")
 
-    if "nvidia" in gpu_drivers:
-        kernel_params.append("nvidia_drm.modeset=1")
-
     return kernel_params
 
 
