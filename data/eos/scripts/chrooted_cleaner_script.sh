@@ -409,11 +409,11 @@ _manage_nvidia_packages() {
                 fi
                 ;;
             nouveau | "" | *)
-                _remove_nvidia_drivers
+                _remove_nvidia_drivers	# no Nvidia GPU or using nouveau
                 ;;
         esac
     else
-        _remove_nvidia_drivers
+        _remove_nvidia_drivers	 # for both offline and online ??
     fi
     true
 }
