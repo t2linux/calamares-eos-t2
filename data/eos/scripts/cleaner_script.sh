@@ -73,7 +73,7 @@ _copy_files(){
         local nvidia_file=$target/tmp/nvidia-info.bash
         local driver="$(/usr/bin/nvidia-inst --recommended-driver)"
         case "$driver" in
-            nvidia | nvidia-open) echo "$nvidia_driver=$driver" >> $nvidia_file ;;
+            nvidia | nvidia-open) echo "nvidia_driver=$driver" >> $nvidia_file ;;
         esac
     fi
 
