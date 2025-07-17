@@ -8,6 +8,8 @@
 # 01-2022 passing in online and username as params - @dalto
 # 04-2022 small code re-organization - @manuel
 # 10-2022 remove unused code and support for dracut/mkinitcpio switch
+# 04-2025 use 'nvidia-inst' to install the Nvidia packages now - @manuel
+# 07-2025 adding logic to install nvidia-lts if needed - @killajoe/joekamprad
 
 _c_c_s_msg() {            # use this to provide all user messages (info, warning, error, ...)
     local type="$1"
