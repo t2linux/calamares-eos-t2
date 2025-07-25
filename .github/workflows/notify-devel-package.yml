@@ -2,7 +2,7 @@ name: Notify Devel Package
 
 on:
   push:
-    branches: [ main ]
+    branches: [ calamares ]
 
 jobs:
   notify:
