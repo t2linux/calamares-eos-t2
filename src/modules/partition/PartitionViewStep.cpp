@@ -520,42 +520,8 @@ PartitionViewStep::onActivate()
 static bool
 shouldWarnForGPTOnBIOS( const PartitionCoreModule* core )
 {
-    if ( PartUtils::isEfiSystem() )
-    {
-        return false;
-    }
-
-    const QString biosFlagName = PartitionTable::flagName( KPM_PARTITION_FLAG( BiosGrub ) );
-
-    auto [ r, device ] = core->bootLoaderModel()->findBootLoader( core->bootLoaderInstallPath() );
-    Q_UNUSED( r );
-    if ( device )
-    {
-        auto* table = device->partitionTable();
-        cDebug() << "Found device for bootloader" << device->deviceNode();
-        if ( table && table->type() == PartitionTable::TableType::gpt )
-        {
-            // So this is a BIOS system, and the bootloader will be installed on a GPT system
-            for ( const auto& partition : qAsConst( table->children() ) )
-            {
-                using Calamares::Units::operator""_MiB;
-                if ( ( partition->activeFlags() & KPM_PARTITION_FLAG( BiosGrub ) )
-                     && ( partition->fileSystem().type() == FileSystem::Unformatted )
-                     && ( partition->capacity() >= 8_MiB ) )
-                {
-                    cDebug() << Logger::SubEntry << "Partition" << partition->devicePath() << partition->partitionPath()
-                             << "is a suitable" << biosFlagName << "partition";
-                    return false;
-                }
-            }
-        }
-        cDebug() << Logger::SubEntry << "No suitable partition for" << biosFlagName << "found";
-    }
-    else
-    {
-        cDebug() << "Found no device for" << core->bootLoaderInstallPath();
-    }
-    return true;
+    // Let's disable this for now until we have time to remove it upstream
+    return false;
 }
 
 static bool
