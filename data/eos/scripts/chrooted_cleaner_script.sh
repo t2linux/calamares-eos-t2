@@ -301,7 +301,7 @@ _manage_other_graphics_drivers() {
 }
 
 _remove_broadcom_wifi_driver_old() {
-    local pkgname=broadcom-wl-dkms
+    local pkgname=broadcom-wl
     local wifi_pci
     local wifi_driver
 
@@ -319,7 +319,7 @@ _remove_broadcom_wifi_driver_old() {
 }
 
 _remove_broadcom_wifi_driver() {
-    local pkgname=broadcom-wl-dkms
+    local pkgname=broadcom-wl
     local file=/tmp/$pkgname.txt
     if [ "$(cat $file 2>/dev/null)" = "no" ] ; then
         _remove_a_pkg $pkgname
@@ -463,7 +463,7 @@ _clean_up(){
     # install or remove AMD and Intel graphics stuff if needed
     _manage_other_graphics_drivers
 
-    # remove broadcom-wl-dkms if it is not needed
+    # remove broadcom-wl if it is not needed
     _remove_broadcom_wifi_driver
 
     _install_extra_drivers_to_target

@@ -38,7 +38,7 @@ _CopyFileToTarget() {
 }
 
 _manage_broadcom_wifi_driver() {
-    local pkgname=broadcom-wl-dkms
+    local pkgname=broadcom-wl
     local targetfile=/tmp/$chroot_path/tmp/$pkgname.txt
     local wifi_pci="$(lspci -k | sed -n '/ Network controller: /,/^[^ \t]/p' | sed '$d')"
 
