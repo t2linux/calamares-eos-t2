@@ -304,7 +304,7 @@ _install_extra_drivers_to_target() {
     # Install special drivers to target if needed.
     # The drivers exist on the ISO and were copied to the target.
 
-    local dir=/opt/extra-drivers
+    local dir=/usr/share/packages
     local pkg
 
 # Handle the broadcom-wl package.
