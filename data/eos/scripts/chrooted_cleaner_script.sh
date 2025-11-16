@@ -300,32 +300,6 @@ _manage_other_graphics_drivers() {
     esac
 }
 
-_remove_broadcom_wifi_driver_old() {
-    local pkgname=broadcom-wl
-    local wifi_pci
-    local wifi_driver
-
-    # _is_pkg_installed $pkgname && {
-        wifi_pci="$(lspci -k | grep -A4 " Network controller: ")"
-        if [ -n "$(lsusb | grep " Broadcom ")" ] || [ -n "$(echo "$wifi_pci" | grep " Broadcom ")" ] ; then
-            return
-        fi
-        wifi_driver="$(echo "$wifi_pci" | grep "Kernel driver in use")"
-        if [ -n "$(echo "$wifi_driver" | grep "in use: wl$")" ] ; then
-            return
-        fi
-        _remove_a_pkg $pkgname
-    # }
-}
-
-_remove_broadcom_wifi_driver() {
-    local pkgname=broadcom-wl
-    local file=/tmp/$pkgname.txt
-    if [ "$(cat $file 2>/dev/null)" = "no" ] ; then
-        _remove_a_pkg $pkgname
-    fi
-}
-
 _install_extra_drivers_to_target() {
     # Install special drivers to target if needed.
     # The drivers exist on the ISO and were copied to the target.
@@ -333,25 +307,25 @@ _install_extra_drivers_to_target() {
     local dir=/opt/extra-drivers
     local pkg
 
-    # Handle the r8168 package.
-    if false && [ -r /tmp/r8168_in_use ] ; then
-        # We must install r8168 now.
-        if _is_offline_mode ; then
-            # Install using the copied r8168 package.
-            pkg="$(/usr/bin/ls -1 $dir/r8168-*-x86_64.pkg.tar.zst)"
-            if [ -n "$pkg" ] ; then
-                _pkg_msg install "r8168 (offline)"
-                pacman -U --noconfirm $pkg
-            else
-                _c_c_s_msg error "no r8168 package in folder $dir!"
-            fi
+# Handle the broadcom-wl package.
+if [ -r /tmp/broadcom-wl.txt ] && grep -q "^yes$" /tmp/broadcom-wl.txt; then
+    _pkg_msg info "Installing broadcom-wl package"
+
+    if _is_offline_mode; then
+        # Install using the copied broadcom-wl package.
+        pkg="$(/usr/bin/ls -1 $dir/broadcom-wl-*-x86_64.pkg.tar.zst 2>/dev/null | head -n1)"
+        if [ -n "$pkg" ]; then
+            _pkg_msg install "broadcom-wl (offline)"
+            pacman -U --noconfirm "$pkg"
         else
-            # Install r8168 package from the mirrors.
-            _install_needed_packages r8168
-	    # Handle the r8168-lts package if LTS is installed.
-            [[ $(pacman -Q linux-lts  2</dev/null) ]] &&  _install_needed_packages r8168-lts
+            _c_c_s_msg error "No broadcom-wl package found in folder $dir!"
         fi
+    else
+        # Install broadcom-wl package from mirrors
+        _install_needed_packages broadcom-wl
     fi
+fi
+
 }
 
 _install_more_firmware() {
@@ -462,9 +436,6 @@ _clean_up(){
 
     # install or remove AMD and Intel graphics stuff if needed
     _manage_other_graphics_drivers
-
-    # remove broadcom-wl if it is not needed
-    _remove_broadcom_wifi_driver
 
     _install_extra_drivers_to_target
     _install_more_firmware
