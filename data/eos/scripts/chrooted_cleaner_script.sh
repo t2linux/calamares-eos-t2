@@ -301,37 +301,35 @@ _manage_other_graphics_drivers() {
 }
 
 _install_extra_drivers_to_target() {
-    # Install special drivers to target if needed.
-    # The drivers exist on the ISO and were copied to the target.
-
     local dir=/usr/share/packages
     local pkg
 
-# Handle the broadcom-wl package.
-if [ -r /tmp/broadcom-wl.txt ] && grep -q "^yes$" /tmp/broadcom-wl.txt; then
-    _pkg_msg info "Installing broadcom-wl package"
+    # Handle the broadcom-wl package.
+    if [ -r /tmp/broadcom-wl.txt ] && grep -q "^yes$" /tmp/broadcom-wl.txt; then
+        _pkg_msg info "Installing broadcom-wl package"
 
-    if _is_offline_mode; then
-        # Install using the copied broadcom-wl package.
-        pkg="$(/usr/bin/ls -1 $dir/broadcom-wl-*-x86_64.pkg.tar.zst 2>/dev/null | head -n1)"
-        if [ -n "$pkg" ]; then
-            _pkg_msg install "broadcom-wl (offline)"
-            pacman -U --noconfirm "$pkg"
+        if _is_offline_mode; then
+            # Install using the copied broadcom-wl package.
+            pkg="$(/usr/bin/ls -1 $dir/broadcom-wl-*-x86_64.pkg.tar.zst 2>/dev/null | head -n1)"
+            if [ -n "$pkg" ]; then
+                _pkg_msg install "broadcom-wl (offline)"
+                pacman -U --noconfirm "$pkg"
+            else
+                _c_c_s_msg error "No broadcom-wl package found in folder $dir!"
+            fi
         else
-            _c_c_s_msg error "No broadcom-wl package found in folder $dir!"
+            # Online install – choose correct package depending on kernels installed
+            if pacman -Qq linux-lts >/dev/null 2>&1; then
+                # LTS kernel installed --> use DKMS version
+                _pkg_msg info "LTS kernel detected --> installing broadcom-wl-dkms"
+                _install_needed_packages broadcom-wl-dkms
+            else
+                # No LTS kernel → install regular broadcom-wl
+                _pkg_msg info "No LTS kernel --> installing broadcom-wl"
+                _install_needed_packages broadcom-wl
+            fi
         fi
-else
-    # Online install – choose correct package depending on kernels installed
-    if pacman -Qq linux-lts >/dev/null 2>&1; then
-        # LTS kernel installed --> use DKMS version
-        _pkg_msg info "LTS kernel detected --> installing broadcom-wl-dkms"
-        _install_needed_packages broadcom-wl-dkms
-    else
-        # No LTS kernel → install regular broadcom-wl
-        _pkg_msg info "No LTS kernel --> installing broadcom-wl"
-        _install_needed_packages broadcom-wl
     fi
-fi
 
 }
 
