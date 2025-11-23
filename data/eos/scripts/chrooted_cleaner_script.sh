@@ -322,7 +322,8 @@ if [ -r /tmp/broadcom-wl.txt ] && grep -q "^yes$" /tmp/broadcom-wl.txt; then
         fi
     else
         # Install broadcom-wl package from mirrors
-        _install_needed_packages broadcom-wl
+        # using dkms version for online installs to support LTS kernel
+        _install_needed_packages broadcom-wl-dkms
     fi
 fi
 
