@@ -10,6 +10,7 @@
 # 10-2022 remove unused code and support for dracut/mkinitcpio switch
 # 04-2025 use 'nvidia-inst' to install the Nvidia packages now - @manuel
 # 07-2025 adding logic to install nvidia-lts if needed - @killajoe/joekamprad
+# 11-2025 adding logic to install broadcom-wl if needed and extra check to decide if broadcom-wl or broadcom-wl-dkms is needed - @killajoe/joekamprad
 
 _c_c_s_msg() {            # use this to provide all user messages (info, warning, error, ...)
     local type="$1"
