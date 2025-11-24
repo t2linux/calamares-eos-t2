@@ -320,7 +320,7 @@ _install_extra_drivers_to_target() {
             fi
         else
             # Online install – choose correct package depending on kernels installed
-            if expac %n linux-lts linux-open-lts >/dev/null ; then
+            if expac %n linux-lts >/dev/null ; then
                 # LTS kernel installed --> use DKMS version
                 _pkg_msg info "LTS kernel detected --> installing broadcom-wl-dkms"
                 _install_needed_packages broadcom-wl-dkms
