@@ -320,7 +320,7 @@ _install_extra_drivers_to_target() {
             fi
         else
             # Online install – choose correct package depending on kernels installed
-            if pacman -Qq linux-lts >/dev/null 2>&1; then
+            if expac %n linux-lts linux-open-lts >/dev/null ; then
                 # LTS kernel installed --> use DKMS version
                 _pkg_msg info "LTS kernel detected --> installing broadcom-wl-dkms"
                 _install_needed_packages broadcom-wl-dkms
@@ -369,9 +369,6 @@ _manage_nvidia_packages() {
                     if _check_internet_connection ; then
                         _install_needed_packages nvidia-inst
                         /usr/bin/nvidia-inst --no-dkms --no-settings
-                        if [[ $(pacman -Q linux-lts 2>/dev/null) ]]; then
-                            _install_needed_packages nvidia-lts
-                        fi
                     else
                         _c_c_s_msg warning "$FUNCNAME: no internet connection!"
                     fi
