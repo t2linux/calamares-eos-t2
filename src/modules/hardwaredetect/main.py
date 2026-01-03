@@ -30,7 +30,6 @@ def pretty_status_message():
 def run():
     cpu_model = "unknown"
     cpu_vendor = "unknown"
-    gpu_drivers = []
     try:
         with open("/proc/cpuinfo", "r") as cpu_file:
             for line in cpu_file:
@@ -41,20 +40,7 @@ def run():
     except KeyError:
         libcalamares.utils.warning("Failed to get CPU drivers")
 
-    try:
-        lspci_output = subprocess.run("LANG=C lspci -k | grep -EA3 'VGA|3D|Display'",
-                                      capture_output=True, shell=True, text=True)
-
-        for line in lspci_output.stdout.split("\n"):
-            if line.strip().startswith("Kernel driver in use:"):
-                gpu_drivers.append(line.split(":")[1].strip())
-    except subprocess.CalledProcessError as cpe:
-        libcalamares.utils.warning(f"Failed to get GPU drivers with error: {cpe.output}")
-    except KeyError:
-        libcalamares.utils.warning("Failed to parse GPU driver string")
-
     libcalamares.globalstorage.insert("cpuModel", cpu_model)
     libcalamares.globalstorage.insert("cpuVendor", cpu_vendor)
-    libcalamares.globalstorage.insert("gpuDrivers", gpu_drivers)
 
     return None
