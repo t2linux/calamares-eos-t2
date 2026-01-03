@@ -72,14 +72,17 @@ _copy_files(){
     # Communicate to chrooted system if
     # - nvidia card is detected
     # - livesession is running nvidia driver
+	if grep -qw "nvidia=1" /proc/cmdline; then
+    	local nvidia_file="$target/tmp/nvidia-info.bash"
+    	local driver
 
-    if grep -qw "nvidia=1" /proc/cmdline ; then
-        local nvidia_file=$target/tmp/nvidia-info.bash
-        local driver="$(/usr/bin/nvidia-inst --recommended-driver)"
-        case "$driver" in
-            nvidia | nvidia-open) echo "nvidia_driver=$driver" >> $nvidia_file ;;
-        esac
-    fi
+    	driver="$(/usr/bin/nvidia-inst --recommended-driver)"
+
+   	 	if [ "$driver" = "nvidia-open" ]; then
+        	echo "nvidia_driver=nvidia-open" >> "$nvidia_file"
+    	fi
+	fi
+
 
     # copy user_commands.bash to target
     _CopyFileToTarget /home/liveuser/user_commands.bash $target/tmp
