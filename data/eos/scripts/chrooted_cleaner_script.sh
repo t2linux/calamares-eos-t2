@@ -358,44 +358,48 @@ _remove_nvidia_drivers() {
 }
 
 _manage_nvidia_packages() {
-    local file=/tmp/nvidia-info.bash        # nvidia info from livesession
+    local file=/tmp/nvidia-info.bash   # nvidia info from livesession
 
-    if [ -r $file ] ; then
-        local nvidia_driver=""
-        source $file
-        case "$nvidia_driver" in
-            nvidia | nvidia-open)
-                if _is_online_mode ; then
-                    if _check_internet_connection ; then
-                        _install_needed_packages nvidia-inst
-                        /usr/bin/nvidia-inst --no-dkms --no-settings
-                    else
-                        _c_c_s_msg warning "$FUNCNAME: no internet connection!"
-                    fi
-                else
-                    # offline: install nvidia packages from /usr/share/packages/
-                    local dir=/usr/share/packages
-                    local pkgs=""
-                    case "$nvidia_driver" in
-                        nvidia) pkgs="$(/usr/bin/ls -1 $dir/nvidia*.pkg.tar.zst 2>/dev/null | grep -v nvidia-open)" ;;
-                        nvidia-open) pkgs="$(/usr/bin/ls -1 $dir/nvidia*.pkg.tar.zst 2>/dev/null | grep -v nvidia-[0-9])" ;;
-                    esac
-                    if [ "$pkgs" ] ; then
-                        pacman -U --noconfirm $pkgs
-                    else
-                        _c_c_s_msg warning "$FUNCNAME: no Nvidia packages in $dir !"
-                    fi
-                fi
-                ;;
-            nouveau | "" | *)
-                _remove_nvidia_drivers	# no Nvidia GPU or using nouveau
-                ;;
-        esac
-    else
-        _remove_nvidia_drivers	 # for both offline and online ??
+    if [ ! -r "$file" ]; then
+        _remove_nvidia_drivers
+        return 0
     fi
-    true
+
+    local nvidia_driver=""
+    source "$file"
+
+    case "$nvidia_driver" in
+        nvidia-open)
+            if _is_online_mode; then
+                if _check_internet_connection; then
+                    _install_needed_packages nvidia-inst
+                    /usr/bin/nvidia-inst --no-dkms --no-settings
+                else
+                    _c_c_s_msg warning "$FUNCNAME: no internet connection!"
+                fi
+            else
+                # offline: install ONLY nvidia-open packages
+                local dir=/usr/share/packages
+                local pkgs
+
+                pkgs="$(ls -1 "$dir"/nvidia-open*.pkg.tar.zst 2>/dev/null)"
+
+                if [ -n "$pkgs" ]; then
+                    pacman -U --noconfirm $pkgs
+                else
+                    _c_c_s_msg warning "$FUNCNAME: no nvidia-open packages in $dir!"
+                fi
+            fi
+            ;;
+        nouveau | "" | *)
+            # unsupported GPU or only supporting nouveau - do nothing - keep nouveau
+            _remove_nvidia_drivers
+            ;;
+    esac
+
+    return 0
 }
+
 
 
 _run_if_exists_or_complain() {
