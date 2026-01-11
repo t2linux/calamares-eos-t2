@@ -28,6 +28,7 @@
       selected: true
       packages:
         - b43-fwcutter
+        - dialog
         - dnsmasq
         - dnsutils
         - ethtool
