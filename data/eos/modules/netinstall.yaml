@@ -61,7 +61,6 @@
         - bash-completion
         - bluez
         - bluez-utils
-        - ffmpegthumbnailer
         - gst-libav
         - gst-plugin-pipewire
         - gst-plugins-bad
