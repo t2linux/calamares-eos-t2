@@ -165,7 +165,6 @@
     - inxi
     - meld
     - nano-syntax-highlighting
-    - pv
     - python-defusedxml
     - python-jinja
     - python-packaging
