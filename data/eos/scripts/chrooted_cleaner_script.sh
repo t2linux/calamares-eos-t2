@@ -207,6 +207,7 @@ _clean_offline_packages(){
 
         ## Live iso specific
         arch-install-scripts
+		net-tools
         memtest86+
 		memtest86+-efi
         mkinitcpio
@@ -221,8 +222,8 @@ _clean_offline_packages(){
 	    fsarchiver
         gpart
 	    gparted
+		gptfdisk
         grsync
-        hdparm
         partitionmanager
 
         # ENDEAVOUROS REPO
