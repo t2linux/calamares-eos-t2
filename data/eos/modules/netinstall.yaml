@@ -39,6 +39,8 @@
         - nss-mdns
         - openssh
         - usb_modeswitch
+        - whois
+        - wireless-regdb
         - wpa_supplicant
         - xl2tpd
     - name: "Package management"
