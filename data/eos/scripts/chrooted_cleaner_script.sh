@@ -208,17 +208,19 @@ _clean_offline_packages(){
         ## Live iso specific
         arch-install-scripts
         memtest86+
+		memtest86+-efi
         mkinitcpio
         mkinitcpio-archiso
         mkinitcpio-busybox
+		mkinitcpio-nfs-utils
         pv
         syslinux
 
         ## Live iso tools
         clonezilla
-	fsarchiver
+	    fsarchiver
         gpart
-	gparted
+	    gparted
         grsync
         hdparm
         partitionmanager
