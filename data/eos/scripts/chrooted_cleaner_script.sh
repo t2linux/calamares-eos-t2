@@ -339,10 +339,13 @@ _install_extra_drivers_to_target() {
 }
 
 _install_more_firmware() {
-    # Install possibly missing firmware packages based on detected hardware
+    # Install or remove firmware packages based on detected hardware
 
-    if [ -n "$(lspci -k | grep "Kernel driver in use: mwifiex_pcie")" ] ; then    # e.g. Microsoft Surface Pro
+    if lspci -k | grep -q "Kernel driver in use: mwifiex_pcie"; then
+        # e.g. Microsoft Surface Pro
         _install_needed_packages linux-firmware-marvell
+    else
+        _remove_a_pkg linux-firmware-marvell
     fi
 }
 
