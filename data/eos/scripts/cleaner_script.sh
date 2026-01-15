@@ -14,11 +14,6 @@ _cleaner_msg() {            # use this function to provide all user messages (in
     echo "==> $type: $msg"
 }
 
-arch_chroot() {   # This function is no more needed?
-    # Use chroot not arch-chroot because of the way calamares mounts partitions
-    chroot /tmp/$chroot_path /bin/bash -c "${1}"
-}
-
 _CopyFileToTarget() {
     # Copy a file to target
 
@@ -69,21 +64,6 @@ _copy_files(){
         fi
     fi
 
-    # Communicate to chrooted system if
-    # - nvidia card is detected
-    # - livesession is running nvidia driver
-	if grep -qw "nvidia=1" /proc/cmdline; then
-    	local nvidia_file="$target/tmp/nvidia-info.bash"
-    	local driver
-
-    	driver="$(/usr/bin/nvidia-inst --recommended-driver)"
-
-   	 	if [ "$driver" = "nvidia-open" ]; then
-        	echo "nvidia_driver=nvidia-open" >> "$nvidia_file"
-    	fi
-	fi
-
-
     # copy user_commands.bash to target
     _CopyFileToTarget /home/liveuser/user_commands.bash $target/tmp
 
@@ -101,10 +81,6 @@ _copy_files(){
         mkdir -p $target/opt/extra-drivers || _cleaner_msg warning "creating folder /opt/extra-drivers on target failed."
         cp /opt/extra-drivers/*.zst $target/opt/extra-drivers/ || _cleaner_msg warning "copying drivers to /opt/extra-drivers on target failed."
     fi
-    #if [ -n "$(lsmod | grep r8168)" ] ; then
-    #    _cleaner_msg info "detected usage of r8168 driver"
-    #    touch $target/tmp/r8168_in_use
-    #fi
 
     _manage_broadcom_wifi_driver
 
@@ -162,23 +138,7 @@ Main() {
     fi
     # [ -z "$NEW_USER" ] && _cleaner_msg "error" "cleaner_script.sh: new username is unknown!"
 
-    # If the Intel X driver was installed, also install it on the target
-    echo "Checking if Intel X11 driver is needed"
-    if [[ $(pacman -Q xf86-video-intel 2>/dev/null) ]] ; then
-		if [ -z ${INSTALL_TYPE} ] ; then
-			pacman -U --noconfirm --sysroot /tmp/$chroot_path /usr/share/packages/libxvmc*.zst --asdeps
-			pacman -U --noconfirm --sysroot /tmp/$chroot_path /usr/share/packages/xf86-video-intel*.zst
-		else
-			pacman -S --noconfirm --sysroot /tmp/$chroot_path xf86-video-intel
-		fi
-	fi
-
     # Copy any file from live environment to new system
-
-    cp -f /etc/calamares/files/environment /tmp/$chroot_path/etc/environment
-    cp -n /usr/bin/device-info /tmp/$chroot_path/usr/bin/.
-    cp -n /usr/bin/eos-connection-checker /tmp/$chroot_path/usr/bin/.
-
     _copy_files
 
     _cleaner_msg info "cleaner_script.sh done."
