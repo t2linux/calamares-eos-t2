@@ -141,10 +141,6 @@ def get_kernel_params(uuid):
     use_systemd_naming = have_program_in_target("dracut") or (libcalamares.utils.target_env_call(["/usr/bin/grep", "-q", "^HOOKS.*systemd", "/etc/mkinitcpio.conf"]) == 0)
 
     partitions = libcalamares.globalstorage.value("partitions")
-    try:
-        gpu_drivers = libcalamares.globalstorage.value("gpuDrivers")
-    except KeyError:
-        pass
 
     swap_uuid = ""
     swap_outer_mappername = None
