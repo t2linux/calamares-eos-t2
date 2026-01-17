@@ -75,9 +75,9 @@ _clean_archiso(){
 
     local xx
 
-    for xx in ${_files_to_remove[*]}; do rm -rf $xx; done
+    for xx in ${_files_to_remove[*]}; do rm -rf "$xx"; done
 
-    find /usr/lib/initcpio -name archiso* -type f -exec rm '{}' \;
+    find /usr/lib/initcpio -name "archiso*" -type f -exec rm '{}' \;
 
 }
 
@@ -183,8 +183,6 @@ _clean_up(){
     _install_extra_drivers_to_target
     _install_more_firmware
 
-    _misc_cleanups
-
     # change log file permissions
     [ -r /var/log/Calamares.log ]         && chown root:root /var/log/Calamares.log
 
@@ -207,17 +205,14 @@ _show_info_about_installed_system() {
 _run_hotfix_end() {
     local file=hotfix-end.bash
     local type=""
-    if ! _check_internet_connection ; then
-        _is_offline_mode && type=info || type=warning
-        _c_c_s_msg $type "cannot fetch $file, no connection."
-        return
-    fi
-    if [ ! -e /tmp/$file ] ; then
-        local url=$(eos-github2gitlab https://raw.githubusercontent.com/endeavouros-team/ISO-hotfixes/main/$file)
-        wget --timeout=60 -q -O /tmp/$file $url || {
-            _c_c_s_msg warning "fetching $file failed."
-            return
-        }
+    if [ "$INSTALL_TYPE" = "online" ]; then
+        if [ ! -e /tmp/$file ] ; then
+            local url=$(eos-github2gitlab https://raw.githubusercontent.com/endeavouros-team/ISO-hotfixes/main/$file)
+            wget --timeout=60 -q -O /tmp/$file "$url" || {
+                _c_c_s_msg warning "fetching $file failed."
+                return
+            }
+        fi
     fi
     _c_c_s_msg info "running script $file"
     bash /tmp/$file
@@ -227,7 +222,8 @@ Main() {
     _c_c_s_msg info "Chrooted cleaner started, parameters: $*"
 
     local i
-    local NEW_USER="" INSTALL_TYPE="" BOOTLOADER=""
+    local NEW_USER=""
+    INSTALL_TYPE=""
 
     # parse the options
     for i in "$@"; do
@@ -238,23 +234,20 @@ Main() {
             --online)
                 INSTALL_TYPE="online"
                 ;;
-            --bootloader=*)
-                BOOTLOADER="${i#*=}"
-                ;;
         esac
     done
     if [ -z "$NEW_USER" ]; then
         _c_c_s_msg error "new username is unknown!"
     fi
 
-    if [ $INSTALL_TYPE != "online" ]; then
-        eos-hwtool --purge --iso
+    if [ "$INSTALL_TYPE" != "online" ]; then
+        /usr/bin/eos-hwtool --purge --iso
         _clean_archiso
-        chown $NEW_USER:$NEW_USER /home/$NEW_USER/.bashrc
+        chown "$NEW_USER":"$NEW_USER" "/home/$NEW_USER/.bashrc"
         _sed_stuff
         _clean_offline_packages
     else
-        eos-hwtool --iso --no32 --install-recommended
+        /usr/bin/eos-hwtool --iso --no32 --install-recommended
     fi
 
     _clean_up
