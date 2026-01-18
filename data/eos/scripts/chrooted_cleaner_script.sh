@@ -36,13 +36,9 @@ _remove_a_pkg() {
 }
 
 _install_needed_packages() {
-    if _is_online_mode ; then
-        if _check_internet_connection ; then
-            _pkg_msg install "if missing: $*"
-            pacman -S --needed --noconfirm "$@"
-        else
-            _c_c_s_msg warning "no internet connection, cannot install packages $*"
-        fi
+    if [ "$INSTALL_TYPE" = "online" ]; then
+        _pkg_msg install "if missing: $*"
+        pacman -S --needed --noconfirm "$@"
     else
         _c_c_s_msg warning "offline mode, not installing packages $*"
     fi
@@ -173,7 +169,9 @@ _install_more_firmware() {
         # e.g. Microsoft Surface Pro
         _install_needed_packages linux-firmware-marvell
     else
-        _remove_a_pkg linux-firmware-marvell
+        if [ "$INSTALL_TYPE" != "online" ]; then
+            _remove_a_pkg linux-firmware-marvell
+        fi
     fi
 }
 
@@ -207,7 +205,7 @@ _run_hotfix_end() {
     local type=""
     if [ "$INSTALL_TYPE" = "online" ]; then
         if [ ! -e /tmp/$file ] ; then
-            local url=$(eos-github2gitlab https://raw.githubusercontent.com/endeavouros-team/ISO-hotfixes/main/$file)
+            local url=https://raw.githubusercontent.com/endeavouros-team/ISO-hotfixes/main/$file
             wget --timeout=60 -q -O /tmp/$file "$url" || {
                 _c_c_s_msg warning "fetching $file failed."
                 return
@@ -241,11 +239,14 @@ Main() {
     fi
 
     if [ "$INSTALL_TYPE" != "online" ]; then
+        _clean_offline_packages
+        if [ $(/usr/bin/eos-hwtool --check-nvidia) = "nvidia-open" ]; then
+            /usr/bin/eos-hwtool --iso --install-recommended --packagedir=/usr/share/packages
+        fi
         /usr/bin/eos-hwtool --purge --iso
         _clean_archiso
         chown "$NEW_USER":"$NEW_USER" "/home/$NEW_USER/.bashrc"
         _sed_stuff
-        _clean_offline_packages
     else
         /usr/bin/eos-hwtool --iso --no32 --install-recommended
     fi
