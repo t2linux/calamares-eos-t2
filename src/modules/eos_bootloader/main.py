@@ -128,13 +128,6 @@ def run():
         except KeyError:
             return f"Configuration error", f"Missing key 'name' in configuration"
 
-    # remove mkinitcpio
-    try:
-        libcalamares.utils.target_env_process_output(["pacman", "--noconfirm", "-Rcn", "mkinitcpio"])
-    except subprocess.CalledProcessError:
-        # If it isn't installed, don't trigger an error
-        pass
-
     # Add the resume module for dracut
     if is_resume_needed():
         dracut_file_path = os.path.join(installation_root_path , "etc/dracut.conf.d/resume.conf")
