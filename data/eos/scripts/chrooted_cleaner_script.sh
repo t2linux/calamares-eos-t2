@@ -124,11 +124,6 @@ _clean_offline_packages(){
 
 }
 
-_remove_ucode(){
-    local ucode="$1"
-    _remove_a_pkg "$ucode"
-}
-
 _install_extra_drivers_to_target() {
     local dir=/usr/share/packages
     local pkg
@@ -244,6 +239,7 @@ Main() {
             /usr/bin/eos-hwtool --iso --install-recommended --packagedir=/usr/share/packages
         fi
         /usr/bin/eos-hwtool --purge --iso
+        /usr/bin/eos-hwtool --enable-services
         _clean_archiso
         chown "$NEW_USER":"$NEW_USER" "/home/$NEW_USER/.bashrc"
         _sed_stuff
