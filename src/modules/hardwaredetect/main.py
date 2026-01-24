@@ -46,9 +46,9 @@ def get_cpu_info():
 def install_ucode(vendor):
     package = None
     if vendor == 'GenuineIntel':
-        package = 'intel_ucode'
+        package = 'intel-ucode'
     elif vendor == 'AuthenticAMD':
-        package = 'amd_ucode'
+        package = 'amd-ucode'
 
     if package:
         try:
