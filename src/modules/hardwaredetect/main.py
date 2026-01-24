@@ -40,7 +40,7 @@ def get_cpu_info():
     except KeyError:
         libcalamares.utils.warning("Failed to get CPU information")
 
-    return cpu_vendor, cpu_info;
+    return cpu_vendor, cpu_model;
 
 
 def install_ucode(vendor):
