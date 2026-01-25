@@ -110,7 +110,6 @@ def update_mirrorlist_online(mountpoint):
 def update_mirrorlist_offline(mountpoint):
     command = ["/usr/bin/create-ml", "--offline"]
     arch_mirrorlist_filename = "/etc/pacman.d/mirrorlist"
-    eos_mirrorlist_filename = "/etc/pacman.d/endeavouros-mirrorlist"
 
     use_existing_mirrorlist = is_package_file_modified('pacman-mirrorlist', 'mirrorlist', arch_mirrorlist_filename)
 
@@ -118,9 +117,6 @@ def update_mirrorlist_offline(mountpoint):
         libcalamares.utils.debug('Using existing Arch mirrorlist from host')
     else:
         libcalamares.utils.host_env_process_output(command, line_cb)
-
-    install_file(mountpoint, arch_mirrorlist_filename)
-    install_file(mountpoint, eos_mirrorlist_filename)
 
 
 def install_file(mountpoint, filename):
