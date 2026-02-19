@@ -1,4 +1,3 @@
-
 labels:
     step: "Desktop"
     step[de]: "Desktop"
@@ -153,7 +152,7 @@ items:
 
       description[ko]: "<html><h3>Xfce</h3>는 UNIX-like 운영체제를 위한 경량 데스크탑 환경입니다.<br/>빠르고 시스템 자원을 적게 사용하면서도 보기 좋고 유저 친화적인 것을 목표로 합니다.<br/><br/><br/><br/><br/></html>"
 
-      description[cs]: "<html><h3>Xfce</h3>je odlehčené desktopové prostředí pro unixové operační systémy.<br/Má za cíl být rychlé a nenáročné na systémové zdroje při zachování atraktivního vzhledu a uživatelské přívětivosti.<br/><br/><br/><br/><br/></html>"
+      description[cs]: "<html><h3>Xfce</h3>je odlehčené desktopové prostředí pro unixové operační systémy.<br/>Má za cíl být rychlé a nenáročné na systémové zdroje při zachování atraktivního vzhledu a uživatelské přívětivosti.<br/><br/><br/><br/><br/></html>"
 
 
     - id: Cinnamon-Desktop
@@ -221,7 +220,7 @@ items:
 
       description[ko]: "<html><h3>MATE</h3>는 GNOME 2의 계승입니다. Linux와 다른 UNIX-like 운영체제에서 사용되는 것과 비슷한 전통적인 데스크탑 경험을 제공하면서 직관적이고 매력적입니다. MATE는 전통적인 데스크탑 경험을 유지하면서도 새로운 기술을 지원하기 위해 활발히 개발 중입니다.<br/><br/><br/><br/></html>"
 
-      description[cs]: "<html><h3>MATE</h3>Desktopové protředí MATE je pokračováním GNOME 2.<br/>Nabízí intuitivní a atraktivní desktopové prostředí s využitím tradičních metafor pro Linux a další Unixové operační systémy.<br/>MATE je aktivně vyvíjen a přidává podporu pro nové technologie, ale zároveň zachovává tradiční desktopové prostředí."<br/><br/><br/><br/></html>"
+      description[cs]: "<html><h3>MATE</h3>Desktopové protředí MATE je pokračováním GNOME 2.<br/>Nabízí intuitivní a atraktivní desktopové prostředí s využitím tradičních metafor pro Linux a další Unixové operační systémy.<br/>MATE je aktivně vyvíjen a přidává podporu pro nové technologie, ale zároveň zachovává tradiční desktopové prostředí.<br/><br/><br/><br/></html>"
 
 
     - id: Budgie-Desktop
@@ -358,4 +357,3 @@ items:
       description[ko]: "<html><h3>i3</h3>i3는 wmii에서 영감을 받은 C로 쓰여진 X11을 위한 데스크탑 환경입니다.<br/>동적으로 변경 가능한 타일링, 스태킹, 탭 레이아웃을 지원합니다.<br/>설정은 텍스트 파일을 통해 이루어지며, Unix 도메인 소켓과 JSON 기반 RPC 인터페이스를 통해 여러 프로그래밍 언어를 이용해 확장이 가능합니다.<br/><br/><br/></html>"
 
       description[cs]: "<html><h3>i3</h3>i3 je dlaždicový správce oken pro X11, inspirovaný wmii a napsaný v C.<br/>Podporuje dynamické dlaždicové, plovoucí a záložkové uspořádání oken.<br/>Nastavení se provádí úpravou textového konfiguračního souboru a k rozšíření funkcionality i3 je možné použít unixové sokety a JSON IPC rozhraní použitelné z různých programovacích jazyků.<br/><br/><br/></html>"
-
