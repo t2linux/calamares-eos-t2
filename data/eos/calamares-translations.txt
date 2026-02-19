@@ -317,9 +317,9 @@ i18n:
  name[zh_CN]: "初始化 pacman ... 排名镜像 ... 将 pacman 镜像列表和密钥环复制到目标 ..."
  name[ja]: "pacmanを初期化します...ミラーをランク付けします... pacmanミラーリストとキーリングをターゲットにコピーします..."
  name[sv]: "initiera pacman ... rangordna speglar ... kopiera pacmans spegellista och nyckelring till mål ..."
- name[pt_BR]: "Iniciar pacman... Classificar espelhos... Copiar lista de espelhos do pacman e chaveiro do alvo..."
+ name[pt_BR]: "Iniciar pacman ... Classificar espelhos ... Copiar lista de espelhos do pacman e chaveiro do alvo ..."
  name[tr]: "Pacman'i başlat ... Aynaları sırala ... Pacman ayna listesini ve anahtarlığı hedefe kopyala ..."
- name[ko]: "pacman 초기화 중... 미러 순위 매기는 중... pacman 미러 리스트와 키링을 설치 대상으로 복사하는 중..."
+ name[ko]: "pacman 초기화 중 ... 미러 순위 매기는 중 ... pacman 미러 리스트와 키링을 설치 대상으로 복사하는 중 ..."
  name[cs]: "inicializace nástroje pacman ... hodnocení zrcadel ... kopie seznamu zrcadel pro pacman a klíčenky do cíle ..."
 
 
@@ -347,18 +347,6 @@ i18n:
 ---
 
 https://github.com/endeavouros-team/calamares/blob/calamares/data/eos/modules/shellprocess_copyfiles.conf
-# SPDX-FileCopyrightText: no
-# SPDX-License-Identifier: CC0-1.0
-#
-# copy logs and files from host to target
----
-
-dontChroot: true
-
-script:
- - "cp /home/liveuser/endeavour-install.log ${ROOT}/var/log/endeavour-install.log"
- - "chmod 0600 ${ROOT}/var/log/endeavour-install.log"
-
 i18n:
  name: "Copy logs and files from host to target"
  name[de]: "Kopiere Logs und Dateien ans Ziel"
