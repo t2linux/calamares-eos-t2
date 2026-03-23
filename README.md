@@ -1,4 +1,4 @@
-# EndeavourOS fork of Calamares Installer Framework
+# [EndeavourOS fork of Calamares Installer Framework](https://endeavouros-team.github.io/EndeavourOS-Development/)
 [![Maintenance](https://img.shields.io/maintenance/yes/2026.svg)]()
 
 <!-- SPDX-FileCopyrightText: no
