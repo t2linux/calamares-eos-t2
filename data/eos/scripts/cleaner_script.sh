@@ -33,21 +33,10 @@ _CopyFileToTarget() {
 }
 
 _manage_broadcom_wifi_driver() {
-    local pkgname=broadcom-wl
     local targetfile=/tmp/$chroot_path/tmp/$pkgname.txt
 
-    # detecting broadcom hardware
-    if lsmod | grep -q "brcmfmac\|b43\|wl" \
-      || lspci -nn | grep -qi "14e4:43"; then
-
-        # check in addition if  broadcom-wl is installed on the live-system
-        if pacman -Q broadcom-wl &>/dev/null; then
-            echo "yes" > "$targetfile"
-        else
-            echo "Broadcom hardware found, but broadcom-wl not installed in live system" >&2
-        fi
-
-    fi
+    # broadcom-wl fucks up brcmfmac so hardcode no
+    echo "no" > $targetfile
 }
 
 _copy_files(){
