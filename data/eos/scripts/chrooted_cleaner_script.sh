@@ -121,7 +121,7 @@ _clean_offline_packages(){
         ## Calamares EndeavourOS
         $(pacman -Qq | grep calamares)        # finds calamares related packages
         ckbcomp
-	
+
     )
 
     pacman -Rsn --noconfirm "${packages_to_remove[@]}"
@@ -253,6 +253,12 @@ Main() {
     _clean_up
     _run_hotfix_end
     _show_info_about_installed_system
+
+    # Fix Wi-Fi by using iwd
+    cat <<EOF | sudo tee /etc/NetworkManager/conf.d/wifi_backend.conf
+[device]
+wifi.backend=iwd
+EOF
 
     # Remove pacnew files
     find /etc -type f -name "*.pacnew" -exec rm {} \;
